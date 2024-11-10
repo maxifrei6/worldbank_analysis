@@ -6,6 +6,7 @@
 
 # Function 1: remove_NA, deletes columns or rows if they are all NAs.
 remove_NA <- function(df) {
+  require(checkmate)
   assertDataFrame(df)
   require(dplyr)
   df <- df[rowSums(is.na(df)) < ncol(df), ] %>%
