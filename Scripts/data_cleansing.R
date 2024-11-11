@@ -75,5 +75,27 @@ full_data <- full_join(geodata, sociometrics, by = colnames(geodata))
 # Sort the joined dataset by Country Name
 full_data <- sort_by(full_data, full_data$`Country Name`)
 
-# Change the row numbering according to new sorting order 
+
 # TODO
+
+
+# Delete column "average" and "Series Name"
+full_data <- full_data %>%
+  select(c(-average, -`Series Name`))
+
+# Columns with Years in column "Year"
+full_data <- full_data %>%
+  pivot_longer(
+    cols = starts_with("20"),
+    names_to = "Year",
+    values_to = "Value",
+    values_drop_na = FALSE
+  )
+
+# Variables in "Series Name" as columns
+full_data <- full_data %>%
+  pivot_wider(
+    id_cols = c(`Country Name`, `Country Code`, Year),
+    names_from = `Series Code`,
+    values_from = Value
+  )
