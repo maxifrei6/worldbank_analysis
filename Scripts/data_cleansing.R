@@ -42,6 +42,8 @@ head(co2data)
 # Read the xlsx file from Data/Row folder
 sociometrics <- read_excel("Data/Raw/Worldbank1.xlsx", sheet = 1, col_names = TRUE, na = "..")
 
+# TO DO: create dictionary/list from sheet 2 to match abbrevaited metrics with description
+
 # Delete columns or rows if they are all NAs.
 # Apply the remove_NAs function to all interested datasets
 geodata <- remove_NA(geodata)
