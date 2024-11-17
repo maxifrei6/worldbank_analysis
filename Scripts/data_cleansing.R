@@ -140,3 +140,6 @@ full_data <- full_data %>%
     names_from = `Series Code`,
     values_from = Value
   )
+
+# Save the merged dataset for future use in the processed data directory
+saveRDS(full_data, file = "Data/Processed/full_data.RDS")
