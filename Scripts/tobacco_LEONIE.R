@@ -9,6 +9,8 @@ library(ggplot2)
 #     2)  whole data: mean of each country one dot
 #     3)  last data used for evaluation -> Year 2021
 #     4)  facetting by year
+#     5)  Bar chart comparing GDP to tabacco usage
+#     6)  Facetting by country, x-axis = Year, y-axis1 = GDP, y-axis2 = tobacco usage
 
 # Variables:  GDP per capita, PPP (constant 2021 international $)
 #             NY.GDP.PCAP.PP.KD
@@ -21,12 +23,6 @@ library(ggplot2)
 #           colour:   Country
 #                     -> grouped? -> mean?
 
-# Check how many NA's are in the data to be used
-# No NA`s in GDP per capita
-sum(is.na(full_data$NY.GDP.PCAP.PP.KD))
-# 382 NA`s in Prevalence of current tobacco use
-sum(is.na(full_data$SH.PRV.SMOK))
-
 # Set up for dataframe
 tobacco_df <- full_data %>%
   select(`Country Name`,
@@ -38,7 +34,25 @@ View(tobacco_df)
 str(tobacco_df$NY.GDP.PCAP.PP.KD)
 str(tobacco_df$SH.PRV.SMOK)
 
-# Example with Afghanistan option 2)
+# Check how many NA's are in the data to be used
+# No NA`s in GDP per capita
+sum(is.na(full_data$NY.GDP.PCAP.PP.KD))
+# 382 NA`s in Prevalence of current tobacco use
+sum(is.na(full_data$SH.PRV.SMOK))
+
+# Check how many NA's in tabacco each Year
+years_data_tobacco <- tobacco_df %>% 
+  group_by(Year) %>% 
+  reframe(num_na = sum(is.na(SH.PRV.SMOK))) %>% 
+  filter(num_na < 25)
+# Knowing there are only 25 countries to investigate, we only have data of the 
+# Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco 
+# usage in the adult population of all 24 countries (excluding Aruba).
+
+# (first have to solve grouping of countries generally before performing this task:)
+# Exclude Aruba from the tabacco_df
+
+# Example with Afghanistan option 2) (just testing)
 mean_gdp_afg <- mean(unlist(tobacco_df[1:22, "NY.GDP.PCAP.PP.KD"]))
 mean_tob_afg <- mean(unlist(tobacco_df[1:22, "NY.GDP.PCAP.PP.KD"]), na.rm = TRUE)
 
@@ -47,32 +61,84 @@ means_per_country <- tobacco_df %>%
   group_by(`Country Name`) %>%
   summarise(
     mean_gdp = mean(NY.GDP.PCAP.PP.KD),
-    mean_tobacco = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE)
+    mean_tobacco = mean(SH.PRV.SMOK, na.rm = TRUE)
   )
 
 # Checking for NA's in table with means (-> empty columns of specific countries?)
 sum(is.na(means_per_country$mean_tobacco))
+# -> Aruba
 
-# first simple plot for overview
+# Dotplot: mean over time, grouped by country, correlation between tobacco usage and GDP
 ggplot(means_per_country,
        aes(x = mean_gdp, y = mean_tobacco, colour = `Country Name`)) +
-  geom_dotplot() +
+  geom_point(size = 2) +
   labs(title = "Correlation of GDP per Capita and tobacco prevalence",
        x = "GDP per Capita in $",
-       y = "Prevalence of current tobacco use in % of adults",
+       y = "Prevalence of tobacco use in % of adults",
        colour = "Country")
 
-# y-axis has to be converted!
+# 5)
+# Get an overview of tobacco variable
+# Code for plotting Prevalence tobacco usage grouped by country
+tobacco_df %>%
+  group_by(`Country Name`) %>%
+  summarise(mean_tobacco = mean(SH.PRV.SMOK, na.rm = TRUE)) %>%
+  ggplot(aes(x = `Country Name`, y = mean_tobacco)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Prävalenz des Tabakkonsums nach Land", x = "Land", 
+       y = "Prävalenz des Tabakkonsums in % der Erwachsenen")
+# Code for plotting GDP per Capita grouped by country
+tobacco_df %>%
+  group_by(`Country Name`) %>%
+  summarise(mean_gdp = mean(NY.GDP.PCAP.PP.KD)) %>%
+  ggplot(aes(x = `Country Name`, y = mean_gdp)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "BIP pro Kopf nach Land", x = "Land", 
+       y = "BIP pro Kopf")
+# put last two together
+means_per_country %>% 
+  ggplot(aes(x = `Country Name`, y = c(mean_gdp, mean_tobacco), fill = c(mean_gdp, mean_tobacco))) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Vergleich von BIP und Tabbakkonsum pro Land", x = "Land", 
+       y = c("BIP pro Kopf in $", "Tabbakkonsum in % der Erwachsenen"))
 
+# 3)
+# Aktuellste Daten im Jahr 2021
+tobacco2021_df <- tobacco_df %>% 
+  filter(Year %in% 2021)
 
+# Check number of NA's in tabacco usage variable
+sum(is.na(tobacco2021_df$SH.PRV.SMOK))
+# Scatterplot dieser Daten
+ggplot(data, aes(x = GDP_per_capita, y = Tobacco_use, color = Country)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Optionale Regression
+  labs(x = "BIP pro Kopf", y = "Tabakkonsum (%)", title = "Korrelation zwischen BIP und Tabakkonsum") +
+  theme_minimal()
+
+# 6) Scatterplot facettiert, x = zeit
+ggplot(data, aes(x = GDP_per_capita, y = Tobacco_use)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Linie für jede Facette
+  facet_wrap(~ Country) +
+  labs(x = "BIP pro Kopf", y = "Tabakkonsum (%)", title = "Korrelation pro Land") +
+  theme_minimal()
+
+# 6b) extra idee: heatmap der correlation
+heatmap_data <- data %>%
+  group_by(Country, Year) %>%
+  summarise(correlation = cor(GDP_per_capita, Tobacco_use, use = "complete.obs")) %>%
+  na.omit()
+
+ggplot(heatmap_data, aes(x = Year, y = Country, fill = correlation)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  labs(x = "Jahr", y = "Land", fill = "Korrelation", title = "Korrelation über Länder und Jahre") +
+  theme_minimal()
 # Have to compromise countries! Make subgroups
 
 
-# Chatgpt code for plotting one variable grouped by country:
-# df %>%
-# group_by(country) %>%
-#   summarise(mean_value = mean(variable, na.rm = TRUE)) %>%
-#   ggplot(aes(x = country, y = mean_value)) +
-#   geom_bar(stat = "identity") +
-#   theme_minimal() +
-#   labs(title = "Mittelwert der Variable je Land", x = "Land", y = "Mittelwert")
+# Sprache in Graphen auf deutsch anpassen
