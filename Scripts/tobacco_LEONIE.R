@@ -53,11 +53,13 @@ years_data_tobacco <- tobacco_df %>%
 # (first have to solve grouping of countries generally before performing this task:)
 # Exclude Aruba from the tabacco_df
 
-## Daten im Jahr k (alle k's ersetzen!)
-tobacco_k_df <- tobacco_df %>% 
-  filter(Year %in% k)
+## data in year:
+tobacco_year_df <- function(year){
+  tobacco_df %>% 
+    filter(Year %in% year)
+}
 # Check number of NA's in tabacco usage variable of Year k
-sum(is.na(tobacco_k_df$SH.PRV.SMOK))
+sum(is.na(tobacco_year_df$SH.PRV.SMOK))
 
 ## Example with Afghanistan option 2) (just testing)
 mean(unlist(tobacco_df[1:22, "NY.GDP.PCAP.PP.KD"]))
@@ -99,7 +101,7 @@ tobacco_df %>%
   summarise(mean_gdp = mean(NY.GDP.PCAP.PP.KD)) %>%
   ggplot(aes(x = `Country Name`, y = mean_gdp)) +
   geom_bar(stat = "identity") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 13)) +
   labs(title = "BIP pro Kopf nach Land", x = "Land", 
        y = "BIP pro Kopf")
 # put last two together:
