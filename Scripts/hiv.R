@@ -40,9 +40,7 @@ library(ggplot2)
 # 2.4) facetting by Year, countries over colour, corr of education and HIV displayed 
 # 2.5) facetting by Country, year over colour, corr of education and HIV displayed
 # 2.6) y-axis: HIV Prevalence per Labour Force with basic information (HIV/EDU) 
-#       
-# 2.7)  
-# 2.8)  
+# 2.a) grouping countries by development level of Worldbank  
 
 ## Adjust dataframe
 hiv_df <- full_data %>%
@@ -142,3 +140,72 @@ ggplot(hiv_df,
   facet_wrap(~ `Country Name`) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5)) +
   labs(x = "Jahr", y = "HIV Prävalenz / Erwerbstätige mit Bildung")
+
+## 2.a) 
+# Categorize all 25 countries: (AI, https://deepai.org/chat/free-chatgpt)
+# (Entwicklungs-, Schwellen- und hoch entwickelte Länder)
+development_ct <- c(
+  "Afghanistan",
+  "Bangladesh",
+  "Bolivia",
+  "Cambodia",
+  "Chad",
+  "Tanzania",
+  "Nigeria",
+  "Viet Nam",
+  "Ghana",
+  "India",
+  "Mali",
+  "Pakistan",
+  "Peru"
+)
+
+emerging_ct <- c("Brazil",
+                 "China",
+                 "Thailand",
+                 "Russian Federation",
+                 "India",
+                 "Kazakhstan",
+                 "Nigeria")
+
+highdeveloped_ct <- c(
+  "United States",
+  "United Kingdom",
+  "New Zealand",
+  "Finland",
+  "Czechia",
+  "Aruba",
+  "Qatar"
+)
+# extra column for categorization
+hiv_df$dev_status <- ifelse(
+  hiv_df$`Country Name` %in% development_ct,
+  "development countries",
+  ifelse(
+    hiv_df$`Country Name` %in% emerging_ct,
+    "emerging countries",
+    ifelse(
+      hiv_df$`Country Name` %in% highdeveloped_ct,
+      "highly developed countries",
+      "Unbekannt"
+    )
+  )
+)
+# Because the grouping by development status is of relative fresh data, we only 
+# take a look at year 2021; we can delete alc column (doesn't have any values)
+hiv_development_df <- hiv_df %>% 
+  filter(Year == 2021) %>% 
+  select(- SH.ALC.PCAP.LI)
+# Dataframe of grouped countries and their value
+hiv_development_df <- hiv_development_df %>%
+  group_by(dev_status) %>%
+  summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+            SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE))
+
+## Visualising results of results
+ggplot(hiv_development_df, aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = dev_status)) + 
+  geom_point() +
+  labs(title = "Korrelation zwischen HIV Auftreten und Bildungsstand", 
+       y = "HIV Prävalenz", x = "Bildungsstand der Erwerbstätigen",
+       colour = "Entwicklungsstand")
+# stimmen die Werte wirklich?
