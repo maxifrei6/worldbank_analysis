@@ -22,11 +22,12 @@ library(ggplot2)
 
 ## Answer / Visualization of 1)
 # 1.1) last available data with alcohol counsumption on x-axis and HIV prevalence on y-axis
+#       countries/continents coloured
 # 1.2)  
 # 1.3)  
 # 1.4)  
-# 1.5)  
-# 1.6)  
+# 1.5) facetting by country, alcoholconsumption vs HIV
+# 1.6) facetting by country, time vs HIV
 # 1.7)  
 # 1.8)  
 
@@ -38,9 +39,10 @@ library(ggplot2)
 #       countrie coded on x-scale?
 # 2.3) boxplot with grouped countries by education and HIV prevalence values
 # 2.4) facetting by Year, countries over colour, corr of education and HIV displayed 
-# 2.5) facetting by Country, year over colour, corr of education and HIV displayed
+# 2.5) facetting by country, education vs HIV
 # 2.6) y-axis: HIV Prevalence per Labour Force with basic information (HIV/EDU) 
 # 2.a) grouping countries by development level of Worldbank  
+# 2.b) grouping countries by continent
 
 ## Adjust dataframe
 hiv_df <- full_data %>%
@@ -112,6 +114,51 @@ hiv_year_df <- function(year){
     filter(Year %in% year)
 }
 
+## 1.1)
+# Dataframe adjusted (no data for Aruba)
+hiv_alc_df <- hiv_df %>% 
+  filter(`Country Name` != "Aruba") %>% 
+  select(-SL.TLF.BASC.ZS)
+hiv_alc_2020_df <- hiv_alc_df %>% 
+  filter(Year == 2020)
+
+# plot results over countries
+ggplot(hiv_alc_2020_df, aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = `Country Name`)) +
+  geom_point() +
+  labs(x = "Alkoholkonsum in Litern pro Kopf", y = "HIV Prävalenz in %",
+       title = "Alkoholkonsum vs. HIV Prävalenz", colour = "Land")
+# plot results over continents
+hiv_alc_2020_continent_df <- hiv_alc_2020_df %>% 
+  group_by(continent) %>% 
+  summarise(SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+            SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE))
+ggplot(hiv_alc_2020_continent_df, aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = continent)) +
+  geom_point() +
+  labs(x = "Alkoholkonsum in Litern pro Kopf", y = "HIV Prävalenz in %",
+       title = "Alkoholkonsum vs. HIV Prävalenz", colour = "Kontinent")
+# as comparison: here countries coded over their continent, to take a look at variance, sample size, ...
+ggplot(hiv_alc_2020_df, aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = continent)) +
+  geom_point(size = 3, alpha = 0.5) +
+  labs(x = "Alkoholkonsum in Litern pro Kopf", y = "HIV Prävalenz in %",
+       title = "Alkoholkonsum vs. HIV Prävalenz", colour = "Kontinent")
+
+# 1.5)
+ggplot(hiv_alc_df,
+       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, color = Year)) +
+  geom_point(size = 1) +
+  facet_wrap(~ `Country Name`) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 0.5) +
+  labs(y = "HIV Prävalenz in %", x = "totaler Alkoholkonsum pro Kopf", color = "Jahr")
+
+# 1.6)
+ggplot(hiv_alc_df,
+       aes(Year, SH.DYN.AIDS.ZS, color = SH.ALC.PCAP.LI)) +
+  geom_point(size = 1) +
+  facet_wrap(~ `Country Name`) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 4)) +
+  labs(x = "Jahr", y = "HIV Prävalenz in %", color = "totaler Alkoholkonsum pro Kopf",
+       title = "HIV Prälenz über Zeit sowie Alkoholkonsum")
+
 ## 2.4) 
 ggplot(hiv_df,
        aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, color = `Country Name`)) +
@@ -127,7 +174,7 @@ ggplot(hiv_df,
   geom_point(size = 1) +
   facet_wrap(~ `Country Name`) +
   geom_smooth(method = "lm", se = FALSE, color = "black", size = 0.5) +
-  labs(x = "HIV Prävalenz", y = "Bildungsstand der Erwerbstätigen", color = "Jahr")
+  labs(y = "HIV Prävalenz in %", x = "% Erwerbstätige mit Grundbildung", color = "Jahr")
 
 ## 2.6)
 #   if high value: high HIV and low edu
@@ -201,6 +248,13 @@ hiv_development_df <- hiv_development_df %>%
   group_by(dev_status) %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE))
+# keep year-information (funktioniert nicht)
+hiv_df %>%
+  select(-SH.ALC.PCAP.LI) %>%
+  group_by(Year) %>% 
+  group_by(dev_status) %>%
+  summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+            SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE))  
 
 ## Visualising results of results
 ggplot(hiv_development_df, aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = dev_status)) + 
@@ -209,3 +263,39 @@ ggplot(hiv_development_df, aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = dev_stat
        y = "HIV Prävalenz", x = "Bildungsstand der Erwerbstätigen",
        colour = "Entwicklungsstand")
 # stimmen die Werte wirklich?
+
+## 2b)
+continent_mapping <- data.frame(
+  Country = c('Afghanistan', 'Aruba', 'Bangladesh', 'Bolivia', 'Brazil', 
+           'Cambodia', 'Chad', 'Russian Federation', 'Tanzania', 'Thailand', 
+           'United States', 'United Kingdom', 'Nigeria', 'Viet Nam', 
+           'China', 'Czechia', 'Finland', 'Ghana', 'India', 
+           'Kazakhstan', 'Mali', 'New Zealand', 'Pakistan', 'Peru', 
+           'Qatar'),
+  continent = c('Asien', 'Nordamerika', 'Asien', 'Südamerika', 'Südamerika', 
+                'Asien', 'Afrika', 'Europa', 'Afrika', 'Asien', 
+                'Nordamerika', 'Europa', 'Afrika', 'Asien', 
+                'Asien', 'Europa', 'Europa', 'Afrika', 'Asien', 
+                'Asien', 'Afrika', 'Ozeanien', 'Asien', 'Südamerika', 
+                'Asien')
+)
+# dataframe with continent variable
+hiv_df <- hiv_df %>%
+  left_join(continent_mapping, by = c("Country Name" = "Country"))
+# grouped dataframe with values by mean over all years
+hiv_continent_df <- hiv_df %>%
+  group_by(continent) %>%
+  summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+            SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE))
+# only year 2021
+hiv_continent_2021_df <- hiv_df %>% 
+  filter(Year == 2021) %>% 
+  select(-SH.ALC.PCAP.LI) %>% 
+  group_by(continent) %>% 
+  summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+            SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE))
+# plot results
+ggplot(hiv_continent_2021_df, aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = continent)) +
+  geom_point() +
+  labs(x = "% Erwerbstätige mit Grundbildung", y = "HIV Prävalenz in %",
+       title = "Grundbildung vs. HIV Prävalenz", colour = "Kontinent")
