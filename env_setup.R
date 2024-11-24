@@ -10,7 +10,7 @@
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 # Loading necessary packages
-packages <- c("readxl",
+packages <- c("readxl",  # for reading .xlsx files
               "tidyr",
               "dplyr",
               "stringr",
@@ -19,6 +19,9 @@ packages <- c("readxl",
               "ggplot2",
               "purrr",
               "knitr",
+              "rnaturalearth",  # for worldmap design
+              "rnaturalearthdata",  # for worldmap design
+              "sf",  # for worldmap design
               "pROC",
               "rpart",
               "survival",
