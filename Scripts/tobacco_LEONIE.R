@@ -14,8 +14,10 @@ library(ggplot2)
 #     7)  Facetting by country, x-axis = Year, y-axis = tobacco usage
 #     8)  Data grouped by development state of 2020
 #     9)  Data grouped by continent
+#     10) Boxplot with countries on x-axis and tobacco usage on y-axis
 # a) grouping data by development state
 # b) grouping data by continent
+# c) grouping by quantile: durchschnitt über jahre , dann quantile
 
 # Variables:  GDP per capita, PPP (constant 2021 international $)
 #             NY.GDP.PCAP.PP.KD
@@ -28,8 +30,37 @@ library(ggplot2)
 #           colour:   Country
 #                     -> grouped? -> mean?
 
+# grouping df by tobacco usage (chatgpt)
+# Beispiel DataFrame erstellen
+# df <- data.frame(
+#   Land = rep(c("Land1", "Land2", "Land3"), each = 22),
+#   Jahr = rep(2020:2021, times = 33),
+#   Variable1 = runif(66, 0, 100),  # Zufällige Werte für Variable1
+#   Variable2 = runif(66, 0, 100)   # Zufällige Werte für Variable2
+# )
+# defining tresholds
+thresholds <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+
+# group data by tobacco thresholds and calculate mean
+tobacco_tob_df <- tobacco_df %>%
+  select(-dev_status, -continent) %>%
+  mutate(tobgroup = cut(
+    SH.PRV.SMOK,
+    breaks = thresholds,
+    right = FALSE,
+    labels = c("0-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70",
+      "70-80", "80-90", "90-100"))) %>%
+  group_by(tobgroup, Year) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD.MEAN = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  ungroup()
+# problem: random NA values in tobgroup
+
+
 ## Set up for dataframe
-tobacco_df <- full_data %>%
+tobacco_df <- data_merged %>%
   select(`Country Name`,
          `Country Code`,
          Year,
@@ -178,9 +209,9 @@ tobacco_continent_2020_df <- tobacco_df %>%
 
 ## Check how many NA's are in the data to be used
 # No NA`s in GDP per capita
-sum(is.na(full_data$NY.GDP.PCAP.PP.KD))
+sum(is.na(data_merged$NY.GDP.PCAP.PP.KD))
 # 382 NA`s in Prevalence of current tobacco use
-sum(is.na(full_data$SH.PRV.SMOK))
+sum(is.na(data_merged$SH.PRV.SMOK))
 
 # Check how many NA's in tabacco each Year
 years_data_tobacco <- tobacco_df %>%
@@ -358,3 +389,9 @@ ggplot(tobacco_2020_df,
     y = "Anteil tabakkonsumierender Gesellschaft",
     colour = "Kontinent"
   )
+
+# 10) Boxplot with countries on x-axis and tobacco usage on y-axis
+ggplot(tobacco_df, aes(`Country Name`, SH.PRV.SMOK)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Tabakkonsum per Land", x = "Land", y = "Anteil tabakkonsumierender Gesellschaft")
