@@ -50,11 +50,6 @@ data_geo <- remove_NA(data_geo)
 data_sociometrics <- remove_NA(data_sociometrics)
 data_co2 <- remove_NA(data_co2)
 
-# Remove duplicate rows if any
-data_geo <- distinct(data_geo)
-data_sociometrics <- distinct(data_sociometrics)
-data_co2 <- distinct(data_co2)
-
 # Get an overview of the datasets
 str(data_geo)
 summary(data_geo)
@@ -97,6 +92,10 @@ data_sociometrics <- data_sociometrics[data_sociometrics$`Country Name` != metad
 str(data_geo)
 str(data_sociometrics)
 str(data_co2)
+
+# create and save RDS before deleting averages
+data_pregrouped <- full_join(data_geo, data_sociometrics, by = colnames(data_geo))
+saveRDS(data_pregrouped, file = "Data/Processed/data_pregrouped.RDS")
 
 # Delete column "average" and "Series Name" to avoid data type issues
 data_geo <- data_geo %>%

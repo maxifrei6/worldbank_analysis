@@ -5,46 +5,81 @@ library(stringr)
 library(checkmate)
 source("Scripts/functions.R")
 
-# Step 1: Calculate the mean population and population density for each country
-country_means <- full_data %>%
-  group_by(`Country Name`) %>%
-  summarize(
-    Mean_Population = mean(SP.POP.TOTL, na.rm = TRUE),
-    Mean_Density = mean(EN.POP.DNST, na.rm = TRUE)
-  )
+# Load and filter the data
+data_grouped <- readRDS("Data/Processed/data_pregrouped.RDS") %>%
+  select(`Country Name`, `Country Code`, `Series Name`, `Series Code`, `average`)
 
-# Step 2: Define thresholds for three buckets for Population and Density
-# You can adjust these values based on your data's distribution
-population_thresholds <- c(1e7, 5e7)  # Example thresholds for population
-density_thresholds <- c(50, 200)      # Example thresholds for density
+data_grouped_pop <- data_grouped %>%
+  filter(`Series Code` == "SP.POP.TOTL")
 
-# Step 3: Categorize each country based on these mean values
-country_means <- country_means %>%
+# Calculate the 1/3 and 2/3 quantiles of the 'average' column
+quantiles <- quantile(data_grouped_pop$average, probs = c(1/3, 2/3), na.rm = TRUE)
+
+# Add new column 'population_size' as an ordered factor
+data_grouped_pop <- data_grouped_pop %>%
   mutate(
-    Population_Category = case_when(
-      Mean_Population < population_thresholds[1] ~ "Low",
-      Mean_Population >= population_thresholds[1] & Mean_Population < population_thresholds[2] ~ "Medium",
+    population_size = case_when(
+      average <= quantiles[1] ~ "Low",
+      average <= quantiles[2] ~ "Medium",
       TRUE ~ "High"
     ),
-    
-    Density_Category = case_when(
-      Mean_Density < density_thresholds[1] ~ "Low",
-      Mean_Density >= density_thresholds[1] & Mean_Density < density_thresholds[2] ~ "Medium",
-      TRUE ~ "High"
-    )
+    # Convert to ordered factor with levels High > Medium > Low
+    population_size = factor(population_size, levels = c("High", "Medium", "Low"), ordered = TRUE)
   )
 
-# View the result
-head(country_means)
+# same for pop_density
+data_grouped_pop_density <- data_grouped %>%
+  filter(`Series Code` == "EN.POP.DNST")
 
-# Step 4: Join the categorized data back to the original dataset
-extended_data <- full_data %>%
-  left_join(country_means %>% select(`Country Name`, Population_Category, Density_Category), 
-            by = "Country Name")
+# Calculate the 1/3 and 2/3 quantiles of the 'average' column
+quantiles <- quantile(data_grouped_pop_density$average, probs = c(1/3, 2/3), na.rm = TRUE)
 
-# View the first few rows of the extended data
-head(extended_data)
+print(quantiles)
 
+# Add new column 'population_density' as an ordered factor
+data_grouped_pop_density <- data_grouped_pop_density %>%
+  mutate(
+    population_density = case_when(
+      average <= quantiles[1] ~ "Low",
+      average <= quantiles[2] ~ "Medium",
+      TRUE ~ "High"
+    ),
+    # Convert to ordered factor with levels High > Medium > Low
+    population_density = factor(population_density, levels = c("High", "Medium", "Low"), ordered = TRUE)
+  )
 
-# ds.store test
-# success
+# same for income
+data_grouped_income_levels<- data_grouped %>%
+  filter(`Series Code` == "NY.ADJ.NNTY.PC.CD")
+
+# Calculate the 1/3 and 2/3 quantiles of the 'average' column
+quantiles <- quantile(data_grouped_income_levels$average, probs = c(1/3, 2/3), na.rm = TRUE)
+
+print(quantiles)
+
+# Add new column 'income_level' as an ordered factor
+data_grouped_income_levels <- data_grouped_income_levels %>%
+  mutate(
+    income_level = case_when(
+      average <= quantiles[1] ~ "Low",
+      average <= quantiles[2] ~ "Medium",
+      TRUE ~ "High"
+    ),
+    # Convert to ordered factor with levels High > Medium > Low
+    income_level = factor(income_level, levels = c("High", "Medium", "Low"), ordered = TRUE)
+  )
+
+# select relevant columns
+data_grouped_pop <- data_grouped_pop %>%
+  select(`Country Name`, `Country Code`,`population_size`)
+data_grouped_pop_density <- data_grouped_pop_density %>%
+  select(`Country Name`, `Country Code`,`population_density`)
+data_grouped_income_levels <- data_grouped_income_levels %>%
+  select(`Country Name`, `Country Code`,`income_level`)
+
+# merge all groups
+data_grouped <- left_join(data_grouped_pop, data_grouped_pop_density, by = c("Country Name", "Country Code")) %>%
+  left_join(data_grouped_income_levels, by = c("Country Name", "Country Code"))
+
+# save as RDS
+saveRDS(data_grouped, file = "Data/Processed/data_grouped.RDS")
