@@ -2,7 +2,9 @@
 title: "Worldbank Education Analysis"
 author: "Maximilian Frei"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ## Introduction
@@ -300,6 +302,13 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS, color = in
     color = "Income Level"
   ) +
   theme_minimal()
+
+data_education %>%
+  group_by(income_level) %>%
+  summarise(
+    correlation = cor(SL.TLF.BASC.ZS, SE.TER.ENRL.TC.ZS, use = "complete.obs"),
+    n = sum(complete.cases(SL.TLF.BASC.ZS, SE.TER.ENRL.TC.ZS))
+  )
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
@@ -316,3 +325,32 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS, color = po
   ) +
   theme_minimal()
 ```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+ggplot(data_education, aes(x = NY.GDP.PCAP.PP.KD, y = SL.TLF.BASC.ZS, color = income_level)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_x_log10() +  # Apply log10 transformation to the x-axis
+  labs(
+    title = "GDP per Capita vs Labor Force with Basic Education (Log Scale)",
+    x = "GDP per Capita (Log Scale, USD)",
+    y = "Labor Force with Basic Education (%)"
+  ) +
+  theme_minimal()
+```
+<br>
+<br>
+**High-Income Countries:**  
+
+- The relationship between GDP per capita and labor force with basic education (%) is strongly positive, as evidenced by the steep slope for high-income countries.  
+- High-income countries are concentrated at the higher end of the GDP scale.  
+
+**Medium-Income Countries:**  
+
+- Medium-income countries appear to have a much flatter relationship, with some variability in education outcomes across a wide range of GDP values.  
+
+**Low-Income Countries:**  
+
+- Low-income countries show a slightly negative or flat trend between GDP per capita and education levels.  
+- These countries are clustered toward the lower GDP range, with varying education outcomes.  
+
