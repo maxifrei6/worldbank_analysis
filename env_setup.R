@@ -7,6 +7,7 @@
 ## If problems with installing Icens and Interval occur, please check R version.
 
 # Setting working directory
+install.packages("rstudioapi")
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 # Loading necessary packages
