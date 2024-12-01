@@ -45,7 +45,7 @@ library(ggplot2)
 # 2.b) grouping countries by continent
 
 ## Adjust dataframe
-hiv_df <- full_data %>%
+hiv_df <- data_merged %>%
   select(`Country Name`,
          `Country Code`,
          Year,
