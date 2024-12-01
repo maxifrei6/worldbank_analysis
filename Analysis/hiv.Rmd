@@ -24,6 +24,6 @@ data_merged <- readRDS("C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/w
 data_grouped <- readRDS("C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_grouped.RDS")
 data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 data_hiv <- data_processed %>% 
-  select(...)
+  select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, alc_consumption, edu_basic)
 ```
 
