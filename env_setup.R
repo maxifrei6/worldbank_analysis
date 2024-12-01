@@ -36,7 +36,7 @@ packages <- c("readxl",  # for reading .xlsx files
               "epitools",
               "ggmosaic",
               "e1071",
-              "RColorBrewer",
+              "RColorBrewer",  # for colorblind-friendly visuals
               "icenReg",
               "interval",
               "scales",
