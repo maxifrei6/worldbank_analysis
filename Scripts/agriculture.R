@@ -21,12 +21,13 @@ data_agriculture <- readRDS("Data/Processed/data_merged.RDS")
 # Answer / Visualization of 1.)
 # 1.1) Scatter plot with agricultural land [%] as color and free y-axis
 # 1.2) Scatter plot with country as color and logarithmic CO2 for y-axis
-# 1.3) Heatmap (only CO2 emissions though) in table design
+# 1.3) A) Heatmap only CO2 emissions / B) Lineplot only agriculture land [%] / C) Lineplot only CO2 emissions
 # 1.4) Heatmap (only CO2 emissions though) in world map design
 # 1.5) Logarithmic CO2 emissions by country, average agricultural land [%] for color and facet order
 # 1.6) Normalized and logarithmic CO2 emissions by country, average agricultural land [%] for color and facet order
 # 1.7) Line plots with normalized data over time for each country
 # 1.8) Boxplots (only one variable though)
+# 1.9) 
 
 # Answer / Visualization of 2.)
 # 2.1) 
@@ -59,12 +60,62 @@ data_agriculture_normd_long <- data_agriculture_normd %>%
     variable == "co2_normd" ~ value * 100,  # used for [%] comparison
     variable == "AG.LND.AGRI.ZS" ~ value))
 
-# Compute the average change in agricultural land [%] by country
-country_order_by_agriland <- data_agriculture %>%
+# Save the ascending order of average change in agricultural land [%] by country
+country_order_by_agrLand <- data_agriculture %>%
   group_by(`Country Name`) %>%
-  summarise(AG.LND.AGRI.ZS_avg = mean(AG.LND.AGRI.ZS)) %>%
-  arrange(AG.LND.AGRI.ZS_avg) %>%
+  summarise(avg_AG.LND.AGRI.ZS = mean(AG.LND.AGRI.ZS)) %>%
+  arrange(avg_AG.LND.AGRI.ZS) %>%
   pull(`Country Name`)
+
+# Get an overview over the CO2 emissions data
+summary(data_agriculture$EN.GHG.CO2.MT.CE.AR5)
+
+# Save the ascending order of within-country variance in CO2 emissions
+country_order_by_CO2variance <- data_agriculture %>%
+  group_by(`Country Name`) %>%
+  summarise(avg_EN.GHG.CO2.MT.CE.AR5 = mean(EN.GHG.CO2.MT.CE.AR5)) %>%
+  arrange(avg_EN.GHG.CO2.MT.CE.AR5) %>%
+  pull(`Country Name`)
+
+# Compute the between-country variance in CO2 emissions
+data_agriculture_variance_between_CO2 <- var(data_agriculture %>%
+                                               group_by(`Country Name`) %>%
+                                               summarise(Average_CO2 = mean(EN.GHG.CO2.MT.CE.AR5)) %>%
+                                               select(Average_CO2))
+
+# Create boxplots for within-country variances (vertical reference line showing the between-country variance)
+ggplot(data_agriculture,
+       aes(x = EN.GHG.CO2.MT.CE.AR5, y = factor(`Country Name`, levels = country_order_by_CO2variance))) +
+  geom_boxplot() +
+  # geom_vline(xintercept = data_agriculture_variance_between_CO2,
+  #            color = "black", linetype = "dashed", size = 1.2) +  # Between-country variance
+  labs(title = "Streuungszerlegung der CO2 Emissionen pro Kopf bezüglich Ländern",
+       x = "CO2 Emissionen pro Kopf [mt]", y = "Land") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Get an overview over the agriculture data
+summary(data_agriculture$AG.LND.AGRI.ZS)
+
+# Recall the already existing ascending order by agricultural land [%]
+country_order_by_agrLand
+
+# Compute the between-country variance in CO2 emissions
+data_agriculture_variance_between_agrLand <- var(data_agriculture %>%
+                                                   group_by(`Country Name`) %>%
+                                                   summarise(Average_agrLand = mean(AG.LND.AGRI.ZS)) %>%
+                                                   select(Average_agrLand))
+
+# Create boxplots for within-country variances (vertical reference line showing the between-country variance)
+ggplot(data_agriculture,
+       aes(x = AG.LND.AGRI.ZS, y = factor(`Country Name`, levels = country_order_by_agrLand))) +
+  geom_boxplot() +
+  # geom_vline(xintercept = data_agriculture_variance_between_agrLand,
+  #           color = "black", linetype = "dashed", size = 1.2) +  # Between-country variance
+  labs(title = "Streuungszerlegung der landwirtschaftlichen Nutzfläche bezüglich Ländern",
+       x = "Landwirtschaftliche Nutzfläche [%]", y = "Land") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 
 
@@ -99,10 +150,12 @@ ggplot(data_agriculture, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 
 
 
 
-### Idea 3: Heatmap (only CO2 emissions though) in table design
+### Idea 1.3.A: Heatmap (only CO2 emissions though) in table design
 ggplot(data_agriculture, aes(x = Year, y = `Country Name`, fill = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
   geom_tile(col = "white") +  # Create heatmap tiles
-  scale_fill_gradient(low = "white", high = "black", name = "Logarithmic CO2 Emissions\nper capita", 
+  scale_fill_gradient(low = brewer.pal(9, "Blues")[1],
+                      high = brewer.pal(9, "Blues")[9],
+                      name = "Logarithmic CO2 Emissions\nper capita",
                       breaks = log10(c(0, 100, 1000, 10000, 100000) + 1),
                       labels = c("0", "100", "1000", "10000", "100000")) +  # Gradient color scale
   ggtitle("Heatmap of CO2 Emissions by Country and Year") +
@@ -111,6 +164,34 @@ ggplot(data_agriculture, aes(x = Year, y = `Country Name`, fill = log10(EN.GHG.C
         legend.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels
   labs(x = "Year", y = "Country")
+
+### Idea 1.3.B: Lineplot (only agriculture land [%] though) in table design
+ggplot(data_agriculture, aes(x = Year, y = AG.LND.AGRI.ZS)) +
+  geom_line() +  
+  ggtitle("Landwirtschaftliche Nutzfläche") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom",
+        legend.title = element_text(hjust = 0.5),
+        legend.title.position = "left",
+        legend.direction = "horizontal",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels
+  labs(x = "Jahr", y = "Anteil [%]") +
+  facet_wrap(~ factor(data_agriculture$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
+
+### Idea 1.3.C: Lineplot (only CO2 emissions though) in table design
+ggplot(data_agriculture, aes(x = Year, y = EN.GHG.CO2.MT.CE.AR5)) +
+  geom_line() +  
+  ggtitle("CO2 Emissionen pro Kopf") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom",
+        legend.title = element_text(hjust = 0.5),
+        legend.title.position = "left",
+        legend.direction = "horizontal",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Jahr", y = "Logarithmierte CO2 Emissionen pro Kopf") +
+  facet_wrap(~ `Country Name`, scales = "free_y")
 
 
 
@@ -161,7 +242,7 @@ ggplot(data_agriculture, aes(colour = AG.LND.AGRI.ZS)) +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
-  facet_wrap(~ factor(data_agriculture$`Country Name`, levels = country_order_by_agriland), ncol = 5)
+  facet_wrap(~ factor(data_agriculture$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
 
 
 
@@ -178,7 +259,7 @@ ggplot(data_agriculture_normd, aes(colour = AG.LND.AGRI.ZS)) +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
-  facet_wrap(~ factor(data_agriculture_normd$`Country Name`, levels = country_order_by_agriland), ncol = 5)
+  facet_wrap(~ factor(data_agriculture_normd$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
 
 
 
@@ -204,11 +285,38 @@ ggplot(data_agriculture_normd_long,
 
 
 
-### Idea 1.8: Boxplots
+### Idea 1.8: Boxplots agricultural land [%]
+ggplot(data_agriculture,
+       aes(x = factor(`Country Name`, levels = country_order_by_agrLand),
+           y = AG.LND.AGRI.ZS)) +
+  geom_boxplot() +  
+  ggtitle("Landwirtschaftliche Nutzfläche") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom",
+        legend.title = element_text(hjust = 0.5),
+        legend.title.position = "left",
+        legend.direction = "horizontal",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels
+  labs(x = "Jahr", y = "Anteil [%]")
 
+
+
+### Idea 1.9: Comparison of agricultural land [%] and CO2 emissions
+ggplot(data_agriculture, aes(x = log(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
+  geom_point(alpha = .5, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf und Anteil landwirtschaftlicher Nutzfläche",
+       x = "Logarithmierte CO2 Emissionen pro Kopf", y = "Landwirtschaftliche Nutzfläche [%]") +
+  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
+  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
+  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
+  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
+  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 
 ##############################################################################################################
+##############################################################################################################
 # Grouping by surface area:
-# TODO: CHANGE NAME OF 
-dummy <- readRDS("Data/Processed/data_merged.RDS")
