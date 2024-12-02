@@ -114,146 +114,7 @@ hiv_year_df <- function(year) {
     filter(Year %in% year)
 }
 
-## 1.1)
-# Dataframe adjusted (no data for Aruba)
-hiv_alc_df <- hiv_df %>%
-  filter(`Country Name` != "Aruba") %>%
-  select(-SL.TLF.BASC.ZS)
-hiv_alc_2020_df <- hiv_alc_df %>%
-  filter(Year == 2020)
 
-# plot results over countries
-ggplot(hiv_alc_2020_df,
-       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = `Country Name`)) +
-  geom_point() +
-  labs(
-    x = "Alkoholkonsum in Litern pro Kopf",
-    y = "HIV Prävalenz in %",
-    title = "Alkoholkonsum vs. HIV Prävalenz",
-    colour = "Land"
-  )
-# plot results over continents
-hiv_alc_2020_continent_df <- hiv_alc_2020_df %>%
-  group_by(continent) %>%
-  summarise(
-    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
-    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE)
-  )
-ggplot(hiv_alc_2020_continent_df,
-       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = continent)) +
-  geom_point() +
-  labs(
-    x = "Alkoholkonsum in Litern pro Kopf",
-    y = "HIV Prävalenz in %",
-    title = "Alkoholkonsum vs. HIV Prävalenz",
-    colour = "Kontinent"
-  )
-# as comparison: here countries coded over their continent, to take a look at variance, sample size, ...
-ggplot(hiv_alc_2020_df,
-       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = continent)) +
-  geom_point(size = 3, alpha = 0.5) +
-  labs(
-    x = "Alkoholkonsum in Litern pro Kopf",
-    y = "HIV Prävalenz in %",
-    title = "Alkoholkonsum vs. HIV Prävalenz",
-    colour = "Kontinent"
-  )
-
-# plot results over development status
-hiv_alc_2020_dev_df <- hiv_alc_2020_df %>%
-  group_by(dev_status) %>%
-  summarise(
-    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
-    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE)
-  )
-ggplot(hiv_alc_2020_dev_df,
-       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = dev_status)) +
-  geom_point() +
-  labs(
-    x = "Alkoholkonsum pro Kopf in Litern",
-    y = "HIV Prävalenz",
-    colour = "Entwicklungstand",
-    title = "Alkoholkonsum vs HIV Prävalenz im Jahr 2020"
-  )
-# for comparison all countries but only coded by development state (variance, etc ...)
-ggplot(hiv_alc_2020_df,
-       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = dev_status)) +
-  geom_point() +
-  labs(
-    x = "Alkoholkonsum pro Kopf in Litern",
-    y = "HIV Prävalenz",
-    colour = "Entwicklungsstand des Landes",
-    title = "Alkoholkonsum vs HIV Prävalenz im Jahr 2020"
-  )
-
-## 1.5)
-ggplot(hiv_alc_df, aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, color = Year)) +
-  geom_point(size = 1) +
-  facet_wrap( ~ `Country Name`) +
-  geom_smooth(
-    method = "lm",
-    se = FALSE,
-    color = "black",
-    size = 0.5
-  ) +
-  labs(y = "HIV Prävalenz in %", x = "totaler Alkoholkonsum pro Kopf", color = "Jahr")
-
-# 1.6)
-ggplot(hiv_alc_df, aes(Year, SH.DYN.AIDS.ZS, color = SH.ALC.PCAP.LI)) +
-  geom_point(size = 1) +
-  facet_wrap( ~ `Country Name`) +
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1,
-    size = 4
-  )) +
-  labs(
-    x = "Jahr",
-    y = "HIV Prävalenz in %",
-    color = "totaler Alkoholkonsum pro Kopf",
-    title = "HIV Prälenz über Zeit sowie Alkoholkonsum"
-  )
-
-## 2.4)
-ggplot(hiv_df,
-       aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, color = `Country Name`)) +
-  geom_point(size = 1) +
-  facet_wrap(~ Year) +
-  geom_smooth(
-    method = "lm",
-    se = FALSE,
-    color = "black",
-    size = 0.5
-  ) +
-  labs(x = "HIV Prävalenz", y = "Bildungsstand der Erwerbstätigen", color = "Land")
-# maybe add rate of change of linear regression line
-
-## 2.5)
-ggplot(hiv_df, aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, color = Year)) +
-  geom_point(size = 1) +
-  facet_wrap( ~ `Country Name`) +
-  geom_smooth(
-    method = "lm",
-    se = FALSE,
-    color = "black",
-    size = 0.5
-  ) +
-  labs(y = "HIV Prävalenz in %", x = "% Erwerbstätige mit Grundbildung", color = "Jahr")
-
-## 2.6)
-#   if high value: high HIV and low edu
-#   low value: low HIV or high HIV but high edu, high edu or high HIV and high Edu
-summary(hiv_df$SH.DYN.AIDS.ZS)
-summary(hiv_df$SL.TLF.BASC.ZS)
-ggplot(hiv_df, aes(Year, SH.DYN.AIDS.ZS / SL.TLF.BASC.ZS)) +
-  geom_point(size = 1) +
-  facet_wrap( ~ `Country Name`) +
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1,
-    size = 5
-  )) +
-  labs(x = "Jahr", y = "HIV Prävalenz / Erwerbstätige mit Bildung")
 
 ## 2.a)
 # Categorize all 25 countries: (AI, https://deepai.org/chat/free-chatgpt)
@@ -415,6 +276,7 @@ hiv_continent_2021_df <- hiv_df %>%
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
     SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE)
   )
+
 # plot results
 ggplot(hiv_continent_2021_df,
        aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = continent)) +
@@ -425,3 +287,144 @@ ggplot(hiv_continent_2021_df,
     title = "Grundbildung vs. HIV Prävalenz",
     colour = "Kontinent"
   )
+## 1.1)
+# Dataframe adjusted (no data for Aruba)
+hiv_alc_df <- hiv_df %>%
+  filter(`Country Name` != "Aruba") %>%
+  select(-SL.TLF.BASC.ZS)
+hiv_alc_2020_df <- hiv_alc_df %>%
+  filter(Year == 2020)
+
+# plot results over countries
+ggplot(hiv_alc_2020_df,
+       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = `Country Name`)) +
+  geom_point() +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz",
+    colour = "Land"
+  )
+# plot results over continents
+hiv_alc_2020_continent_df <- hiv_alc_2020_df %>%
+  group_by(continent) %>%
+  summarise(
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE)
+  )
+ggplot(hiv_alc_2020_continent_df,
+       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = continent)) +
+  geom_point() +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz",
+    colour = "Kontinent"
+  )
+# as comparison: here countries coded over their continent, to take a look at variance, sample size, ...
+ggplot(hiv_alc_2020_df,
+       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = continent)) +
+  geom_point(size = 3, alpha = 0.5) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz",
+    colour = "Kontinent"
+  )
+
+# plot results over development status
+hiv_alc_2020_dev_df <- hiv_alc_2020_df %>%
+  group_by(dev_status) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE)
+  )
+ggplot(hiv_alc_2020_dev_df,
+       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = dev_status)) +
+  geom_point() +
+  labs(
+    x = "Alkoholkonsum pro Kopf in Litern",
+    y = "HIV Prävalenz",
+    colour = "Entwicklungstand",
+    title = "Alkoholkonsum vs HIV Prävalenz im Jahr 2020"
+  )
+# for comparison all countries but only coded by development state (variance, etc ...)
+ggplot(hiv_alc_2020_df,
+       aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = dev_status)) +
+  geom_point() +
+  labs(
+    x = "Alkoholkonsum pro Kopf in Litern",
+    y = "HIV Prävalenz",
+    colour = "Entwicklungsstand des Landes",
+    title = "Alkoholkonsum vs HIV Prävalenz im Jahr 2020"
+  )
+
+## 1.5)
+ggplot(hiv_alc_df, aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, color = Year)) +
+  geom_point(size = 1) +
+  facet_wrap( ~ `Country Name`) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    color = "black",
+    size = 0.5
+  ) +
+  labs(y = "HIV Prävalenz in %", x = "totaler Alkoholkonsum pro Kopf", color = "Jahr")
+
+# 1.6)
+ggplot(hiv_alc_df, aes(Year, SH.DYN.AIDS.ZS, color = SH.ALC.PCAP.LI)) +
+  geom_point(size = 1) +
+  facet_wrap( ~ `Country Name`) +
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1,
+    size = 4
+  )) +
+  labs(
+    x = "Jahr",
+    y = "HIV Prävalenz in %",
+    color = "totaler Alkoholkonsum pro Kopf",
+    title = "HIV Prälenz über Zeit sowie Alkoholkonsum"
+  )
+
+## 2.4)
+ggplot(hiv_df,
+       aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, color = `Country Name`)) +
+  geom_point(size = 1) +
+  facet_wrap(~ Year) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    color = "black",
+    size = 0.5
+  ) +
+  labs(x = "HIV Prävalenz", y = "Bildungsstand der Erwerbstätigen", color = "Land")
+# maybe add rate of change of linear regression line
+
+## 2.5)
+ggplot(hiv_df, aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, color = Year)) +
+  geom_point(size = 1) +
+  facet_wrap( ~ `Country Name`) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    color = "black",
+    size = 0.5
+  ) +
+  labs(y = "HIV Prävalenz in %", x = "% Erwerbstätige mit Grundbildung", color = "Jahr")
+
+## 2.6)
+#   if high value: high HIV and low edu
+#   low value: low HIV or high HIV but high edu, high edu or high HIV and high Edu
+summary(hiv_df$SH.DYN.AIDS.ZS)
+summary(hiv_df$SL.TLF.BASC.ZS)
+ggplot(hiv_df, aes(Year, SH.DYN.AIDS.ZS / SL.TLF.BASC.ZS)) +
+  geom_point(size = 1) +
+  facet_wrap( ~ `Country Name`) +
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1,
+    size = 5
+  )) +
+  labs(x = "Jahr", y = "HIV Prävalenz / Erwerbstätige mit Bildung")
+
