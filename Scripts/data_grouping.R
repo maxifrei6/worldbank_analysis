@@ -203,3 +203,58 @@ data_grouped <- full_join(data_grouped_alc,
 
 # save as RDS
 saveRDS(data_grouped, file = "Data/Processed/data_grouped.RDS")
+
+## 3. Relevant for tobacco evaluation (leonie)
+# Grouping by prevalence of current tobacco use (% of adults)
+# grouping over quantiles to reach evenly distribution
+# Problem: Country has a large variance of alcohol consumption values over the years
+# -> grouping over average could be a problem!
+data_grouped_tob <- readRDS(
+  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_pregrouped.RDS"
+) %>%
+  select(`Country Name`,
+         `Country Code`,
+         `Series Name`,
+         `Series Code`,
+         `average`)
+
+data_grouped_tob <- data_grouped_tob %>%
+  filter(`Series Code` == c("SH.PRV.SMOK"))
+
+# remove rows with NA's in average column
+data_grouped_tob <- data_grouped_tob %>%
+  filter(is.na(average) == FALSE)
+
+# Calculate the 0.2, 0.4, 0.6, 0.8 quantiles of the 'average' column
+quantiles <- quantile(data_grouped_tob$average,
+                      probs = c(1 / 5, 2 / 5, 3 / 5, 4 / 5),
+                      na.rm = TRUE)
+
+# Add new column 'tobacco_prev' as an ordered factor
+data_grouped_tobacco_prev <- data_grouped_tob %>%
+  mutate(
+    tobacco_prev = case_when(
+      average <= quantiles[1] ~ "Very Low",
+      average <= quantiles[2] ~ "Low",
+      average <= quantiles[3] ~ "Medium",
+      average <= quantiles[4] ~ "High",
+      TRUE ~ "Very High"
+    ),
+    # Convert to ordered factor with levels Very High > High > Medium > Low > Very Low
+    tobacco_prev = factor(
+      tobacco_prev,
+      levels = c("Very High", "High", "Medium", "Low", "Very Low"),
+      ordered = TRUE
+    )
+  )
+
+# select relevant columns
+data_grouped_tobacco_prev <- data_grouped_tobacco_prev %>%
+  select(`Country Name`, `Country Code`, `tobacco_prev`)
+
+# merge all groups
+data_grouped <- full_join(data_grouped_tobacco_prev, data_grouped,
+                          by = c("Country Name", "Country Code"))
+
+# save as RDS
+saveRDS(data_grouped, file = "Data/Processed/data_grouped.RDS")
