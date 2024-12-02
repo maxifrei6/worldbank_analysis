@@ -25,6 +25,19 @@ data_hiv <- data_processed %>%
   select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, alc_consumption, edu_basic)
 ```
 <br>
+Check how many NA's in HIV, alcohol and education variable each Year (excluding years existing only of NA's)
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  group_by(Year) %>%
+  reframe(
+    num_na_hiv = sum(is.na(SH.DYN.AIDS.ZS)),
+    num_na_alc = sum(is.na(SH.ALC.PCAP.LI)),
+    num_na_edu = sum(is.na(SL.TLF.BASC.ZS))
+  ) %>%
+  filter(num_na_hiv < 25 & num_na_alc < 25 & num_na_edu < 25)
+```
+<br>  
 ### 1. HIV Prevalence and alcohol consumption
 <br>
 To take a look at the grouping of our data by alcohol consumption, we will display a plot of the most recent data in Year 2020.
