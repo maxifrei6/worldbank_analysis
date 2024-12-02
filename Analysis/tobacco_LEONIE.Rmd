@@ -1,0 +1,26 @@
+---
+title: "Worldbank Tobacco Analysis"
+author: "Leonie Mertes"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+---
+## Introduction
+This analysis explores the relationship of prevalence of current tobacco use (% of adults) prevalence to GDP per capita. Therefore we analyse the following leading question:
+1. How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
+<br>
+<br>
+```{r setup, message = FALSE, echo = FALSE, warning = FALSE}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
+# Load the dataset
+data_merged <- readRDS("C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_merged.RDS")
+data_grouped <- readRDS("C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_grouped.RDS")
+data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+data_tob <- data_processed %>% 
+  select(`Country Name`, `Country Code`, Year, NY.GDP.PCAP.PP.KD, SH.PRV.SMOK, tobacco_prev)
+```
+<br>
+### 1. Tobacco Prevalence and GDP

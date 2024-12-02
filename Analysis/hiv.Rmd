@@ -3,7 +3,6 @@ title: "Worldbank HIV Analysis"
 author: "Leonie Mertes"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
 ---
 
