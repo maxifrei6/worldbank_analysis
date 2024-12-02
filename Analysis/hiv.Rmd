@@ -3,8 +3,8 @@ title: "Worldbank HIV Analysis"
 author: "Leonie Mertes"
 date: "`r Sys.Date()`"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ## Introduction
@@ -30,7 +30,7 @@ data_hiv <- data_processed %>%
 <br>
 To take a look at the grouping of our data by alcohol consumption, we will display a plot of the most recent data in Year 2020.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
   ggplot(aes(`Country Name`, SH.ALC.PCAP.LI, colour = alc_consumption)) +
@@ -52,7 +52,7 @@ Maybe its possible to group data for each year?
 <br>
 Now we take a look at the Comparison of alcohol consumption and HIV prevalence in 2020. Therefore we group by the relative alcohol consumption.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
   group_by(alc_consumption) %>%
@@ -69,7 +69,7 @@ data_hiv %>%
 <br>
 In the following we view the same plot, but without the extreme value. Therefore the country Tanzania is removed.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
   filter(`Country Name` != "Tanzania") %>%
@@ -87,7 +87,7 @@ data_hiv %>%
 <br>
 Now we view only one dot per category of relative alcohol consumption
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
   group_by(alc_consumption) %>%
@@ -109,7 +109,7 @@ data_hiv %>%
 <br>
 Now again without the extreme value of Tanzania
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
   filter(`Country Name` != "Tanzania") %>% 
@@ -132,7 +132,7 @@ data_hiv %>%
 <br>
 To get a better overview we take a look at all years.
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>% 
   group_by(Year, alc_consumption) %>% 
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -162,7 +162,7 @@ Now we want to take a more precise look at the connection of HIV Prevalence and 
 <br>
 To take a look at the grouping of our data by basic education of the working force, we will display a plot of the most recent data in Year 2021.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2021) %>%
   ggplot(aes(`Country Name`, SL.TLF.BASC.ZS, colour = edu_basic)) +
@@ -182,7 +182,7 @@ data_hiv %>%
 <br>
 Now we take a look at the Comparison of percentage of the labor force with basic education and HIV prevalence in 2021. Therefore we group by the relative education level.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2021) %>%
   group_by(edu_basic) %>%
@@ -199,7 +199,7 @@ data_hiv %>%
 <br>
 This plot is not very meaningful, therfore we try to only plot one dot per category.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2021) %>%
   group_by(edu_basic) %>%
@@ -222,7 +222,7 @@ data_hiv %>%
 Now we see a upwards tendency (even without the extreme value).
 We notice as well that there is no value for the category "Medium" relative education. Therefore we take a look at 2020.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE}
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
   group_by(edu_basic) %>%
@@ -239,7 +239,7 @@ data_hiv %>%
 <br>
 Is there really an downwards tendency?
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
   group_by(edu_basic) %>%
@@ -262,7 +262,7 @@ data_hiv %>%
 <br>
 Unfortunately in mean the graph is still upwards. Maybe plot over years to get an overview.
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>% 
   group_by(Year, edu_basic) %>% 
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
