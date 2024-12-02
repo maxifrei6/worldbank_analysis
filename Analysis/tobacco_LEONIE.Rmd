@@ -16,11 +16,20 @@ library(dplyr)
 library(ggplot2)
 
 # Load the dataset
-data_merged <- readRDS("C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_merged.RDS")
-data_grouped <- readRDS("C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_grouped.RDS")
+data_merged <- readRDS(
+  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_merged.RDS"
+)
+data_grouped <- readRDS(
+  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_grouped.RDS"
+)
 data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
-data_tob <- data_processed %>% 
-  select(`Country Name`, `Country Code`, Year, NY.GDP.PCAP.PP.KD, SH.PRV.SMOK, tobacco_prev)
+data_tob <- data_processed %>%
+  select(`Country Name`,
+         `Country Code`,
+         Year,
+         NY.GDP.PCAP.PP.KD,
+         SH.PRV.SMOK,
+         tobacco_prev)
 ```
 <br>
 ### 1. Tobacco Prevalence and GDP
@@ -54,7 +63,7 @@ data_tob %>%
     hjust = 1,
     size = 4
   )) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Now we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore we group by the relative tobacco usage.
@@ -72,6 +81,6 @@ data_tob %>%
     colour = "relativer Tabakkonsum"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>

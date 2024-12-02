@@ -58,7 +58,7 @@ data_hiv %>%
     hjust = 1,
     size = 4
   )) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Maybe its possible to group data for each year?
@@ -78,7 +78,7 @@ data_hiv %>%
     colour = "relativer Alkoholkonsum"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 In the following we view the same plot, but without the extreme value. Therefore the country Tanzania is removed.
@@ -97,7 +97,7 @@ data_hiv %>%
     colour = "relativer Alkoholkonsum"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Now we view only one dot per category of relative alcohol consumption
@@ -120,7 +120,7 @@ data_hiv %>%
     colour = "relativer Alkoholkonsum"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Now again without the extreme value of Tanzania
@@ -128,7 +128,7 @@ Now again without the extreme value of Tanzania
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>%
-  filter(`Country Name` != "Tanzania") %>% 
+  filter(`Country Name` != "Tanzania") %>%
   group_by(alc_consumption) %>%
   summarise(
     alc_consumption = alc_consumption,
@@ -144,17 +144,19 @@ data_hiv %>%
     colour = "relativer Alkoholkonsum"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")  
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 To get a better overview we take a look at all years.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_hiv %>% 
-  group_by(Year, alc_consumption) %>% 
-  summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
-            SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
-            .groups = "drop") %>%
+data_hiv %>%
+  group_by(Year, alc_consumption) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
   ggplot(aes(Year, SH.DYN.AIDS.ZS, colour = alc_consumption)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_line(aes(group = alc_consumption)) +
@@ -169,7 +171,7 @@ data_hiv %>%
     y = "HIV Prävalenz",
     colour = "relativer Alkoholkonsum"
   ) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 (bringt nichts!:
@@ -196,7 +198,7 @@ data_hiv %>%
     hjust = 1,
     size = 4
   )) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Now we take a look at the Comparison of percentage of the labor force with basic education and HIV prevalence in 2021. Therefore we group by the relative education level.
@@ -214,7 +216,7 @@ data_hiv %>%
     colour = "relativer Bildungsstand"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 This plot is not very meaningful, therfore we try to only plot one dot per category.
@@ -237,7 +239,7 @@ data_hiv %>%
     colour = "relativer Bildungsstand"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1") 
+  scale_colour_brewer(palette = "Set2") 
 ```
 <br>
 Now we see a upwards tendency (even without the extreme value).
@@ -256,7 +258,7 @@ data_hiv %>%
     colour = "relativer Bildungsstand"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Is there really an downwards tendency?
@@ -280,17 +282,19 @@ data_hiv %>%
     colour = "relativer Bildungsstand"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Unfortunately in mean the graph is still upwards. Maybe plot over years to get an overview.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_hiv %>% 
-  group_by(Year, edu_basic) %>% 
-  summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
-            SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
-            .groups = "drop") %>%
+data_hiv %>%
+  group_by(Year, edu_basic) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
   ggplot(aes(Year, SH.DYN.AIDS.ZS, colour = edu_basic)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_line(aes(group = edu_basic)) +
@@ -305,7 +309,7 @@ data_hiv %>%
     y = "HIV Prävalenz",
     colour = "relativer Bildungsstand"
   )  +
-  scale_colour_brewer(palette = "Set1")
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 The 60 % with higher education level also show a higher HIV Prevalence. Their Prevalence is falling over the years, while countries with lower education level have an small tendency to increasing HIV prevalence.
