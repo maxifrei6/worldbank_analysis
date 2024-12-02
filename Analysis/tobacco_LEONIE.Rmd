@@ -36,7 +36,7 @@ data_tob %>%
 <br>
 Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba).
 <br>
-To take a look at the grouping of our data by tobacco prevalence, we will display a plot of the most recent data in Year 2020.
+To take a look at the grouping of our data by tobacco usage, we will display a plot of the most recent data in Year 2020.
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
@@ -47,13 +47,31 @@ data_tob %>%
     y = "Anteil der tabakkonsumierenden Erwachsenen",
     x = "Land",
     title = "Gruppierung der Daten im Jahr 2020",
-    colour = "verhältnismäßiger Tabakkonsum"
+    colour = "relativer Tabakkonsum"
   ) +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
     size = 4
-  ))
+  )) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
-
+Now we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore we group by the relative tobacco usage.
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  filter(Year == 2020) %>%
+  group_by(tobacco_prev) %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_prev)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP im Jahr 2020",
+    colour = "relativer Tabakkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")
+```
+<br>

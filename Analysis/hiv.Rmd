@@ -57,7 +57,8 @@ data_hiv %>%
     angle = 45,
     hjust = 1,
     size = 4
-  ))
+  )) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 Maybe its possible to group data for each year?
@@ -76,7 +77,8 @@ data_hiv %>%
     title = "Alkoholkonsum vs. HIV Prävalenz im Jahr 2020",
     colour = "relativer Alkoholkonsum"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 In the following we view the same plot, but without the extreme value. Therefore the country Tanzania is removed.
@@ -94,7 +96,8 @@ data_hiv %>%
     title = "Alkoholkonsum vs. HIV Prävalenz im Jahr 2020",
     colour = "relativer Alkoholkonsum"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 Now we view only one dot per category of relative alcohol consumption
@@ -116,7 +119,8 @@ data_hiv %>%
     y = "HIV Prävalenz",
     colour = "relativer Alkoholkonsum"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)  
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 Now again without the extreme value of Tanzania
@@ -139,7 +143,8 @@ data_hiv %>%
     y = "HIV Prävalenz",
     colour = "relativer Alkoholkonsum"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)  
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")  
 ```
 <br>
 To get a better overview we take a look at all years.
@@ -163,7 +168,8 @@ data_hiv %>%
     x = "Jahr",
     y = "HIV Prävalenz",
     colour = "relativer Alkoholkonsum"
-  ) 
+  ) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 (bringt nichts!:
@@ -189,7 +195,8 @@ data_hiv %>%
     angle = 45,
     hjust = 1,
     size = 4
-  ))
+  )) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 Now we take a look at the Comparison of percentage of the labor force with basic education and HIV prevalence in 2021. Therefore we group by the relative education level.
@@ -206,7 +213,8 @@ data_hiv %>%
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2021",
     colour = "relativer Bildungsstand"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 This plot is not very meaningful, therfore we try to only plot one dot per category.
@@ -228,7 +236,8 @@ data_hiv %>%
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2021",
     colour = "relativer Bildungsstand"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)  
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1") 
 ```
 <br>
 Now we see a upwards tendency (even without the extreme value).
@@ -246,7 +255,8 @@ data_hiv %>%
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2020",
     colour = "relativer Bildungsstand"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 Is there really an downwards tendency?
@@ -269,7 +279,8 @@ data_hiv %>%
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2020",
     colour = "relativer Bildungsstand"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE)  
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 Unfortunately in mean the graph is still upwards. Maybe plot over years to get an overview.
@@ -293,7 +304,8 @@ data_hiv %>%
     x = "Jahr",
     y = "HIV Prävalenz",
     colour = "relativer Bildungsstand"
-  ) 
+  )  +
+  scale_colour_brewer(palette = "Set1")
 ```
 <br>
 The 60 % with higher education level also show a higher HIV Prevalence. Their Prevalence is falling over the years, while countries with lower education level have an small tendency to increasing HIV prevalence.
