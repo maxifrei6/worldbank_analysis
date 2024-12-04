@@ -100,7 +100,7 @@ data_hiv %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Now we view only one dot per category of relative alcohol consumption
+Now we view only one dot per category of relative alcohol consumption.
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%

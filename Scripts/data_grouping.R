@@ -230,10 +230,10 @@ quantiles <- quantile(data_grouped_tob$average,
                       probs = c(1 / 5, 2 / 5, 3 / 5, 4 / 5),
                       na.rm = TRUE)
 
-# Add new column 'tobacco_prev' as an ordered factor
-data_grouped_tobacco_prev <- data_grouped_tob %>%
+# Add new column 'tobacco_usage' as an ordered factor
+data_grouped_tobacco_usage <- data_grouped_tob %>%
   mutate(
-    tobacco_prev = case_when(
+    tobacco_usage = case_when(
       average <= quantiles[1] ~ "Very Low",
       average <= quantiles[2] ~ "Low",
       average <= quantiles[3] ~ "Medium",
@@ -241,19 +241,19 @@ data_grouped_tobacco_prev <- data_grouped_tob %>%
       TRUE ~ "Very High"
     ),
     # Convert to ordered factor with levels Very High > High > Medium > Low > Very Low
-    tobacco_prev = factor(
-      tobacco_prev,
+    tobacco_usage = factor(
+      tobacco_usage,
       levels = c("Very High", "High", "Medium", "Low", "Very Low"),
       ordered = TRUE
     )
   )
 
 # select relevant columns
-data_grouped_tobacco_prev <- data_grouped_tobacco_prev %>%
-  select(`Country Name`, `Country Code`, `tobacco_prev`)
+data_grouped_tobacco_usage <- data_grouped_tobacco_usage %>%
+  select(`Country Name`, `Country Code`, `tobacco_usage`)
 
 # merge all groups
-data_grouped <- full_join(data_grouped_tobacco_prev, data_grouped,
+data_grouped <- full_join(data_grouped_tobacco_usage, data_grouped,
                           by = c("Country Name", "Country Code"))
 
 # save as RDS

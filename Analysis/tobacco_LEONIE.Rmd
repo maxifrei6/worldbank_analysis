@@ -29,7 +29,7 @@ data_tob <- data_processed %>%
          Year,
          NY.GDP.PCAP.PP.KD,
          SH.PRV.SMOK,
-         tobacco_prev)
+         tobacco_usage)
 ```
 <br>
 ### 1. Tobacco Prevalence and GDP
@@ -50,7 +50,7 @@ To take a look at the grouping of our data by tobacco usage, we will display a p
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
-  ggplot(aes(`Country Name`, SH.PRV.SMOK, colour = tobacco_prev)) +
+  ggplot(aes(`Country Name`, SH.PRV.SMOK, colour = tobacco_usage)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     y = "Anteil der tabakkonsumierenden Erwachsenen",
@@ -71,8 +71,8 @@ Now we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
-  group_by(tobacco_prev) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_prev)) +
+  group_by(tobacco_usage) %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -84,3 +84,49 @@ data_tob %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
+Now we view only one dot per category of relative tobacco usage.
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  filter(Year == 2020) %>%
+  group_by(tobacco_usage) %>%
+  summarise(
+    tobacco_usage = tobacco_usage,
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP im Jahr 2020",
+    colour = "relativer Tabakkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Now take a look of the coherence of the variables without our extreme value of the group "Very Low".
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  filter(Year == 2020) %>%
+  group_by(tobacco_usage) %>%
+  summarise(
+    tobacco_usage = tobacco_usage,
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE)
+  ) %>%
+  filter(tobacco_usage != "Very Low") %>% 
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP im Jahr 2020",
+    colour = "relativer Tabakkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
