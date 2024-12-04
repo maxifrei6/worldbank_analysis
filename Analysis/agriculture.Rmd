@@ -3,8 +3,8 @@ title: "Worldbank Agriculture Analysis"
 author: "Robin Billinger"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ## Introduction
@@ -163,13 +163,14 @@ We can recognize a slightly positive linear trend between the variables. However
 
 ``` {r facetted scatterplot logarithmic, echo = FALSE, , warning = FALSE, message = FALSE}
 # Logarithmic CO2 emissions by country, average agricultural land [%] for color and facetting order
-ggplot(data_agriculture, aes(colour = AG.LND.AGRI.ZS)) +
+ggplot(data_agriculture, aes(color = AG.LND.AGRI.ZS)) +
   geom_point(aes(x = Year, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
-  scale_color_distiller(name = "Landwirtschaftliche Nutzfläche [%]",
-                        palette = "Oranges",
-                        direction = 1,
-                        breaks = c(0, 20, 40, 60, 80, 100),
-                        labels = c("0", "20", "40", "60", "80", "100")) +
+  scale_color_viridis_c(option = "plasma", direction = -1) +
+  # scale_color_distiller(name = "Landwirtschaftliche Nutzfläche [%]",
+  #                       palette = "Oranges",
+  #                       direction = 1,
+  #                       breaks = c(0, 20, 40, 60, 80, 100),
+  #                       labels = c("0", "20", "40", "60", "80", "100")) +
   labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
        x = "Jahr", y = "Logarithmierte CO2 Emissionen pro Kopf [mt]") +
   theme_bw() +
@@ -227,3 +228,5 @@ ggplot(data_agriculture_normd_long,
 As we can see, there seems to be no direct relationship between the countries' percentage of agricultural land and their CO2 emissions per capita. 
 
 ### 2. Influence of surface area on previous relationship
+However, one further aspect that might change that non-relationship is the introduction of another variable to take into account, namely the countries' surface areas.
+
