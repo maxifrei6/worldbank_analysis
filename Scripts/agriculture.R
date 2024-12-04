@@ -315,8 +315,3 @@ ggplot(data_agriculture, aes(x = log(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.
   #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
-
-
-##############################################################################################################
-##############################################################################################################
-# Grouping by surface area:
