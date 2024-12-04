@@ -258,3 +258,23 @@ data_grouped <- full_join(data_grouped_tobacco_prev, data_grouped,
 
 # save as RDS
 saveRDS(data_grouped, file = "Data/Processed/data_grouped.RDS")
+
+
+
+
+##############################################################################################################
+# Grouping for the question regarding agriculture - by surface area:
+# Start with the grouped dataset
+data_grouped_agr <- readRDS("Data/Processed/data_pregrouped.RDS")
+
+data_grouped_agr <- group_data(df = data_grouped_agr,
+                               grouping_by = "AG.SRF.TOTL.K2",
+                               column_new = "surfaceArea",
+                               quantile_labels = c("Very small", "Small", "Moderate", "Large", "Very Large"))
+
+# Merge all groups
+# TODO: all data groupings merge in one session with electricity, education, hiv, tobacco and agriculture.
+
+# Save as RDS
+# TODO: save one data_grouped file at the end after all single groups have been merged.
+##############################################################################################################
