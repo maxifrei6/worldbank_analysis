@@ -118,7 +118,7 @@ data_tob %>%
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
     SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE)
   ) %>%
-  filter(tobacco_usage != "Very Low") %>% 
+  filter(tobacco_usage != "Very Low") %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
@@ -128,5 +128,32 @@ data_tob %>%
     colour = "relativer Tabakkonsum"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+To get a better overview we take a look at all years.
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  group_by(Year, tobacco_usage) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_line(aes(group = tobacco_usage)) +
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1,
+    size = 6
+  )) +
+  labs(
+    x = "Jahr",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP",
+    colour = "relativer Tabakkonsum"
+  ) +
   scale_colour_brewer(palette = "Set2")
 ```
