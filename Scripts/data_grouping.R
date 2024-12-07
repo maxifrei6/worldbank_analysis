@@ -270,7 +270,7 @@ data_grouped_agr <- readRDS("Data/Processed/data_pregrouped.RDS")
 data_grouped_agr <- group_data(df = data_grouped_agr,
                                grouping_by = "AG.SRF.TOTL.K2",
                                column_new = "surfaceArea",
-                               quantile_labels = c("Very small", "Small", "Moderate", "Large", "Very Large"))
+                               quantile_labels = c("Very Small", "Small", "Moderate", "Large", "Very Large"))
 
 # Merge all groups
 # TODO: all data groupings merge in one session with electricity, education, hiv, tobacco and agriculture.
