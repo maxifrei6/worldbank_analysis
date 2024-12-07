@@ -39,7 +39,8 @@ remove_NA <- function(df) {
 # containing the columns specified in input 'df'. The resulting column name is created according to scheme:
 # 'cat_' + column_new (e.g. column_new = 'population' --> 'cat_population').
 # - quantile_labels: A character vector with no missing values defining the category labels, the grouped
-# data shall be assigned into.
+# data shall be assigned into. Supposed to be inserted in ascending intensity of occurrence for it to be
+# rightfully allocated.
 #
 # Output:
 # - A data frame of the columns 'Country Name', 'Country Code' and the newly created column 'cat_...',
