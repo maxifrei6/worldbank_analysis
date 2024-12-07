@@ -76,7 +76,7 @@ group_data <- function(df, grouping_by, column_new, quantile_labels) {
       {{ column_new }} := quantile_labels[findInterval(df$average, quantile_data, rightmost.closed = TRUE)],
       
       # Convert the new, dynamically-created column to an ordered factor
-      {{ column_new }} := factor(.data[[column_new]], levels = rev(quantile_labels), ordered = TRUE)
+      {{ column_new }} := factor(.data[[column_new]], levels = quantile_labels, ordered = TRUE)
     )
   
   # Select the relevant columns
