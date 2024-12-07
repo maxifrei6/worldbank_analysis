@@ -32,7 +32,7 @@ data_agriculture <- data_agriculture %>%
 # Convert column `Year` to data type Integer
 data_agriculture$Year <- as.integer(data_agriculture$Year)
 
-# Save the ascending order of average change in agricultural land [%] by country
+# Save the ascending order of average agricultural land [%] by country
 country_order_by_agrLand <- data_agriculture %>%
   group_by(`Country Name`) %>%
   summarise(avg_AG.LND.AGRI.ZS = mean(AG.LND.AGRI.ZS)) %>%
@@ -43,7 +43,7 @@ country_order_by_agrLand <- data_agriculture %>%
 ### 1. Percentage of agricultural land and CO2 emissions per capita
 We analyze whether the percentage of agricultural land relates to the CO2 emissions per capita. To get an overview over the interested data and be able to to evaluate future insights correctly, we start by looking at the two indicators separately. Starting with the distribution of the CO2 emissions, we get the following information.
 
-```{r CO2 emissions, echo = FALSE, , warning = FALSE, message = FALSE}
+```{r CO2 emissions, echo = FALSE, warning = FALSE, message = FALSE}
 # Load libraries
 library(RColorBrewer)
 # Heatmap displaying the development of CO2 emissions per capita across countries
@@ -66,9 +66,11 @@ ggplot(data_agriculture, aes(x = factor(Year), y = `Country Name`, fill = log10(
   labs(x = "Jahr", y = "Land")
 
 # Get an overview over the CO2 emissions data
-cat("\n", summary(data_agriculture$EN.GHG.CO2.MT.CE.AR5),"\n")
+cat("\n", "\n")
+summary(data_agriculture$EN.GHG.CO2.MT.CE.AR5)
+cat("\n", "\n")
 
-# Save the ascending order of within-country variance in CO2 emissions
+# Save the ascending order of average CO2 emissions
 country_order_by_CO2variance <- data_agriculture %>%
   group_by(`Country Name`) %>%
   summarise(avg_EN.GHG.CO2.MT.CE.AR5 = mean(EN.GHG.CO2.MT.CE.AR5)) %>%
@@ -100,7 +102,7 @@ The CO2 emissions have high variance within the countries. Simultaneously, there
 <br>
 Furthermore, the distribution of the percentage of agricultural land delivers the following information.
 
-```{r agricultural land, echo = FALSE, , warning = FALSE, message = FALSE}
+```{r agricultural land, echo = FALSE, warning = FALSE, message = FALSE}
 # Country-facetted line plot displaying the development of agricultural land [%] ordered by ascending mean [%]
 ggplot(data_agriculture, aes(x = Year, y = AG.LND.AGRI.ZS)) +
   geom_line() +  
@@ -116,7 +118,9 @@ ggplot(data_agriculture, aes(x = Year, y = AG.LND.AGRI.ZS)) +
   facet_wrap(~ factor(data_agriculture$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
 
 # Get an overview over the agriculture data
-cat("\n", summary(data_agriculture$AG.LND.AGRI.ZS), "\n")
+cat("\n", "\n")
+summary(data_agriculture$AG.LND.AGRI.ZS)
+cat("\n", "\n")
 
 # Compute the between-country variance in CO2 emissions
 data_agriculture_variance_between_agrLand <- var(data_agriculture %>%
@@ -143,7 +147,7 @@ In contrast to the CO2 emissions, the percentages of agricultural land have rath
 <br>
 Moving on, we want to bring those two variables back together. For this purpose, analyzing the distribution of the collected data while disregarding the country-specific origin gives us this cloud of data points. Note, that the CO2 emissions are displayed logarithmic to counter the expansive value disparity in the data.
 
-```{r scatterplot initial position, echo = FALSE, , warning = FALSE, message = FALSE}
+```{r scatterplot initial position, echo = FALSE, warning = FALSE, message = FALSE}
 # Initial comparison via scatterplot of agricultural land [%] and CO2 emissions per capita [mt]
 ggplot(data_agriculture, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
   geom_point(alpha = .3, size = 3) +
@@ -161,7 +165,7 @@ ggplot(data_agriculture, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGR
 <br>
 We can recognize a slightly positive linear trend between the variables. However, the development over time and the country-specification of observations are completely ignored. In order to take those factors back into consideration, we first distinguish among the countries by facetting our visualization for an in depth comparison of the indicators for each country over time.
 
-``` {r facetted scatterplot logarithmic, echo = FALSE, , warning = FALSE, message = FALSE}
+```{r facetted scatterplot logarithmic, echo = FALSE, warning = FALSE, message = FALSE}
 # Logarithmic CO2 emissions by country, average agricultural land [%] for color and facetting order
 ggplot(data_agriculture, aes(color = AG.LND.AGRI.ZS)) +
   geom_point(aes(x = Year, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
@@ -185,7 +189,7 @@ The in ascending percentage of agricultural land sorted facets show no obvious c
 <br>
 To dig even further, we now adjust the data by normalizing the CO2 emissions within each country, letting us investigate relative changes on the same scale as the agricultural land.
 
-```{r facetted scatterplot normalized, echo = FALSE, , warning = FALSE, message = FALSE}
+```{r facetted scatterplot normalized, echo = FALSE, warning = FALSE, message = FALSE}
 # Normalize variable CO2 emissions to same scale as agricultural land [%]
 data_agriculture_normd <- data_agriculture %>%
   group_by(`Country Name`) %>%
@@ -230,3 +234,154 @@ As we can see, there seems to be no direct relationship between the countries' p
 ### 2. Influence of surface area on previous relationship
 However, one further aspect that might change that non-relationship is the introduction of another variable to take into account, namely the countries' surface areas.
 
+```{r setup surface area, echo = FALSE, warning = FALSE, message = FALSE}
+# Save the ascending order of average surface area
+country_order_by_surface <- data_agriculture %>%
+  group_by(`Country Name`) %>%
+  summarise(avg_AG.SRF.TOTL.K2 = mean(AG.SRF.TOTL.K2)) %>%
+  arrange(avg_AG.SRF.TOTL.K2) %>%
+  pull(`Country Name`)
+
+# Lineplot to get an overview of the surface area development within each country over time
+ggplot(data_agriculture, aes(x = Year, y = AG.SRF.TOTL.K2)) +
+  geom_line() +
+  labs(title = "",  # TODO: INSERT LABELS
+       x = "", y = "") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surface), scales = "free_y")
+```
+<br> 
+As we can see, there are several countries with no changes in surface area throughout the interested timespan at all. Therefore, before heading forward, we first want to zoom in on those with changes a little closer.
+
+```{r surface area changeless countries, echo = FALSE, warning = FALSE, message = FALSE}
+# Check in how many and which countries there is any change in surface area throughout the interested timespan
+AG.SRF.TOTL.K2_countriesWithChange <- data_agriculture %>%
+  group_by(`Country Name`) %>%
+  summarize(noChange = all(AG.SRF.TOTL.K2 == AG.SRF.TOTL.K2[[1]])) %>%
+  filter(!noChange) %>%
+  pull(`Country Name`)
+cat("Anzahl der Länder ohne Veränderungen: ", length(AG.SRF.TOTL.K2_countriesWithChange))
+
+# Filter the data for only countries with changes in surface area
+data_agriculture_surfaceChange <- data_agriculture %>%
+  filter(`Country Name` %in% AG.SRF.TOTL.K2_countriesWithChange) %>%
+  select(`Country Name`, `Country Code`, Year, AG.SRF.TOTL.K2)
+```
+<br>
+
+```{r surface area changing countries: absolute, echo = FALSE, warning = FALSE, message = FALSE}
+# Investigate the absolute and relative changes for those countries from year to year
+data_agriculture_surfaceChange <- data_agriculture_surfaceChange %>%
+  arrange(`Country Name`, Year) %>%  # Ensure data is ordered by Country and Year
+  group_by(`Country Name`) %>%
+  mutate(Change = AG.SRF.TOTL.K2 - lag(AG.SRF.TOTL.K2),  # Changes
+         Change = ifelse(is.na(Change), 0, Change),  # Replace NAs for change from 1999 to 2000 with 0
+         absChange = abs(AG.SRF.TOTL.K2 - lag(AG.SRF.TOTL.K2)),  # Absolute Changes
+         absChange = ifelse(is.na(absChange), 0, absChange),  # Replace NAs for change from 1999 to 2000 with 0
+         relChange = ((AG.SRF.TOTL.K2 - lag(AG.SRF.TOTL.K2)) / lag(AG.SRF.TOTL.K2)) * 100,  # Relative changes [%]
+         relChange = ifelse(is.na(relChange), 0, relChange))  # Replace NAs for change from 1999 to 2000 with 0 %
+
+# Save the ascending order of average absolute change in surface area
+country_order_by_surfaceAbs <- data_agriculture_surfaceChange %>%
+  group_by(`Country Name`) %>%
+  summarise(avg_absChange = mean(absChange)) %>%
+  arrange(avg_absChange) %>%
+  pull(`Country Name`)
+
+# Plot the changes in surface area for comparison between countries in order of ascending absolute changes
+ggplot(data_agriculture_surfaceChange, aes(x = Year)) +
+  geom_bar(aes(y = Change, fill = Change < 0), stat = "identity") +
+  scale_fill_brewer(palette = "Set2", guide = "none") +  # Custom colors
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "",  # TODO: INSERT TITLE
+       x = "Jahr", y = "Absolute Änderung in Landfläche") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.spacing.y = unit(1, "lines")) + 
+  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surfaceAbs), ncol = 2, scales = "free_y")
+```
+<br>
+For the vast majority of the countries, the changes can be classified as under 1000 square kilometers over the whole timespan. Similar insights can be derived when looking at the relative changes.
+
+```{r surface area changeless countries: relative, echo = FALSE, warning = FALSE, message = FALSE}
+# Save the ascending order of average relative change in surface area
+country_order_by_surfaceRel <- data_agriculture_surfaceChange %>%
+  group_by(`Country Name`) %>%
+  summarise(avg_relChange = mean(relChange)) %>%
+  arrange(avg_relChange) %>%
+  pull(`Country Name`)
+
+# Plot the relative changes in surface area for comparison between countries
+ggplot(data_agriculture_surfaceChange, aes(x = Year, y = relChange)) +
+  geom_line() +
+  labs(title = "",  # TODO: INSERT TITLE
+       x = "Jahr", y = "Relative Änderung in Landfläche [%]") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surfaceRel), ncol = 2)
+
+# Plot the relative changes in surface area with free y-scale to make minimal changes recognizable
+ggplot(data_agriculture_surfaceChange, aes(x = Year, y = relChange)) +
+  geom_line() +
+  labs(title = "",  # TODO: INSERT TITLE
+       x = "Jahr", y = "Relative Änderung in Landfläche [%]") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surfaceRel), scales = "free_y", ncol = 2)
+```
+<br>
+For each country, even those with changes throughout the timespan, there are at most minimal changes of two percent in surface area. To finally confirm those claims we take a look at the scatter decomposition.
+```{r scatter decomposition surface area, echo = FALSE, warning = FALSE, message = FALSE}
+# Compute the between-country variance in surface area
+data_agriculture_variance_between_surface <- var(data_agriculture %>%
+                                                   group_by(`Country Name`) %>%
+                                                   summarise(Average_surface = mean(AG.SRF.TOTL.K2)) %>%
+                                                   select(Average_surface))
+
+# Create boxplots for within-country variances (vertical reference line showing the between-country variance)
+ggplot(data_agriculture,
+       aes(x = AG.SRF.TOTL.K2, y = factor(`Country Name`, levels = country_order_by_surface))) +
+  geom_boxplot() +
+  # geom_vline(xintercept = data_agriculture_variance_between_surface,
+  #            color = "black", linetype = "dashed", size = 1.2) +  # Between-country variance
+  labs(title = "Streuungszerlegung der Landfläche bezüglich Ländern",
+       x = expression(Landfläche ~ "[" ~ km^2 ~ "]"), y = "Land") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+cat("Streuung zwischen den Ländern: " , data_agriculture_variance_between_surface)
+```
+<br> 
+In conclusion, we recognize that the changes in surface area are negligible over time. Therefore, we drop our focus on the development over time considering this variable when moving on. More interesting might be shifting the perspective towards whether the absolute amount of surface area has any influence on the relationship between agricultural land and CO2 emissions for our subset of countries.
+<br>
+<br> 
+For this exploration, we want to distinguish our countries into the following groups:
+```{r grouping initial, echo = FALSE, warning = FALSE, message = FALSE}
+# Load group dictionary
+####################### TODO: Change the data_grouped_agr loading to readRDS(...) of correct RDS file in Data/Processed
+data_grouped <- data_grouped_agr
+
+data_surface <- left_join(data_agriculture, data_grouped, by = c("Country Name", "Country Code")) %>%
+  select(`Country Name`, `Country Code`, Year, AG.LND.AGRI.ZS, AG.SRF.TOTL.K2, EN.GHG.CO2.MT.CE.AR5, cat_surfaceArea)
+
+# Plot the initial comparison via scatterplot, this time in grouped categories. 
+ggplot(data_surface, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
+  geom_point(aes(color = cat_surfaceArea), alpha = .7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
+       x = "Logarithmierte CO2 Emissionen pro Kopf [mt]", y = "Landwirtschaftliche Nutzfläche [%]") +
+  scale_color_brewer(palette = "Set2") +  # TODO: SHOULDN'T THIS BE A SEQUENTIAL COLORGRADING -> WHICH PALETTE?
+  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
+  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
+  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
+  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
+  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+<br>
+We see there is no direct influence obvious through the grouping of the data. Let's dig deeper by looking at the time-specific distribution.
+```{r }
+```
+<br>
