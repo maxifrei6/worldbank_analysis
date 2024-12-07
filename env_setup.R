@@ -32,11 +32,11 @@ packages <- c("readxl",  # for reading .xlsx files
               "zoo",
               "kableExtra",
               "readr",
-              "patchwork",
+              "patchwork",  # for more options in assembling plots
               "epitools",
               "ggmosaic",
               "e1071",
-              "RColorBrewer",  # for colorblind-friendly visuals
+              "RColorBrewer",  # for colorblind-friendly visualizations
               "icenReg",
               "interval",
               "scales",
