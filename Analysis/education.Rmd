@@ -24,6 +24,24 @@ library(tidyr)
 data_merged <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_merged.RDS")
 data_grouped <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_grouped.RDS")
 data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+
+# Add new column 'decade' as an ordered factor
+data_education <- data_education %>%
+  mutate(
+    decade = case_when(
+      Year <= 2009 ~ "2000s", # 2000 - 2009
+      Year <= 2019 ~ "2010s", # 2010 - 2019
+      TRUE ~ "2020s"          # 2020 and later
+    ),
+    # Convert 'decade' to an ordered factor with levels 2020s > 2010s > 2000s
+    decade = factor(
+      decade,
+      levels = c("2000s", "2010s", "2020s"),
+      ordered = TRUE
+    )
+  )
+
+
 ```
 
 ### 1 Central Government Debt and Labor Force Education
@@ -32,19 +50,19 @@ We analyze whether countries with higher central government debt as a percentage
 <br>
 ```{r scatter-debt-education, echo = FALSE, , warning=FALSE, message=FALSE}
 # Scatter plot: Central government debt vs labor force with basic education
-ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = income_level)) +
+ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.7, size = 3) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(
     title = "Central Government Debt vs Labor Force with Basic Education",
     x = "Central Government Debt (% of GDP)",
-    y = "Labor Force with Basic Education (%)",
-    color = "Income Level"
+    y = "Labor Force with Basic Education (%)"
   ) +
   theme_minimal()
 ```
+
 <br>
-<br>
+
 ```{r, echo = FALSE}
 
 print("Count of missing data points and share of total data points by income level")
@@ -60,8 +78,62 @@ data_education %>%
   as.data.frame() # Ensure full output display
 
 ```
+
 <br>
 
+```{r scatter-debt-education-years, echo = FALSE, , warning=FALSE, message=FALSE}
+# Scatter plot: Central government debt vs labor force with basic education
+ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = Year)) +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  facet_wrap(~ Year) +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Central Government Debt (% of GDP)",
+    y = "Labor Force with Basic Education (%)",
+    color = "Year"
+  ) +
+  theme_minimal()
+```
+
+<br>
+
+```{r scatter-debt-education-decades, echo = FALSE, , warning=FALSE, message=FALSE}
+# Scatter plot: Central government debt vs labor force with basic education
+ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = decade)) +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  facet_wrap(~ decade, ncol = 2) +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Central Government Debt (% of GDP)",
+    y = "Labor Force with Basic Education (%)",
+    color = "decade"
+  ) +
+  theme_minimal()
+```
+
+### Interpretation 
+At first glance we can observe a positive correlation between debt and education quality which has been stable across all time frames. The high proportion of missing data begs for further exploration. 
+Next we will look at how this relationship differs if we group the observation based on income levels
+
+<br>
+
+```{r scatter-debt-education-income-lvls, echo = FALSE, , warning=FALSE, message=FALSE}
+# Scatter plot: Central government debt vs labor force with basic education
+ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = income_level)) +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Central Government Debt (% of GDP)",
+    y = "Labor Force with Basic Education (%)",
+    color = "income level"
+  ) +
+  theme_minimal()
+```
+
+<br>
 
 #### Further questions and interpretations:
 
