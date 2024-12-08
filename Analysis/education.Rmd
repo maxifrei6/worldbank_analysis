@@ -77,6 +77,56 @@ data_education %>%
   ) %>%
   as.data.frame() # Ensure full output display
 
+# Summarize data for NA and Not NA
+missing_data_summary <- data_education %>%
+  group_by(income_level) %>%
+  summarise(
+    debt_missing = sum(is.na(GC.DOD.TOTL.GD.ZS)),
+    debt_not_missing = sum(!is.na(GC.DOD.TOTL.GD.ZS)),
+    education_missing = sum(is.na(SL.TLF.BASC.ZS)),
+    education_not_missing = sum(!is.na(SL.TLF.BASC.ZS))
+  ) %>%
+  pivot_longer(
+    cols = c(debt_missing, debt_not_missing, education_missing, education_not_missing),
+    names_to = c("variable", "status"),
+    names_sep = "_",
+    values_to = "count"
+  )
+
+# Create a bar chart
+ggplot(missing_data_summary, aes(x = income_level, y = count, fill = status)) +
+  geom_bar(stat = "identity", position = "fill") + # Stacked bar showing proportions
+  facet_wrap(~variable, labeller = as_labeller(c(
+    "debt" = "Debt Data (GC.DOD.TOTL.GD.ZS)",
+    "education" = "Education Data (SL.TLF.BASC.ZS)"
+  ))) +
+  labs(
+    title = "Comparison of NA vs Not NA by Income Level",
+    x = "Income Level",
+    y = "Proportion",
+    fill = "Data Status"
+  ) +
+  scale_fill_manual(values = c("missing" = "red", "not_missing" = "green"), labels = c("Missing", "Not Missing")) +
+  theme_minimal()
+
+# Summarize available data pairs for each country
+available_data_pairs <- data_education %>%
+  group_by(`Country Name`) %>%
+  summarise(
+    available_pairs = sum(!is.na(GC.DOD.TOTL.GD.ZS) & !is.na(SL.TLF.BASC.ZS)) # Count rows where both variables are not NA
+  ) %>%
+  arrange(desc(available_pairs)) # Arrange by descending order of available pairs
+
+# Create a bar chart to visualize the data pairs
+ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pairs), y = available_pairs)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(
+    title = "Available Data Pairs for Each Country",
+    x = "Country Name",
+    y = "Number of Available Data Pairs"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for better readability
 ```
 
 <br>
