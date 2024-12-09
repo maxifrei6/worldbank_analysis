@@ -1,0 +1,123 @@
+---
+title: "Worldbank Analysis"
+subtitle: "subtitle"
+author: "Maximilian Frei, Robin Billinger, Leonie Mertes, Iman Saffari"
+institute: "institute"
+date: "2025-01-21"
+format:
+  revealjs:
+    css: customstyle.css
+    embed-resources: true
+    slide-number: c
+    logo: "/Users/maximilian/Desktop/wb_local/Results/Style/LMU_Logo.svg"
+editor: visual
+---
+
+```{r setup, include=FALSE}
+#source("env_setup.R")
+
+```
+
+## Agenda
+
+::: incremental
+1.  Überblick und Terminologie
+
+2.  Datenanalyse
+
+    2.1 Electricity and National Income\
+    2.2 Education\
+    2.3 HIV\
+    2.4 Tobacco\
+    2.5 Agriculture
+
+3.  Zusammenfassung und Diskussion
+:::
+
+## Überblick
+
+**Worldbank Datensatz**
+
+::: incremental
+-   **Erhebungsart**: Logitudinal
+
+-   25 Länder über 22 Jahre (2000 - 2021) untersucht
+
+    -- Weitere Details
+
+-   18 verschiedene Indikatoren
+:::
+
+## Terminologie {.custom-smaller}
+
+::: incremental
+-   **fachbegriff**: kurze Beschreibung
+
+-   **weiterer fachbegriff**: kurze Beschreibung
+:::
+
+## 2.1 Electricity and National Income (1/2)
+
+1.  How does access to electricity correlate with adjusted net national income per capita across different countries?
+
+## 2.1 Electricity and National Income (2/2)
+
+2.  Does this also depend on the country size or the inhabitants?
+
+## 2.2 Education (1/2)
+
+1.  Do countries with higher central government debt as a percentage of GDP have a lower percentage of labor force with basic education?
+
+```{r, echo = FALSE, , warning=FALSE, message=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Load the dataset
+data_merged <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_merged.RDS")
+data_grouped <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_grouped.RDS")
+data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+
+# Scatter plot code
+ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Central Government Debt (% of GDP)",
+    y = "Labor Force with Basic Education (%)",
+    color = "Income Level"
+  ) +
+  theme_minimal()
+```
+
+## 2.2 Education (2/2)
+
+2.  Are countries with higher percentage of labor force with basic education able to maintain lower pupil-teacher ratios, and what impact might this have on education quality?
+
+## 2.3 HIV (1/2)
+
+1.  How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
+
+## 2.3 HIV (2/2)
+
+2.  Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
+
+## 2.4 Tobacco (1/2)
+
+-   How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
+
+## 2.4 Tobacco (2/2)
+
+-   Further analysis of tobacco.
+
+## 2.5 Agriculture (1/2)
+
+1.  Is there a relationship between the percentage of agricultural land and CO2 emissions per capita across countries?
+
+## 2.5 Agriculture (2/2)
+
+2.  Does the size of the surface area of the country play a role?
+
+## Zusammenfassung und Diskussion
