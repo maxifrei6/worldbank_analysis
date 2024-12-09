@@ -65,7 +65,7 @@ group_data <- function(df, grouping_by, column_new, quantile_labels) {
   # Calculate the n_quantiles of the 'average' column
   n_quantile <- length(quantile_labels)
   quantile_probs <- seq(from = 0, to = 1, by = 1 / n_quantile)
-  quantile_data <- quantile(df$average, probs = quantile_probs)
+  quantile_data <- quantile(df$average, probs = quantile_probs, na.rm = TRUE)
   
   # Dynamically create the new column name 'column_new' 
   column_new <- paste0("cat_", column_new)
