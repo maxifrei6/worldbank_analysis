@@ -29,7 +29,7 @@ data_tob <- data_processed %>%
          Year,
          NY.GDP.PCAP.PP.KD,
          SH.PRV.SMOK,
-         tobacco_usage)
+         cat_tob_usage)
 ```
 <br>
 ### 1. Tobacco Prevalence and GDP
@@ -50,7 +50,7 @@ To take a look at the grouping of our data by tobacco usage, we will display a p
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
-  ggplot(aes(`Country Name`, SH.PRV.SMOK, colour = tobacco_usage)) +
+  ggplot(aes(`Country Name`, SH.PRV.SMOK, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     y = "Anteil der tabakkonsumierenden Erwachsenen",
@@ -71,8 +71,8 @@ Now we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
-  group_by(tobacco_usage) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
+  group_by(cat_tob_usage) %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -89,13 +89,13 @@ Now we view only one dot per category of relative tobacco usage.
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
-  group_by(tobacco_usage) %>%
+  group_by(cat_tob_usage) %>%
   summarise(
-    tobacco_usage = tobacco_usage,
+    cat_tob_usage = cat_tob_usage,
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
     SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE)
   ) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -112,14 +112,14 @@ Now take a look of the coherence of the variables without our extreme value of t
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
-  group_by(tobacco_usage) %>%
+  group_by(cat_tob_usage) %>%
   summarise(
-    tobacco_usage = tobacco_usage,
+    cat_tob_usage = cat_tob_usage,
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
     SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE)
   ) %>%
-  filter(tobacco_usage != "Very Low") %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
+  filter(cat_tob_usage != "Very Low") %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -135,15 +135,15 @@ To get a better overview we take a look at all years.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
-  group_by(Year, tobacco_usage) %>%
+  group_by(Year, cat_tob_usage) %>%
   summarise(
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
     SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = tobacco_usage)) +
+  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
-  geom_line(aes(group = tobacco_usage)) +
+  geom_line(aes(group = cat_tob_usage)) +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
