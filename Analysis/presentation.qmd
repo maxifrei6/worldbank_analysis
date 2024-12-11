@@ -1,17 +1,19 @@
 ---
 title: "Worldbank Analysis"
 subtitle: "subtitle"
-author: "Maximilian Frei, Robin Billinger, Leonie Mertes, Iman Saffari"
+author: "Robin Billinger, Leonie Mertes, Iman Saffari, Maximilian Frei"
 institute: "institute"
 date: "2025-01-21"
-format:
+format: 
   revealjs:
-    css: customstyle.css
-    embed-resources: true
-    slide-number: c
-    logo: "/Users/maximilian/Desktop/wb_local/Results/Style/LMU_Logo.svg"
+    self-contained: true
 editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
+
 
 ```{r setup, include=FALSE}
 #source("env_setup.R")
@@ -48,7 +50,7 @@ editor: visual
 -   18 verschiedene Indikatoren
 :::
 
-## Terminologie {.custom-smaller}
+## Terminologie
 
 ::: incremental
 -   **fachbegriff**: kurze Beschreibung
@@ -56,19 +58,19 @@ editor: visual
 -   **weiterer fachbegriff**: kurze Beschreibung
 :::
 
-## 2.1 Electricity and National Income (1/2)
+## 2.1 Electricity and National Income (1/2) {.smaller}
 
-1.  How does access to electricity correlate with adjusted net national income per capita across different countries?
+How does access to electricity correlate with adjusted net national income per capita across different countries?
 
-## 2.1 Electricity and National Income (2/2)
+## 2.1 Electricity and National Income (2/2) {.smaller}
 
-2.  Does this also depend on the country size or the inhabitants?
+Does this also depend on the country size or the inhabitants?
 
-## 2.2 Education (1/2)
+## 2.2 Education (1/2) {.smaller}
 
-1.  Do countries with higher central government debt as a percentage of GDP have a lower percentage of labor force with basic education?
+Do countries with **higher central government debt (% of GDP)** have a **lower % of labor force with basic education**?
 
-```{r, echo = FALSE, , warning=FALSE, message=FALSE}
+```{r}
 # Load necessary libraries
 library(dplyr)
 library(ggplot2)
@@ -79,45 +81,47 @@ data_merged <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_m
 data_grouped <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_grouped.RDS")
 data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 
-# Scatter plot code
+# Faceted scatter plot: Debt vs Education by Income Level
 ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(alpha = 0.7, size = 3) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
+  facet_wrap(~ cat_income_level) +
   labs(
-    title = "Central Government Debt vs Labor Force with Basic Education",
+    title = "Central Government Debt vs Labor Force with Basic Education by Income Level",
     x = "Central Government Debt (% of GDP)",
     y = "Labor Force with Basic Education (%)",
     color = "Income Level"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"))
 ```
 
-## 2.2 Education (2/2)
+## 2.2 Education (2/2) {.smaller}
 
-2.  Are countries with higher percentage of labor force with basic education able to maintain lower pupil-teacher ratios, and what impact might this have on education quality?
+Are countries with higher percentage of labor force with basic education able to maintain **lower** pupil-teacher ratios, and what impact might this have on education quality?
 
-## 2.3 HIV (1/2)
+## 2.3 HIV (1/2) {.smaller}
 
-1.  How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
+How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
 
-## 2.3 HIV (2/2)
+## 2.3 HIV (2/2) {.smaller}
 
-2.  Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
+Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 
-## 2.4 Tobacco (1/2)
+## 2.4 Tobacco (1/2) {.smaller}
 
--   How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
+How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
 
-## 2.4 Tobacco (2/2)
+## 2.4 Tobacco (2/2) {.smaller}
 
--   Further analysis of tobacco.
+Further analysis of tobacco.
 
-## 2.5 Agriculture (1/2)
+## 2.5 Agriculture (1/2) {.smaller}
 
-1.  Is there a relationship between the percentage of agricultural land and CO2 emissions per capita across countries?
+Is there a relationship between the percentage of agricultural land and CO2 emissions per capita across countries?
 
-## 2.5 Agriculture (2/2)
+## 2.5 Agriculture (2/2) {.smaller}
 
-2.  Does the size of the surface area of the country play a role?
+Does the size of the surface area of the country play a role?
 
-## Zusammenfassung und Diskussion
+## Zusammenfassung und Diskussion {.smaller}
