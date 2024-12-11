@@ -391,6 +391,25 @@ ggplot(data_surface, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5),
         legend.title = element_text(hjust = 0.5))
+
+# Plot the initial comparison via scatterplot, faceted in grouped categories. 
+ggplot(data_surface, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
+  geom_point(alpha = .7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
+       x = "Logarithmierte CO2 Emissionen pro Kopf [Mt]", y = "Landwirtschaftliche Nutzfläche [%]") +
+  scale_color_brewer(palette = "Set2", name = "Landfläche") +  
+  # TODO: SHOULDN'T THIS BE A SEQUENTIAL COLORGRADING -> WHICH PALETTE?
+  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
+  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
+  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
+  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
+  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(hjust = 0.5)) +
+  facet_wrap(~ data_surface$cat_surfaceArea)
+
 ```
 <br>
 We see there is no direct influence obvious through the grouping of the data. Let's dig deeper by looking at the time-specific distribution.
