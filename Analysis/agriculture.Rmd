@@ -22,8 +22,7 @@ library(ggplot2)
 library(tidyr)
 
 # Load the processed "data_merged" dataset
-data_agriculture <- data_merged # TODO: AS SOON AS CO2 INPUT IS FIXED, PUT READRDS() BACK TO ASSIGNMENT
-# readRDS("/Users/rb.bllngr/Desktop/worldbank_analysis/Data/Processed/data_merged.RDS")
+data_agriculture <- readRDS("/Users/rb.bllngr/Desktop/worldbank_analysis/Data/Processed/data_merged.RDS")
 ################################### data_agriculture <- readRDS(normalizePath("Data/Processed/data_merged.RDS"))
 
 # Filter relevant columns
@@ -94,7 +93,7 @@ ggplot(data_agriculture,
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
 
-cat("Streuung zwischen den Ländern: " , data_agriculture_variance_between_CO2)
+cat("Streuung zwischen den Ländern: " , data_agriculture_variance_between_CO2, "\n")
 
 ```
 <br>
@@ -364,8 +363,7 @@ For this exploration, we want to distinguish our countries into the following gr
 # TODO: Change the readRDS(...) loading to non-hardcode RDS file in Data/Processed
 # TODO: Change grouping of data to read the correct RDS file from Processed instead of grouping here!
 source("/Users/rb.bllngr/Desktop/worldbank_analysis/Scripts/functions.R")
-data_grouped <- data_pregrouped # TODO: AS SOON AS CO2 INPUT IS FIXED, PUT READRDS() BACK TO ASSIGNMENT
-# readRDS("/Users/rb.bllngr/Desktop/worldbank_analysis/Data/Processed/data_pregrouped.RDS")
+data_grouped <- readRDS("/Users/rb.bllngr/Desktop/worldbank_analysis/Data/Processed/data_pregrouped.RDS")
 data_grouped <- group_data(df = data_grouped,
                                grouping_by = "AG.SRF.TOTL.K2",
                                column_new = "surfaceArea",
