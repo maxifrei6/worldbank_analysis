@@ -51,9 +51,9 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
   geom_point(alpha = 0.5) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
               method = MASS::rlm,  # TODO: IF RLM USED --> PACKAGE MASS!
-              size = 1, se = FALSE) +
+              linewidth = 1, se = FALSE) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
-              method = "lm", size = 1, se = FALSE) +
+              method = "lm", linewidth = 1, se = FALSE) +
   ggtitle("Zusammenhang zwischen der Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(), limits = c(0, 60)) +
@@ -73,9 +73,9 @@ ggplot(data_tobacco[data_tobacco$`Country Name` != "Qatar", ], aes(x = SH.PRV.SM
   geom_point(alpha = 0.5) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
               method = MASS::rlm,  # TODO: IF RLM USED --> PACKAGE MASS!
-              size = 1, se = FALSE) +
+              linewidth = 1, se = FALSE) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
-              method = "lm", size = 1, se = FALSE) +
+              method = "lm", linewidth = 1, se = FALSE) +
   ggtitle("Zusammenhang zwischen der Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(), limits = c(0, 60)) +
@@ -91,13 +91,13 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
   geom_point() +
   geom_smooth(data = data_tobacco,
               aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year, color = "Robust-Linear"),
-              method = MASS::rlm, size = 1, se = FALSE) +  # IF RLM USED --> PACKAGE MASS!!!
+              method = MASS::rlm, linewidth = 1, se = FALSE) +  # IF RLM USED --> PACKAGE MASS!!!
   geom_smooth(data = data_tobacco,
               aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year, color = "Linear"),
-              method = "lm", size = 1, se = FALSE) +  # TODO: CHOOSE METHOD
+              method = "lm", linewidth = 1, se = FALSE) +  # TODO: CHOOSE METHOD
   geom_smooth(data = data_tobacco,
               aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year, color = "Lokal-Polynomiell"),
-              method = "loess", size = 1, se = FALSE) +  # TODO: CHOOSE METHOD
+              method = "loess", linewidth = 1, se = FALSE) +  # TODO: CHOOSE METHOD
   labs(title = "Zusammenhang zwischen der Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf",
        x = "Prävalenz des aktuellen Tabakkonsums [%]", y = "BIP pro Kopf [$]") +
   scale_color_manual(name = "Regression",
@@ -131,7 +131,7 @@ data_tobacco_normdensity <- data_tobacco_normdensity %>%
   filter(norm_x_val <= 60)
 
 ### Idea 1.4: Scatter plot of relationship of interested variables faceted years with density curves
-
+# Plot the upper row of the data points for the assembled tobacco plotting
 plot_tobacco1_data_upper <- ggplot(data_tobacco %>% filter(Year %in% c(2000, 2005, 2010))) +
   geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +  
   ggtitle("Zusammenhang zwischen der Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
@@ -147,6 +147,7 @@ plot_tobacco1_data_upper <- ggplot(data_tobacco %>% filter(Year %in% c(2000, 200
         axis.ticks.x = element_blank()) +
   facet_wrap(~ Year)
 
+# Plot the bottom row of the data points for the assembled tobacco plotting
 plot_tobacco1_data_bottom <- ggplot(data_tobacco %>% filter(Year %in% c(2018, 2019, 2020))) +
   geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
@@ -161,14 +162,14 @@ plot_tobacco1_data_bottom <- ggplot(data_tobacco %>% filter(Year %in% c(2018, 20
   facet_wrap(~ Year)
 
 # Add overlayed normal distribution curves to the assembled plot in the data displays
-# Plot the upper row of the density curves for the assembled tobacco plotting no. 1
+# Plot the upper row of the density curves for the assembled tobacco plotting
 plot_tobacco1_density_upper <- ggplot() +
   geom_line(data = data_tobacco_normdensity %>% filter(Year %in% c(2000, 2005, 2010)),  # TODO: data
             aes(x = norm_x_val, y = norm_y_val, group = Year),
-            color = brewer.pal(4, "Set2")[[2]], size = 1, inherit.aes = FALSE) +
+            color = brewer.pal(4, "Set2")[[2]], linewidth = 1, inherit.aes = FALSE) +
   geom_density(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010)),
                aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
-               color = brewer.pal(4, "Set2")[[1]], size = 1, alpha = 0.5, bw = 5) +
+               color = brewer.pal(4, "Set2")[[1]], linewidth = 1, alpha = 0.5, bw = 5) +
   geom_vline(data = data_tobacco_normdensity %>% filter(Year %in% c(2000, 2005, 2010)),  # TODO: data
              aes(xintercept = SH.PRV.SMOK_mean, group = Year),
              color = "black", linetype = "dashed") +
@@ -181,17 +182,17 @@ plot_tobacco1_density_upper <- ggplot() +
         axis.title.y = element_text(margin = margin(r = 10))) +
   facet_wrap(~ Year)
 
-# Plot the bottom row of the density curves for the assembled tobacco plotting no. 1
+# Plot the bottom row of the density curves for the assembled tobacco plotting
 plot_tobacco1_density_bottom <- ggplot() +
   geom_line(data = data_tobacco_normdensity %>% filter(Year %in% c(2018, 2019, 2020)),  # TODO: data
             aes(x = norm_x_val, y = norm_y_val, group = Year, color = "Normalverteilung"),
-            size = 1, inherit.aes = FALSE) +
+            linewidth = 1, inherit.aes = FALSE) +
   geom_density(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
                aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
-               color = brewer.pal(3, "Set2")[[1]], size = 1, bw = 5, show.legend = FALSE) +
+               color = brewer.pal(3, "Set2")[[1]], linewidth = 1, bw = 5, show.legend = FALSE) +
   # Add an invisible line by framing dummy data to show "KDE" with line instead of hollow square for shape in legend
   geom_line(data = data.frame(x = c(0,0), y = c(0,0)),
-            aes(x = x, y = y, color = "Kerndichteschätzer"), size = 1) +
+            aes(x = x, y = y, color = "Kerndichteschätzer"), linewidth = 1) +
   geom_vline(data = data_tobacco_normdensity %>% filter(Year %in% c(2018, 2019, 2020)),  # TODO: data
              aes(xintercept = SH.PRV.SMOK_mean, group = Year),
              color = "black", linetype = "dashed") +
@@ -206,7 +207,7 @@ plot_tobacco1_density_bottom <- ggplot() +
         legend.text = element_text(size = 10)) +
   facet_wrap(~ Year)
 
-
+# Assemble the plot
 (plot_tobacco1_data_upper /
     plot_tobacco1_density_upper /
     plot_tobacco1_data_bottom /
