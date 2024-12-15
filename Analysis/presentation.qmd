@@ -1,9 +1,9 @@
 ---
 title: "Worldbank Analysis"
 subtitle: "subtitle"
-author: "Robin Billinger, Leonie Mertes, Iman Saffari, Maximilian Frei"
+author: "Robin Billinger, Maximilian Frei, Leonie Mertes, Iman Saffari"
 institute: "institute"
-date: "2025-01-21"
+date: "2025-01-20"
 format: 
   revealjs:
     self-contained: true
@@ -26,11 +26,11 @@ execute:
 
 2.  Datenanalyse
 
-    2.1 Electricity and National Income\
-    2.2 Education\
+    2.1 Elektrizität und nationales Einkommen\
+    2.2 Bildung\
     2.3 HIV\
-    2.4 Tobacco\
-    2.5 Agriculture
+    2.4 Tabakkonsum\
+    2.5 Landwirtschaft
 
 3.  Zusammenfassung und Diskussion
 :::
@@ -40,7 +40,7 @@ execute:
 **Worldbank Datensatz**
 
 ::: incremental
--   **Erhebungsart**: Logitudinal
+-   **Erhebungsart**: Longitudinal
 
 -   25 Länder über 22 Jahre (2000 - 2021) untersucht
 
@@ -107,20 +107,330 @@ How does the HIV prevalence in the population aged 15-49 relate to the total alc
 
 Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 
-## 2.4 Tobacco (1/2) {.smaller}
+## 2.4 Tabakkonsum (1/2) {.smaller}
 
-How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
+In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen innerhalb eines Landes?
 
-## 2.4 Tobacco (2/2) {.smaller}
+```{r tobacco_setup}
+# Load the dataset
+data_tobacco <- readRDS("Data/Processed/data_merged.RDS")
 
-Further analysis of tobacco.
+# Filter relevant columns Country Name, Country Code, Year, NY.GDP.PCAP.PP.KD and SH.PRV.SMOK 
+data_tobacco <- data_tobacco %>%
+  select(`Country Name`, `Country Code`, Year, NY.GDP.PCAP.PP.KD, SH.PRV.SMOK)
 
-## 2.5 Agriculture (1/2) {.smaller}
+# Convert column `Year` to data type Integer
+data_tobacco$Year <- as.integer(data_tobacco$Year)
 
-Is there a relationship between the percentage of agricultural land and CO2 emissions per capita across countries?
+# As we only have data on each country for the years 2000, 2005, 2010, 2018, 2019, 2020,
+# we remove all missing years for each country
+data_tobacco <- data_tobacco[data_tobacco$Year %in% c(2000, 2005, 2010, 2018, 2019, 2020), ]
 
-## 2.5 Agriculture (2/2) {.smaller}
+# Calculate mean and standard deviation for each year
+data_tobacco_normdensity <- data_tobacco %>%
+  group_by(Year) %>%
+  summarize(SH.PRV.SMOK_mean = mean(SH.PRV.SMOK),
+            SH.PRV.SMOK_sd = sd(SH.PRV.SMOK))
 
-Does the size of the surface area of the country play a role?
+# Generate evenly-spaced values of x and compute density for each year
+data_tobacco_normdensity <- data_tobacco_normdensity %>%
+  rowwise() %>%
+  mutate(
+    # Create 100 evenly-spaced points inbetween the lowest and highest observed datapoint 
+    norm_x_val = list(seq(0, 100, length.out = 100)),
+    # Compute the corresponding PDF values
+    norm_y_val = list(dnorm(norm_x_val, mean = SH.PRV.SMOK_mean, sd = SH.PRV.SMOK_sd))) %>%
+  unnest(c(norm_x_val, norm_y_val))  # Convert the lists into columns
+
+# Remove rows with values of the normal distribution calculation that are larger than 60% (as 60% > max(SH.PRV.SMOK))
+data_tobacco_normdensity <- data_tobacco_normdensity %>%
+  filter(norm_x_val <= 60)
+```
+
+```{r}
+##################### PLOT VON LEONIE? #####################
+```
+
+## 2.4 Tabakkonsum (2/2) {.smaller}
+
+Tiefergehende Analyse des Tabakkonsums
+```{r tobacco_plot2_faceted_scatter_and_density}
+# Plot the upper row of the data points for the assembled tobacco plotting
+plot_tobacco1_data_upper <- ggplot(data_tobacco %>% filter(Year %in% c(2000, 2005, 2010))) +
+  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +  
+  ggtitle("Zusammenhang zwischen der Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
+  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
+                     minor_breaks = waiver(), limits = c(0, 60)) +
+  scale_y_continuous(name = "BIP pro Kopf [$]", breaks = c(0, 25000, 50000, 75000, 100000, 125000),
+                     minor_breaks = waiver(), limits = c(0, 125000)) +
+  theme_bw() +
+  theme(plot.margin = margin(0, 0, 0, 0),
+        plot.title = element_text(hjust = 0.5),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  facet_wrap(~ Year)
+
+# Plot the bottom row of the data points for the assembled tobacco plotting
+plot_tobacco1_data_bottom <- ggplot(data_tobacco %>% filter(Year %in% c(2018, 2019, 2020))) +
+  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +
+  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
+                     minor_breaks = waiver(), limits = c(0, 60)) +
+  scale_y_continuous(name = "BIP pro Kopf [$]", breaks = c(0, 25000, 50000, 75000, 100000, 125000),
+                     minor_breaks = waiver(), limits = c(0, 125000)) +
+  theme_bw() +
+  theme(plot.margin = margin(0, 0, 0, 0),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  facet_wrap(~ Year)
+
+# Add overlayed normal distribution curves to the assembled plot in the data displays
+# Plot the upper row of the density curves for the assembled tobacco plotting
+plot_tobacco1_density_upper <- ggplot() +
+  geom_line(data = data_tobacco_normdensity %>% filter(Year %in% c(2000, 2005, 2010)),  # TODO: data
+            aes(x = norm_x_val, y = norm_y_val, group = Year),
+            color = brewer.pal(4, "Set2")[[2]], linewidth = 1, inherit.aes = FALSE) +
+  geom_density(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010)),
+               aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
+               color = brewer.pal(4, "Set2")[[1]], linewidth = 1, alpha = 0.5, bw = 5) +
+  geom_vline(data = data_tobacco_normdensity %>% filter(Year %in% c(2000, 2005, 2010)),  # TODO: data
+             aes(xintercept = SH.PRV.SMOK_mean, group = Year),
+             color = "black", linetype = "dashed") +
+  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
+                     minor_breaks = waiver(), limits = c(0, 60)) +
+  scale_y_continuous(name = "Dichte", breaks = c(0, 0.02, 0.04), minor_breaks = waiver()) +
+  theme_bw() +
+  theme(strip.text = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(margin = margin(r = 10))) +
+  facet_wrap(~ Year)
+
+# Plot the bottom row of the density curves for the assembled tobacco plotting
+plot_tobacco1_density_bottom <- ggplot() +
+  geom_line(data = data_tobacco_normdensity %>% filter(Year %in% c(2018, 2019, 2020)),  # TODO: data
+            aes(x = norm_x_val, y = norm_y_val, group = Year, color = "Normalverteilung"),
+            linewidth = 1, inherit.aes = FALSE) +
+  geom_density(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
+               aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
+               color = brewer.pal(3, "Set2")[[1]], linewidth = 1, bw = 5, show.legend = FALSE) +
+  # Add an invisible line by framing dummy data to show "KDE" with line instead of hollow square for shape in legend
+  geom_line(data = data.frame(x = c(0,0), y = c(0,0)),
+            aes(x = x, y = y, color = "Kerndichteschätzer"), linewidth = 1) +
+  geom_vline(data = data_tobacco_normdensity %>% filter(Year %in% c(2018, 2019, 2020)),  # TODO: data
+             aes(xintercept = SH.PRV.SMOK_mean, group = Year),
+             color = "black", linetype = "dashed") +
+  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
+                     minor_breaks = waiver(), limits = c(0, 60)) +
+  scale_y_continuous(name = "Dichte", breaks = c(0, 0.02, 0.04), minor_breaks = waiver()) +
+  scale_color_brewer(name = "", palette = "Set2") +
+  theme_bw() +
+  theme(strip.text = element_blank(),
+        axis.title.y = element_text(margin = margin(r = 10)),
+        legend.position = "bottom",
+        legend.text = element_text(size = 10)) +
+  facet_wrap(~ Year)
+
+# Assemble the plot
+(plot_tobacco1_data_upper /
+    plot_tobacco1_density_upper /
+    plot_tobacco1_data_bottom /
+    plot_tobacco1_density_bottom) +
+  plot_layout(heights = c(2, 0.5, 2, 0.5))
+```
+
+## 2.5 Landwirtschaft (1/4) {.smaller}
+
+Gibt es einen Zusammenhang zwischen dem Anteil der landwirtschaftlichen Nutzfläche und den CO2 Emissionen pro Kopf eines Landes?
+
+```{r agriculture_setup_and_plot1_scatter}
+# Load the processed "data_merged" dataset
+data_agriculture <- readRDS("Data/Processed/data_merged.RDS")
+
+# Filter relevant columns
+data_agriculture <- data_agriculture %>%
+  select(`Country Name`, `Country Code`, Year, AG.LND.AGRI.ZS, AG.SRF.TOTL.K2, EN.GHG.CO2.MT.CE.AR5)
+
+# Convert column `Year` to data type Integer
+data_agriculture$Year <- as.integer(data_agriculture$Year)
+
+# Save the ascending order of average agricultural land [%] by country
+country_order_by_agrLand <- data_agriculture %>%
+  group_by(`Country Name`) %>%
+  summarise(avg_AG.LND.AGRI.ZS = mean(AG.LND.AGRI.ZS)) %>%
+  arrange(avg_AG.LND.AGRI.ZS) %>%
+  pull(`Country Name`)
+
+# Initial comparison via scatterplot of agricultural land [%] and CO2 emissions per capita [mt]
+ggplot(data_agriculture, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
+  geom_point(alpha = .3, size = 2.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
+       x = "Landwirtschaftliche Nutzfläche [%]", y = "Logarithmierte CO2 Emissionen pro Kopf [Mt]") +
+  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
+  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
+  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
+  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
+  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+## 2.5 Landwirtschaft (2/4) {.smaller}
+
+```{r agriculture_plot2_faceted_scatter_normd}
+# Normalize variable CO2 emissions to same scale as agricultural land [%]
+data_agriculture_normd <- data_agriculture %>%
+  group_by(`Country Name`) %>%
+  mutate(
+    co2_min = min(EN.GHG.CO2.MT.CE.AR5),
+    co2_max = max(EN.GHG.CO2.MT.CE.AR5),
+    co2_normd = ((EN.GHG.CO2.MT.CE.AR5 - co2_min) / (co2_max - co2_min))
+  ) %>%
+  ungroup()
+
+# Pivot normalized data_agriculture dataset to longer format for better visualization of two variables
+data_agriculture_normd_long <- data_agriculture_normd %>%
+  pivot_longer(cols = c(co2_normd, AG.LND.AGRI.ZS), names_to = "variable", values_to = "value") %>%
+  mutate(value = case_when(
+    variable == "co2_normd" ~ value * 100,  # used for [%] comparison
+    variable == "AG.LND.AGRI.ZS" ~ value))
+
+# Plotting with normalized data over time for each country
+ggplot(data_agriculture_normd_long,
+       aes(x = Year, y = value, group = interaction(`Country Name`, variable))) +
+  geom_point(aes(fill = variable), alpha = 0.75, size = 2.5, shape = 21, stroke = 0.5) +  # or geom_line? (And is geom_line overdramatizing the (wrong?) outliers in CO2 emissions?)
+  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche nach Ländern",
+       x = "Jahr", y = "Anteil [%]", fill = "") +
+  scale_fill_brewer(palette = "Set2",  # Colorblind-friendly palette
+                     labels = c("Landwirtschaftliche Nutzfläche [%]",
+                                "(Min, Max)-normalisierte CO2 Emissionen pro Kopf [%]")) +
+  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
+                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(hjust = 0.5)) +
+  facet_wrap(~ factor(data_agriculture_normd_long$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
+```
+
+## 2.5 Landwirtschaft (3/4) {.smaller}
+
+Spielt hierbei die vollständige Landfläche des Landes eine Rolle?
+
+``` {r surface_setup_and_agriculture_plot3_groupfaceted}
+source("Scripts/functions.R")
+data_grouped <- readRDS("Data/Processed/data_pregrouped.RDS")
+data_grouped <- group_data(df = data_grouped,
+                               grouping_by = "AG.SRF.TOTL.K2",
+                               column_new = "surfaceArea",
+                               quantile_labels = c("Very Small", "Small", "Moderate", "Large", "Very Large"))
+
+data_surface <- left_join(data_agriculture, data_grouped, by = c("Country Name", "Country Code")) 
+data_surface <- data_surface %>%
+  select(`Country Name`, `Country Code`, Year, AG.LND.AGRI.ZS, AG.SRF.TOTL.K2, EN.GHG.CO2.MT.CE.AR5, cat_surfaceArea)
+
+# Plot the initial comparison via scatterplot, this time in grouped categories. 
+ggplot(data_surface, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
+  geom_point(aes(color = cat_surfaceArea), alpha = .7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
+       x = "Logarithmierte CO2 Emissionen pro Kopf [Mt]", y = "Landwirtschaftliche Nutzfläche [%]") +
+  scale_color_brewer(palette = "Set2", name = "Landfläche") +  
+  # TODO: SHOULDN'T THIS BE A SEQUENTIAL COLORGRADING -> WHICH PALETTE?
+  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
+  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
+  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
+  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
+  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(hjust = 0.5))
+
+# Plot the initial comparison via scatterplot, faceted in grouped categories. 
+ggplot(data_surface, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
+  geom_point(alpha = .3, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = paste0("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche",
+                      "\n", "für Ländergruppen bezüglich deren Landfläche"),
+       x = "Landwirtschaftliche Nutzfläche [%]", y = "Logarithmierte CO2 Emissionen pro Kopf [Mt]") +
+  scale_color_brewer(palette = "Set2", name = "Landfläche") +  
+  # TODO: SHOULDN'T THIS BE A SEQUENTIAL COLORGRADING -> WHICH PALETTE?
+  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
+  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
+  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
+  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
+  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(hjust = 0.5)) +
+  facet_wrap(~ data_surface$cat_surfaceArea)
+```
+
+## 2.5 Landwirtschaft (4/4) {.smaller}
+
+``` {r agriculture_plot4_groupfaceted_normd}
+# Join the long normalized data for visualization of two variables on y-axis
+data_surface_normd_long <- (left_join(data_agriculture_normd_long,
+                                      data_grouped,
+                                      by = c("Country Name", "Country Code")))
+
+
+# Plotting with normalized data over time for each group
+plot_surface2_upper_row <- ggplot(data_surface_normd_long %>%
+                                    filter(cat_surfaceArea %in% c("Very Small", "Small", "Moderate")),
+                                  aes(x = Year,
+                                      y = value,
+                                      group = interaction(`Country Name`, variable))) +
+  geom_point(alpha = 0.5, size = 2.5, shape = 21, stroke = 0.5, aes(fill = variable)) +
+  geom_smooth(aes(group = variable), method = "lm", se = FALSE, color = "black", size = 1.5) +
+  geom_smooth(aes(group = variable, color = variable), method = "lm", se = FALSE, size = 1, show.legend = FALSE) +
+  labs(title = paste0("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche",
+                      "\n", "für Ländergruppen bezüglich deren Landfläche"),
+       y = "Anteil [%]") +
+  scale_fill_brewer(palette = "Set2",  # Colorblind-friendly palette
+                     labels = c("Landwirtschaftliche Nutzfläche [%]",
+                                "(Min, Max)-normalisierte CO2 Emissionen pro Kopf [%]")) +
+  scale_color_brewer(palette = "Set2") +
+  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
+                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(hjust = 0.5)) +
+  facet_wrap(~ cat_surfaceArea, ncol = 3)
+
+plot_surface2_bottom_row <- ggplot(data_surface_normd_long %>%
+                                     filter(cat_surfaceArea %in% c("Large", "Very Large")),
+                                   aes(x = Year,
+                                       y = value,
+                                       group = interaction(`Country Name`, variable))) +
+  geom_point(alpha = 0.5, size = 2.5, shape = 21, stroke = 0.5, aes(fill = variable)) +
+  geom_smooth(aes(group = variable), method = "lm", se = FALSE, color = "black", size = 1.5) +
+  geom_smooth(aes(group = variable, color = variable), method = "lm", se = FALSE, size = 1, show.legend = FALSE) +
+  labs(x = "Jahr", y = "Anteil [%]", color = "", fill = "") +
+  scale_fill_brewer(palette = "Set2",  # Colorblind-friendly palette
+                     labels = c("Landwirtschaftliche Nutzfläche [%]",
+                                "(Min, Max)-normalisierte CO2 Emissionen pro Kopf [%]")) +
+  scale_color_brewer(palette = "Set2", labels = c("A", "B")) +
+  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
+                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(hjust = 0.5)) +
+  facet_wrap(~ cat_surfaceArea, ncol = 2)
+
+plot_surface2_upper_row /
+  (plot_spacer() + plot_surface2_bottom_row + plot_spacer() + plot_layout(widths = c(.5, 2, .5)))
+```
 
 ## Zusammenfassung und Diskussion {.smaller}
