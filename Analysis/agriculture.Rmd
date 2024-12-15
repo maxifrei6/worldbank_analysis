@@ -3,8 +3,8 @@ title: "Worldbank Agriculture Analysis"
 author: "Robin Billinger"
 date: "`r Sys.Date()`"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ## Introduction
@@ -148,11 +148,11 @@ Moving on, we want to bring those two variables back together. For this purpose,
 
 ```{r scatterplot initial position, echo = FALSE, warning = FALSE, message = FALSE}
 # Initial comparison via scatterplot of agricultural land [%] and CO2 emissions per capita [mt]
-ggplot(data_agriculture, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
+ggplot(data_agriculture, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
   geom_point(alpha = .3, size = 2.5) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
-       x = "Logarithmierte CO2 Emissionen pro Kopf [Mt]", y = "Landwirtschaftliche Nutzfläche [%]") +
+       x = "Landwirtschaftliche Nutzfläche [%]", y = "Logarithmierte CO2 Emissionen pro Kopf [Mt]") +
   # scale_x_log10(name = "CO2 Emissionen pro Kopf",
   #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
   #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
@@ -240,6 +240,47 @@ country_order_by_surface <- data_agriculture %>%
   summarise(avg_AG.SRF.TOTL.K2 = mean(AG.SRF.TOTL.K2)) %>%
   arrange(avg_AG.SRF.TOTL.K2) %>%
   pull(`Country Name`)
+
+# Load libraries
+library(scales)
+library(ggradar)
+
+# Radar chart for first overview of the interaction of the three variables - bounded by country barriers
+# set by the countries we are observing.
+data_agriculture_radar <- data_agriculture %>%
+  mutate(EN.GHG.CO2.MT.CE.AR5 = log10(EN.GHG.CO2.MT.CE.AR5 + 1)) %>%
+  rename(log10_EN.GHG.CO2.MT.CE.AR5 = EN.GHG.CO2.MT.CE.AR5)
+
+data_agriculture_radar <- data_agriculture_radar %>%
+  group_by(`Country Name`) %>%
+  summarize(across(matches("\\."), \(x) mean(x, na.rm = TRUE))) %>%
+  mutate(across(matches("\\."), rescale))
+
+data_agriculture_radar <- data_agriculture_radar %>%
+  pivot_longer(cols = matches("\\."), names_to = "Indicator", values_to = "Value") %>%
+  pivot_wider(names_from = `Country Name`, values_from = Value)
+
+ggradar(data_agriculture_radar,
+        axis.label.size = 3,
+        grid.label.size = 4,
+        gridline.min.colour = "black",
+        gridline.mid.colour = "black",
+        gridline.max.colour = "black",
+        group.line.width = 1,
+        group.point.size = 2) +
+  ggtitle("Indikatordaten im Zeitraum 2000 bis 2021",
+          subtitle = "Mittlere Indikatordaten pro Land pro Indikator") +
+  theme_minimal() +
+  scale_color_brewer(name = "Indikatoren\n(auf 0-100 % der beobachteten Länder)",
+                     palette = "Set2",
+                     labels = c("AG.SRF.TOTL.K2" = "Landfläche",
+                                "AG.LND.AGRI.ZS" = "Landwirtschaftliche Nutzfläche",
+                                "log10_EN.GHG.CO2.MT.CE.AR5" = "Logarithmierte CO2-Emissionen pro Kopf")) +
+  theme(axis.text = element_blank(),
+        legend.position = "right",
+        legend.title = element_text(hjust = 0.5),
+        legend.title.position = "top",
+        panel.grid = element_blank())
 
 # Lineplot to get an overview of the surface area development within each country over time
 ggplot(data_agriculture, aes(x = Year, y = AG.SRF.TOTL.K2)) +
@@ -392,10 +433,11 @@ ggplot(data_surface, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS
 
 # Plot the initial comparison via scatterplot, faceted in grouped categories. 
 ggplot(data_surface, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
-  geom_point(alpha = .7, size = 3) +
+  geom_point(alpha = .3, size = 3) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
-  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
-       x = "Logarithmierte CO2 Emissionen pro Kopf [Mt]", y = "Landwirtschaftliche Nutzfläche [%]") +
+  labs(title = paste0("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche",
+                      "\n", "für Ländergruppen bezüglich deren Landfläche"),
+       x = "Landwirtschaftliche Nutzfläche [%]", y = "Logarithmierte CO2 Emissionen pro Kopf [Mt]") +
   scale_color_brewer(palette = "Set2", name = "Landfläche") +  
   # TODO: SHOULDN'T THIS BE A SEQUENTIAL COLORGRADING -> WHICH PALETTE?
   # scale_x_log10(name = "CO2 Emissionen pro Kopf",

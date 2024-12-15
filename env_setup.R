@@ -23,6 +23,7 @@ packages <- c("readxl",  # for reading .xlsx files
               "rnaturalearth",  # for worldmap design
               "rnaturalearthdata",  # for worldmap design
               "sf",  # for worldmap design
+              "devtools",  # for loading packages outside of CRAN, e.g. GitHub
               "pROC",
               "rpart",
               "survival",
@@ -39,7 +40,7 @@ packages <- c("readxl",  # for reading .xlsx files
               "RColorBrewer",  # for colorblind-friendly visualizations
               "icenReg",
               "interval",
-              "scales",
+              "scales",  # for rescaling data to percentage scale within data barriers
               "ggthemes") ## add more packages if needed
 
 for (pkg in packages) {
@@ -48,6 +49,12 @@ for (pkg in packages) {
     library(pkg, character.only = TRUE)
   }
 }
+
+##########################################################################################################
+# TODO: HOW TO HANDLE MASS AND GRID AS THEY ARE BASE PACKAGE BUT HAVE TO BE LOADED - IN THE RMDs DIRECTLY?
+##########################################################################################################
+# TODO: HOW TO LOAD devtools::install_github("ricardo-bion/ggradar") AS IT COMES FROM GITHUB?
+##########################################################################################################
 
 # Loading data
 folder_path <- "Data/Processed/"
