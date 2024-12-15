@@ -101,15 +101,130 @@ Are countries with higher percentage of labor force with basic education able to
 
 ## 2.3 HIV (1/2) {.smaller}
 
-How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
+How does the **HIV prevalence in the population aged 15-49** relate to the **total alcohol consumption per capita**?
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Load the dataset
+data_merged <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_merged.RDS")
+data_grouped <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_grouped.RDS")
+data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+data_hiv <- data_processed %>% 
+  select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)
+
+data_hiv %>%
+  group_by(Year, cat_alc) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(Year, SH.DYN.AIDS.ZS, colour = cat_alc)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_line(aes(group = cat_alc)) +
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1,
+    size = 6
+  )) +
+  labs(
+    title = "HIV Prävalenz über die Jahre",
+    x = "Jahr",
+    y = "HIV Prävalenz",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  scale_colour_brewer(palette = "Set2")
+```
 
 ## 2.3 HIV (2/2) {.smaller}
 
 Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 
-## 2.4 Tobacco (1/2) {.smaller}
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Load the dataset
+data_merged <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_merged.RDS")
+data_grouped <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_grouped.RDS")
+data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+data_hiv <- data_processed %>% 
+  select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)
+
+data_hiv %>%
+  filter(Year == 2020) %>%
+  group_by(cat_education) %>%
+  summarise(
+    cat_education = cat_education,
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Anteil an Arbeitenden mit grundlegender Bildung",
+    y = "HIV Prävalenz in %",
+    title = "Bildungsstand vs. HIV Prävalenz im Jahr 2020",
+    colour = "relativer Bildungsstand"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
+
+## 2.4 Tobacco Leonie (1/2) {.smaller}
 
 How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
+# Load the dataset
+data_merged <- readRDS(
+  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_merged.RDS"
+)
+data_grouped <- readRDS(
+  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_grouped.RDS"
+)
+data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+data_tob <- data_processed %>%
+  select(`Country Name`,
+         `Country Code`,
+         Year,
+         NY.GDP.PCAP.PP.KD,
+         SH.PRV.SMOK,
+         cat_tob_usage)
+
+data_tob %>%
+  group_by(Year, cat_tob_usage) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_line(aes(group = cat_tob_usage)) +
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1,
+    size = 6
+  )) +
+  labs(
+    x = "Jahr",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP",
+    colour = "relativer Tabakkonsum"
+  ) +
+  scale_colour_brewer(palette = "Set2")
+```
 
 ## 2.4 Tobacco (2/2) {.smaller}
 
