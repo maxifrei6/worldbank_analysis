@@ -99,7 +99,7 @@ ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = ca
 
 Are countries with higher percentage of labor force with basic education able to maintain **lower** pupil-teacher ratios, and what impact might this have on education quality?
 
-## 2.3 HIV (1/2) {.smaller}
+## 2.3 HIV (1/3) {.smaller}
 
 How does the **HIV prevalence in the population aged 15-49** relate to the **total alcohol consumption per capita**?
 
@@ -140,9 +140,44 @@ data_hiv %>%
   scale_colour_brewer(palette = "Set2")
 ```
 
-## 2.3 HIV (2/2) {.smaller}
+## 2.3 HIV (2/3) {.smaller}
 
-Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
+Further analysis
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Load the dataset
+data_merged <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_merged.RDS")
+data_grouped <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_grouped.RDS")
+data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+data_hiv <- data_processed %>% 
+  select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)
+
+data_hiv %>%
+  group_by(cat_alc) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
+
+## 2.3 HIV (3/3) {.smaller}
+
+Do countries with **higher percentage of labor force with basic education** have **lower HIV prevalence rates in the 15-49 population**? 
 
 <<<<<<< HEAD
 ```{r}
@@ -158,24 +193,18 @@ data_hiv <- data_processed %>%
   select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)
 
 data_hiv %>%
-  filter(Year == 2020) %>%
   group_by(cat_education) %>%
   summarise(
-    cat_education = cat_education,
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
-    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
-  geom_point(size = 3, alpha = 0.7) +
+  ggplot(aes(x = cat_education, y = SH.DYN.AIDS.ZS)) +
+  geom_col(fill = "steelblue") +
   labs(
-    x = "Anteil an Arbeitenden mit grundlegender Bildung",
+    x = "relatives Bildungslevel der arbeitsfähigen Bevölkerung",
     y = "HIV Prävalenz in %",
-    title = "Bildungsstand vs. HIV Prävalenz im Jahr 2020",
-    colour = "relativer Bildungsstand"
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
+    title = "Bildungsstand vs. HIV Prävalenz im Schnitt über die Jahre"
+  )
 ```
 
 ## 2.4 Tabakkonsum (1/2) {.smaller}

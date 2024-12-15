@@ -175,9 +175,45 @@ data_hiv %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-(bringt nichts!:
-Now we want to take a more precise look at the connection of HIV Prevalence and alcohol consumption. Therefore we facet over year.)
+Now we take a look over the average of all years, where we categorize by relative alcohol consumption and compare to HIV Prevalence.
+<br> 
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  group_by(cat_alc) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = cat_alc, y = SH.DYN.AIDS.ZS)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    x = "relativer Alkoholkonsum",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre"
+  )
+```
 <br>
+to take a look at the categorization, we plot the same data in slightly different way:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  group_by(cat_alc) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
 <br>
 ### 2. HIV prevalence and basic education
 <br>
@@ -228,7 +264,6 @@ data_hiv %>%
   filter(Year == 2021) %>%
   group_by(cat_education) %>%
   summarise(
-    cat_education = cat_education,
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
     SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE)
   ) %>%
@@ -270,7 +305,6 @@ data_hiv %>%
   filter(Year == 2020) %>%
   group_by(cat_education) %>%
   summarise(
-    cat_education = cat_education,
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
     SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
     .groups = "drop"
@@ -318,6 +352,7 @@ The 60 % with higher education level also show a higher HIV Prevalence. Their Pr
 education have a higher HIV Prevalence than the others.
 <br>
 Now we take a look at all years, facetted by cat_education, all countries each a line
+<br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
   filter(Year == 2020) %>% 
@@ -333,4 +368,42 @@ data_hiv %>%
   )  +
   scale_colour_brewer(palette = "Set2")
 ```
-
+<br>
+we want to create a plot of the averages over alll years grouped by education level. For interest first with x-axis education and second as bar plot (x axis the education level)
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  group_by(cat_education) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Anteil an Arbeitenden mit grundlegender Bildung",
+    y = "HIV Prävalenz in %",
+    title = "Bildungsstand vs. HIV Prävalenz im Schnitt über die Jahre",
+    colour = "relativer Bildungsstand"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  group_by(cat_education) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = cat_education, y = SH.DYN.AIDS.ZS)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    x = "relatives Bildungslevel der arbeitsfähigen Bevölkerung",
+    y = "HIV Prävalenz in %",
+    title = "Bildungsstand vs. HIV Prävalenz im Schnitt über die Jahre"
+  )
+```
+<br>
