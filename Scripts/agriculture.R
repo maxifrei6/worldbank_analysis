@@ -1,8 +1,11 @@
 # Load libraries
 # TODO
 
-# Load the processed "data_merged" dataset
-data_agriculture <- readRDS("Data/Processed/data_merged.RDS")
+library(here)
+
+# Load the processed "data_merged" dataset using `here`
+data_agriculture <- readRDS(here("Data", "Processed", "data_merged.RDS"))
+
 
 # Questions:
 # 1. Is there a relationship between the percentage of agricultural land and

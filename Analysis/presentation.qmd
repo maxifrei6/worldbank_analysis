@@ -15,8 +15,18 @@ execute:
 ---
 
 ```{r setup, include=FALSE}
-#source("env_setup.R")
+## YOU NEED TO RUN env_setup TO INSTALL ALL PACKAGES
+library(here)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(RColorBrewer)
+library(patchwork)
 
+# Load the dataset
+data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
+data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
+data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 ```
 
 ## Agenda
@@ -57,61 +67,98 @@ execute:
 -   **weiterer fachbegriff**: kurze Beschreibung
 :::
 
-## 2.1 Electricity and National Income (1/2) {.smaller}
+## 2.1 Elektrizität und nationales Einkommen (1/2) {.smaller}
 
-How does access to electricity correlate with adjusted net national income per capita across different countries?
+Wie korreliert der Zugang zu Elektrizität mit dem bereinigten Nettonationaleinkommen pro Kopf in verschiedenen Ländern?
 
-## 2.1 Electricity and National Income (2/2) {.smaller}
+## 2.1 Elektrizität und nationales Einkommen (2/2) {.smaller}
 
-Does this also depend on the country size or the inhabitants?
+Hängt dies auch von der Größe des Landes oder der Einwohnerzahl ab?
 
-## 2.2 Education (1/2) {.smaller}
+## 2.2 Bildung (1/2) {.smaller}
 
-Do countries with **higher central government debt (% of GDP)** have a **lower % of labor force with basic education**?
+Haben Länder mit **höherer Staatsverschuldung (in % des BIP)** einen **geringeren Anteil an Erwerbspersonen mit Grundbildung**?
 
 ```{r}
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-
-# Load the dataset
-data_merged <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_merged.RDS")
-data_grouped <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_grouped.RDS")
-data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
-
 # Faceted scatter plot: Debt vs Education by Income Level
 ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(alpha = 0.7, size = 3) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   facet_wrap(~ cat_income_level) +
   labs(
-    title = "Central Government Debt vs Labor Force with Basic Education by Income Level",
-    x = "Central Government Debt (% of GDP)",
-    y = "Labor Force with Basic Education (%)",
-    color = "Income Level"
+    title = "Verschuldung des Zentralstaats im Vergleich zur Erwerbsbevölkerung mit Grundbildung nach Einkommensniveau",
+    x = "Zentralstaatliche Verschuldung (% des BIP)",
+    y = "Erwerbstätige mit Grundbildung (%)",
+    color = "Einkommensniveau"
   ) +
   theme_minimal() +
   theme(strip.text = element_text(face = "bold"))
 ```
 
-## 2.2 Education (2/2) {.smaller}
 
-Are countries with higher percentage of labor force with basic education able to maintain **lower** pupil-teacher ratios, and what impact might this have on education quality?
+
+## 2.2 Bildung (2/3) {.smaller}
+
+```{r longitudinal_plot, fig.height=8, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+# Filter countries with more than 4 non-NA entries for SL.TLF.BASC.ZS
+data_filtered <- data_education %>%
+  filter(cat_income_level == "Medium") %>%
+  group_by(`Country Name`) %>%
+  filter(sum(!is.na(SL.TLF.BASC.ZS)) > 4) %>%  # Keep countries with more than 4 non-NA entries
+  ungroup()
+
+# Convert Year column to numeric
+data_filtered <- data_filtered %>%
+  mutate(Year = as.numeric(as.character(Year)))
+
+# Faceted line chart with subtle trend lines and simplified x-axis
+ggplot(data_filtered, 
+       aes(x = Year, y = SL.TLF.BASC.ZS, color = cat_population_size)) +
+  geom_line(aes(group = `Country Name`), alpha = 0.8, size = 0.7) +  # Line chart
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", size = 0.8, color = "grey50", alpha = 0.6) +  # Subtle trend line
+  facet_wrap(~ `Country Name`, scales = "free_y") +  # Facet by country
+  scale_x_continuous(breaks = seq(2000, 2020, 5)) +  # Simplify x-axis breaks
+  labs(
+    title = "Bildungstrends im Zeitverlauf nach Land (Länder mit mittlerem Einkommen und >4 Nicht-NA-Einträgen)",
+    x = "Jahr",
+    y = "Erwerbstätige mit Grundbildung (%)",
+    color = "Größe der Bevölkerung"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),  # Bigger and centered title
+    strip.text = element_text(size = 8, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+    legend.position = "bottom"
+  )
+
+```
+
+## 2.2 Bildung (3/3) {.smaller}
+
+Sind Länder mit einem höheren Prozentsatz an Erwerbstätigen mit Grundbildung in der Lage, eine **niedrigere** Schüler-Lehrer-Relation beizubehalten, und welche Auswirkungen könnte dies auf die Bildungsqualität haben?
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# Scatter plot: pupil-teacher ratios vs labor force with basic education
+ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  facet_wrap(~ cat_income_level) +
+  labs(
+    title = "Schüler-Lehrer-Verhältnis vs. Erwerbspersonen mit Grundbildung",
+    x = "Schüler-Lehrer-Relation",
+    y = "Erwerbspersonen mit Grundbildung (%)",
+    color = "Einkommensniveau"
+  ) +
+  theme_minimal()
+
+```
 
 ## 2.3 HIV (1/3) {.smaller}
 
-How does the **HIV prevalence in the population aged 15-49** relate to the **total alcohol consumption per capita**?
+Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren** zum **gesamten Alkoholkonsum pro Kopf**?
 
 ```{r}
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-
-# Load the dataset
-data_merged <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_merged.RDS")
-data_grouped <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_grouped.RDS")
 data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 data_hiv <- data_processed %>% 
   select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)
@@ -142,17 +189,9 @@ data_hiv %>%
 
 ## 2.3 HIV (2/3) {.smaller}
 
-Further analysis
+Weitere Analyse
 ```{r}
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(tidyr)
 
-# Load the dataset
-data_merged <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_merged.RDS")
-data_grouped <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_grouped.RDS")
-data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 data_hiv <- data_processed %>% 
   select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)
 
@@ -177,20 +216,10 @@ data_hiv %>%
 
 ## 2.3 HIV (3/3) {.smaller}
 
-Do countries with **higher percentage of labor force with basic education** have **lower HIV prevalence rates in the 15-49 population**? 
+Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**? 
 
 <<<<<<< HEAD
 ```{r}
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-
-# Load the dataset
-data_merged <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_merged.RDS")
-data_grouped <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_grouped.RDS")
-data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
-data_hiv <- data_processed %>% 
-  select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)
 
 data_hiv %>%
   group_by(cat_education) %>%
@@ -208,14 +237,12 @@ data_hiv %>%
 ```
 
 ## 2.4 Tabakkonsum (1/2) {.smaller}
->>>>>>> b0148bda1cd10436d14782eb05da10e736db5678
 
 In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen innerhalb eines Landes?
 
 ```{r tobacco_setup}
 # Load the dataset
-data_tobacco <- readRDS("Data/Processed/data_merged.RDS")
->>>>>>> b0148bda1cd10436d14782eb05da10e736db5678
+data_tobacco <- data_merged
 
 # Filter relevant columns Country Name, Country Code, Year, NY.GDP.PCAP.PP.KD and SH.PRV.SMOK 
 data_tobacco <- data_tobacco %>%
@@ -250,18 +277,7 @@ data_tobacco_normdensity <- data_tobacco_normdensity %>%
 ```
 
 ```{r}
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
 
-# Load the dataset
-data_merged <- readRDS(
-  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_merged.RDS"
-)
-data_grouped <- readRDS(
-  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_grouped.RDS"
-)
-data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 data_tob <- data_processed %>%
   select(`Country Name`,
          `Country Code`,
@@ -388,7 +404,7 @@ Gibt es einen Zusammenhang zwischen dem Anteil der landwirtschaftlichen Nutzflä
 
 ```{r agriculture_setup_and_plot1_scatter}
 # Load the processed "data_merged" dataset
-data_agriculture <- readRDS("Data/Processed/data_merged.RDS")
+data_agriculture<- data_merged
 
 # Filter relevant columns
 data_agriculture <- data_agriculture %>%
@@ -464,14 +480,8 @@ ggplot(data_agriculture_normd_long,
 
 Spielt hierbei die vollständige Landfläche des Landes eine Rolle?
 
-``` {r surface_setup_and_agriculture_plot3_groupfaceted}
-source("Scripts/functions.R")
-data_grouped <- readRDS("Data/Processed/data_pregrouped.RDS")
-data_grouped <- group_data(df = data_grouped,
-                               grouping_by = "AG.SRF.TOTL.K2",
-                               column_new = "surfaceArea",
-                               quantile_labels = c("Very Small", "Small", "Moderate", "Large", "Very Large"))
 
+``` {r surface_setup_and_agriculture_plot3_groupfaceted}
 data_surface <- left_join(data_agriculture, data_grouped, by = c("Country Name", "Country Code")) 
 data_surface <- data_surface %>%
   select(`Country Name`, `Country Code`, Year, AG.LND.AGRI.ZS, AG.SRF.TOTL.K2, EN.GHG.CO2.MT.CE.AR5, cat_surfaceArea)
@@ -512,6 +522,7 @@ ggplot(data_surface, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1)
         legend.title = element_text(hjust = 0.5)) +
   facet_wrap(~ data_surface$cat_surfaceArea)
 ```
+
 
 ## 2.5 Landwirtschaft (4/4) {.smaller}
 

@@ -1,16 +1,16 @@
+library(here)
 library(readxl)
 library(tidyr)
 library(dplyr)
 library(stringr)
 library(checkmate)
-source("Scripts/functions.R")
+source(here("Scripts", "functions.R"))
 
 
 ##############################################################################################################
-## processed data frame for everyone to work with 
-data_processed <- readRDS(
-  "Data/Processed/data_pregrouped.RDS"
-)
+# Load the preprocessed dataset using `here`
+data_processed <- readRDS(here("Data", "Processed", "data_pregrouped.RDS"))
+
 
 # 1. Grouping for the question regarding agriculture - by surface area:
 
@@ -63,6 +63,6 @@ data_grouped <- left_join(data_grouped_alc,
   left_join(data_grouped_pop_density, by = c("Country Name", "Country Code")) %>% 
   left_join(data_grouped_income_levels, by = c("Country Name", "Country Code"))
 
-# Save as RDS
-saveRDS(data_grouped, file = "Data/Processed/data_grouped.RDS")
+# Save the grouped data using `here`
+saveRDS(data_grouped, file = here("Data", "Processed", "data_grouped.RDS"))
 ##############################################################################################################

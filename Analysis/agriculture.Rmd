@@ -17,13 +17,13 @@ This analysis explores relationships between indicators across countries such as
 
 ```{r setup, echo = FALSE, message = FALSE}
 # Load libraries
+library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 
-# Load the processed "data_merged" dataset
-data_agriculture <- readRDS("/Users/rb.bllngr/Desktop/worldbank_analysis/Data/Processed/data_merged.RDS")
-################################### data_agriculture <- readRDS(normalizePath("Data/Processed/data_merged.RDS"))
+# Load the processed "data_merged" dataset using `here`
+data_agriculture <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 
 # Filter relevant columns
 data_agriculture <- data_agriculture %>%
@@ -243,7 +243,7 @@ country_order_by_surface <- data_agriculture %>%
 
 # Load libraries
 library(scales)
-library(ggradar)
+library(ggradar) # not available for some newer R versions
 
 # Radar chart for first overview of the interaction of the three variables - bounded by country barriers
 # set by the countries we are observing.
@@ -401,10 +401,12 @@ For this exploration, we want to distinguish our countries into the following gr
 # Load group dictionary
 ####################### 
 # TODO: Remove sourcing of funtions.R
-# TODO: Change the readRDS(...) loading to non-hardcode RDS file in Data/Processed
+# TODO: Change the readRDS(...) loading to non-hardcode RDS file in Data/Processed - DONE :)
 # TODO: Change grouping of data to read the correct RDS file from Processed instead of grouping here!
-source("/Users/rb.bllngr/Desktop/worldbank_analysis/Scripts/functions.R")
-data_grouped <- readRDS("/Users/rb.bllngr/Desktop/worldbank_analysis/Data/Processed/data_pregrouped.RDS")
+# Source the functions script using `here`
+source(here("Scripts", "functions.R"))
+# Load the grouped dataset using `here`
+data_grouped <- readRDS(here("Data", "Processed", "data_pregrouped.RDS"))
 data_grouped <- group_data(df = data_grouped,
                                grouping_by = "AG.SRF.TOTL.K2",
                                column_new = "surfaceArea",

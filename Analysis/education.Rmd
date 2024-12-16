@@ -16,13 +16,14 @@ This analysis explores relationships between indicators such as central governme
 <br>
 ```{r setup, message=FALSE, echo = FALSE}
 # Load necessary libraries
+library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 
 # Load the dataset
-data_merged <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_merged.RDS")
-data_grouped <- readRDS("/Users/maximilian/Desktop/wb_local/Data/Processed/data_grouped.RDS")
+data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
+data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
 data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 
 # Add new column 'decade' as an ordered factor

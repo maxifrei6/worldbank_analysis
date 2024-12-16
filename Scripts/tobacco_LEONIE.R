@@ -1,5 +1,5 @@
 # Tobacco_LEONIE
-
+library(here)
 library(dplyr)
 library(ggplot2)
 ## How does GDP per capita relate to the prevalence of current tobacco use
@@ -401,9 +401,9 @@ ggplot(tobacco_df, aes(`Country Name`, SH.PRV.SMOK)) +
 # grouping over quantiles to reach evenly distribution
 # Problem: Country has a large variance of alcohol consumption values over the years
 # -> grouping over average could be a problem!
-data_grouped_tob <- readRDS(
-  "C:/Users/Leonie/Documents/Studium/3. Semester/Statsoft/worldbank_analysis/Data/Processed/data_pregrouped.RDS"
-) %>%
+# Load the grouped tobacco dataset using `here`
+data_grouped_tob <- readRDS(here("Data", "Processed", "data_pregrouped.RDS")
+                            ) %>%
   select(`Country Name`,
          `Country Code`,
          `Series Name`,

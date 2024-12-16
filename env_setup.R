@@ -1,16 +1,32 @@
 ### Sourcing this file can help set up the environment needed for this project. ###
 
 ## Warning: The `interval` package requires supporting packages that do not belong
-## to CRAN. It may cause problem due to different R versions.
+## to CRAN. It may cause problems due to different R versions.
 ## In the project, we use R 4.4.1.
 
-## If problems with installing Icens and Interval occur, please check R version.
+# Install and load the `devtools` package
+if (!require("devtools")) install.packages("devtools")
+library(devtools)
 
-# Setting working directory
-install.packages("rstudioapi")
-setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+# List of GitHub packages
+github_packages <- list(
+  "cran/Icens" = "Icens"           # Icens package from GitHub
+)
 
-# Loading necessary packages
+# Install or update GitHub packages
+for (repo in names(github_packages)) {
+  pkg <- github_packages[[repo]]
+  
+  # Check if the package is installed
+  if (!require(pkg, character.only = TRUE)) {
+    message(paste("Installing GitHub package:", pkg))
+    devtools::install_github(repo, upgrade = "always")
+    library(pkg, character.only = TRUE)
+  }
+}
+
+
+# List of CRAN packages
 packages <- c("readxl",  # for reading .xlsx files
               "tidyr",
               "dplyr",
@@ -23,7 +39,6 @@ packages <- c("readxl",  # for reading .xlsx files
               "rnaturalearth",  # for worldmap design
               "rnaturalearthdata",  # for worldmap design
               "sf",  # for worldmap design
-              "devtools",  # for loading packages outside of CRAN, e.g. GitHub
               "pROC",
               "rpart",
               "survival",
@@ -41,42 +56,38 @@ packages <- c("readxl",  # for reading .xlsx files
               "icenReg",
               "interval",
               "scales",  # for rescaling data to percentage scale within data barriers
-              "ggthemes") ## add more packages if needed
+              "ggthemes",
+              "ggradar",
+              "here") ## add more packages if needed
 
+# Install CRAN packages if missing
 for (pkg in packages) {
   if (!require(pkg, character.only = TRUE)) {
-    install.packages(pkg)
+    message(paste("Installing CRAN package:", pkg))
+    install.packages(pkg, dependencies = TRUE)
     library(pkg, character.only = TRUE)
   }
 }
 
-##########################################################################################################
-# TODO: HOW TO HANDLE MASS AND GRID AS THEY ARE BASE PACKAGE BUT HAVE TO BE LOADED - IN THE RMDs DIRECTLY?
-##########################################################################################################
-# TODO: HOW TO LOAD devtools::install_github("ricardo-bion/ggradar") AS IT COMES FROM GITHUB?
-##########################################################################################################
+# Set project root and load data
+library(here)
+message("Project root directory set by `here()`: ", here())
 
-# Loading data
-folder_path <- "Data/Processed/"
+folder_path <- here("Data", "Processed")  # Relative path to the data folder
 rds_files <- list.files(path = folder_path, pattern = ".RDS$", full.names = TRUE, ignore.case = TRUE)
+
 for (file in rds_files) {
   var_name <- gsub(".RDS", "", file, ignore.case = TRUE)
-  var_name <- gsub("Data/Processed/", "", var_name)
+  var_name <- gsub(paste0(folder_path, "/"), "", var_name)
   data <- readRDS(file)
   assign(var_name, data)
 }
 
-# If variables named with "/" at first, which often occurs for Mac users, rename them
-for (var in ls()) {
-  if (str_detect(var, "/")) {
-    new_var <- gsub("/", "", var)
-    assign(new_var, get(var))
-    rm(var)
-  }
-}
+# Source project functions using `here()`
+source(here("Scripts", "functions.R"))
 
-# Remove unnecessary variables
-rm(folder_path, rds_files, file, var_name, data, pkg, packages)
+# Clean up unnecessary variables
+rm(folder_path, rds_files, file, var_name, data, pkg, packages, github_packages, repo)
 
-# Source functions
-source("Scripts/functions.R")
+# Inform the user to restart R if needed
+message("If you experience any issues with loaded packages, please restart R and re-run this script.")

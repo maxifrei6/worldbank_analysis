@@ -15,16 +15,18 @@
 # Final steps 
   # Save cleaned datasets for future use
 
+library(here)
 library(readxl)
 library(tidyr)
 library(dplyr)
 library(stringr)
 library(checkmate)
-source("Scripts/functions.R")
+source(here("Scripts", "functions.R"))
 
-# Read the csv files from Data/Raw folder
-data_geo <- read.csv("Data/Raw/Worldbank2.csv", header = TRUE, sep = ",", na.strings = "")
-data_co2 <- read.csv("Data/Raw/Co2_emi_WB.csv", header = TRUE, sep = ";", na.strings = "")
+# Read the CSV files using 'here' for relative paths
+data_geo <- read.csv(here("Data", "Raw", "Worldbank2.csv"), header = TRUE, sep = ",", na.strings = "")
+data_co2 <- read.csv(here("Data", "Raw", "Co2_emi_WB.csv"), header = TRUE, sep = ";", na.strings = "")
+
 
 ###################################################################################################################
 #################### NEW WAY TO READ IN AND FORMAT THE CO2 EMISSIONS FROM 2024-12-09 ONWARDS: #####################
@@ -65,8 +67,8 @@ str(data_geo)
 str(data_co2)
 head(data_co2)
 
-# Read the xlsx file from Data/Raw folder
-data_sociometrics <- read_excel("Data/Raw/Worldbank1.xlsx", sheet = 1, col_names = TRUE, na = "..")
+# Read the xlsx file using `here`
+data_sociometrics <- read_excel(here("Data", "Raw", "Worldbank1.xlsx"), sheet = 1, col_names = TRUE, na = "..")
 
 # TODO: create dictionary/list from sheet 2 to match abbreviated metrics with description
 
@@ -119,7 +121,9 @@ str(data_co2)
 
 # Create and save RDS before deleting averages
 data_pregrouped <- full_join(data_geo, data_sociometrics, by = colnames(data_geo))
-saveRDS(data_pregrouped, file = "Data/Processed/data_pregrouped.RDS")
+
+# Save the dataset using `here`
+saveRDS(data_pregrouped, file = here("Data", "Processed", "data_pregrouped.RDS"))
 
 # Delete column "average" and "Series Name" to avoid data type issues
 data_geo <- data_geo %>%
@@ -161,5 +165,5 @@ data_merged <- data_merged %>%
     values_from = Value
   )
 
-# Save the merged dataset for future use in the processed data directory
-saveRDS(data_merged, file = "Data/Processed/data_merged.RDS")
+# Save the merged dataset using `here` for the file path
+saveRDS(data_merged, file = here("Data", "Processed", "data_merged.RDS"))
