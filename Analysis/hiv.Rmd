@@ -14,13 +14,14 @@ This analysis explores relationships of HIV prevalence in the population aged 15
 <br>
 ```{r setup, message = FALSE, echo = FALSE, warning = FALSE}
 # Load necessary libraries
+library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 
 # Load the dataset
-data_merged <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_merged.RDS")
-data_grouped <- readRDS("C:\\Users\\Leonie\\Documents\\Studium\\3. Semester\\StatSoft\\worldbank_analysis\\Data\\Processed\\data_grouped.RDS")
+data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
+data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
 data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 data_hiv <- data_processed %>% 
   select(`Country Name`, `Country Code`, Year, SH.DYN.AIDS.ZS, SH.ALC.PCAP.LI, SL.TLF.BASC.ZS, cat_alc, cat_education)

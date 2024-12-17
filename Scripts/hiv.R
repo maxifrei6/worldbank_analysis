@@ -1,5 +1,5 @@
 # HIV
-
+library(here)
 library(dplyr)
 library(ggplot2)
 
@@ -433,9 +433,7 @@ ggplot(hiv_df, aes(Year, SH.DYN.AIDS.ZS / SL.TLF.BASC.ZS)) +
 # grouping over quantiles to reach evenly distribution
 # Problem: Country has a large variance of alcohol consumption values
 # -> grouping over average could be a problem!
-data_grouped_hiv <- readRDS(
-  "Data/Processed/data_pregrouped.RDS"
-) %>%
+data_grouped_hiv <- readRDS(here("Data", "Processed", "data_pregrouped.RDS")) %>%
   select(`Country Name`,
          `Country Code`,
          `Series Name`,

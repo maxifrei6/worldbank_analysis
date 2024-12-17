@@ -1,5 +1,6 @@
-# Load the merged dataset
-data_indicators <- readRDS("Data/Processed/data_merged.RDS")
+library(here)
+# Load the processed "data_merged" dataset using `here`
+data_indicators <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 
 # Calculate the mean for every indicator for each country and rescale the mean on a zero to 100 %
 # scale relative between all countries' values
