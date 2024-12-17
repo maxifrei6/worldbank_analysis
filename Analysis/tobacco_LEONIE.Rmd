@@ -157,3 +157,22 @@ data_tob %>%
   ) +
   scale_colour_brewer(palette = "Set2")
 ```
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  group_by(cat_tob_usage) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    x = "relativer Tabakkonsum",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP"
+  )
+```
+1. dotplot nach jahr faccettiert. x: tabak, y: bip
+2. barplot faccetiert nach jahr, x: jedes jahr neu gruppiert nach tabak und dann bip geplottet
+3 verhältnis
