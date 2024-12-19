@@ -133,7 +133,10 @@ data_tobacco_normdensity <- data_tobacco_normdensity %>%
 ### Idea 1.4: Scatter plot of relationship of interested variables faceted years with density curves
 # Plot the upper row of the data points for the assembled tobacco plotting
 plot_tobacco1_data_upper <- ggplot(data_tobacco %>% filter(Year %in% c(2000, 2005, 2010))) +
-  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +  
+  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +
+  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010)),
+              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+              method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +
   ggtitle("Zusammenhang zwischen der Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(), limits = c(0, 60)) +
@@ -150,6 +153,9 @@ plot_tobacco1_data_upper <- ggplot(data_tobacco %>% filter(Year %in% c(2000, 200
 # Plot the bottom row of the data points for the assembled tobacco plotting
 plot_tobacco1_data_bottom <- ggplot(data_tobacco %>% filter(Year %in% c(2018, 2019, 2020))) +
   geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +
+  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
+              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+              method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]", breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(), limits = c(0, 60)) +
   scale_y_continuous(name = "BIP pro Kopf [$]", breaks = c(0, 25000, 50000, 75000, 100000, 125000),
