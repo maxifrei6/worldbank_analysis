@@ -1,4 +1,6 @@
 library(here)
+library(scales)
+
 # Load the processed "data_merged" dataset using `here`
 data_indicators <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 
@@ -12,30 +14,6 @@ data_indicators <- data_indicators %>%
 # Pivot the data to long format with the different indicators in one column
 data_indicators <- data_indicators %>%
   pivot_longer(cols = -`Country Name`, names_to = "Indicator", values_to = "Value")
-
-# Change the Country Names to German - if necessary - for plot visualization
-countryName_mapping <- c("Bangladesh" = "Bangladesch",
-                         "Bolivia" = "Bolivien",
-                         "Brazil" = "Brasilien",
-                         "Cambodia" = "Kambodscha",
-                         "Chad" = "Tschad",
-                         "Czechia" = "Tschechien",
-                         "Finland" = "Finnland",
-                         "India" = "Indien",
-                         "Kazakhstan" = "Kasachstan",
-                         "New Zealand" = "Neuseeland",
-                         "Qatar" = "Katar",
-                         "Russian Federation" = "Russland",
-                         "Tanzania" = "Tansania",
-                         "United Kingdom" = "Vereinigtes\nKönigreich",
-                         "United States" = "USA",
-                         "Viet Nam" = "Vietnam")
-data_indicators$`Country Name` <- ifelse(data_indicators$`Country Name` %in% names(countryName_mapping),
-                                         countryName_mapping[data_indicators$`Country Name`],
-                                         data_indicators$`Country Name`)
-
-# Sort the rows alphabetically according to the countries' names again
-data_indicators <- data_indicators %>% arrange(`Country Name`)
 
 # Prepare the data for radar chart plotting by spreading countries over columns
 data_indicators <- data_indicators %>%
