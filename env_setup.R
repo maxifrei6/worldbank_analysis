@@ -28,14 +28,14 @@ for (repo in names(github_packages)) {
 
 # List of CRAN packages
 packages <- c("readxl",  # for reading .xlsx files
-              "tidyr",
-              "dplyr",
+              "tidyr",  # for pivoting data frames
+              "dplyr",  # for cleansing purposes
               "stringr",
-              "checkmate",
+              "checkmate",  # for input validation checks
               "lubridate",
-              "ggplot2",
+              "ggplot2",  # for plotting
               "purrr",
-              "knitr",
+              "knitr",  # for globally setting up .html knitting
               "rnaturalearth",  # for worldmap design
               "rnaturalearthdata",  # for worldmap design
               "sf",  # for worldmap design
@@ -55,9 +55,9 @@ packages <- c("readxl",  # for reading .xlsx files
               "RColorBrewer",  # for colorblind-friendly visualizations
               "icenReg",
               "interval",
-              "scales",  # for rescaling data to percentage scale within data barriers
+              "scales",  # for re-scaling data to percentage scale within data barriers
               "ggthemes",
-              "ggradar",
+              "ggradar",  # for radar charts - TODO: GITHUB CONNECTION TO RICARDO BION FOR DOWNLOAD
               "here") ## add more packages if needed
 
 # Install CRAN packages if missing
