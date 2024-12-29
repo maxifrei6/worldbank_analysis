@@ -39,6 +39,7 @@ packages <- c("readxl",  # for reading .xlsx files
               "rnaturalearth",  # for worldmap design
               "rnaturalearthdata",  # for worldmap design
               "sf",  # for worldmap design
+              "grid",  # for axis labeling of assembled plots
               "pROC",
               "rpart",
               "survival",
