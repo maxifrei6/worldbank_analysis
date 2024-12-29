@@ -7,17 +7,15 @@ library(checkmate)
 source(here("Scripts", "functions.R"))
 
 
-##############################################################################################################
-# Load the preprocessed dataset using `here`
+# Load the pre-processed data set using `here`
 data_processed <- readRDS(here("Data", "Processed", "data_pregrouped.RDS"))
 
 
 # 1. Grouping for the question regarding agriculture - by surface area:
-
 data_grouped_agr <- group_data(df = data_processed,
                                grouping_by = "AG.SRF.TOTL.K2",
-                               column_new = "surfaceArea",
-                               quantile_labels = c("Very Small", "Small", "Moderate", "Large", "Very Large"))
+                               column_new = "surface_area",
+                               quantile_labels = c("Sehr Klein", "Klein", "Mittel", "Groß", "Sehr Groß"))
 
 # 2. Relevant for HIV evaluation
 # 2.1 Grouping by alcohol consumption 
@@ -49,11 +47,9 @@ data_grouped_income_levels <- group_data(df = data_processed, grouping_by = "NY.
                                column_new = "income_level", quantile_labels = 
                                  c("Low", "Medium", "High"))
 
+# TODO: GROUPING ACCORDING TO/REGARDING ELECTRICITY
+
 # Merge all groups
-# TODO: all data groupings merge in one session with electricity, education, hiv, tobacco and agriculture. 
-
-
-# merge all groups
 data_grouped <- left_join(data_grouped_alc,
                           data_grouped_edu,
                           by = c("Country Name", "Country Code")) %>%
@@ -65,4 +61,3 @@ data_grouped <- left_join(data_grouped_alc,
 
 # Save the grouped data using `here`
 saveRDS(data_grouped, file = here("Data", "Processed", "data_grouped.RDS"))
-##############################################################################################################
