@@ -3,18 +3,18 @@ title: "Worldbank Agriculture Analysis"
 author: "Robin Billinger"
 date: "`r Sys.Date()`"
 output:
+  pdf_document: default
   html_document:
     self-contained: true
     clean: true
-  pdf_document: default
 ---
 
 ## Introduction
-This analysis explores relationships between indicators across countries such as percentage of agricultural land, CO2 emissions per capita, and size of surface area using World Bank data. It is divided into two main parts:  
-
+This analysis explores relationships between indicators across countries such as percentage of agricultural land, CO2 emissions per capita, and size of surface area using World Bank data. It is divided into two main parts, with this script focusing on the first question. For further observation of the second question, refer to the file 'Analysis/agriculture.Rmd'.
+<br><br>
 1. Is there a relationship between the **percentage of agricultural land** and **CO2 emissions per capita** across countries?
 <br><br>
-2. Does the **size of the surface area** of the country play a role?
+2. Does the size of the surface area of the country play a role?
 <br>
 
 ```{r setup, echo = FALSE, message = FALSE}
@@ -38,6 +38,9 @@ data_agriculture <- data_agriculture %>%
 
 # Convert column `Year` to data type Integer
 data_agriculture$Year <- as.integer(data_agriculture$Year)
+
+# Save the agriculture data set using 'here' for the file path.
+saveRDS(data_agriculture, file = here("Data", "Processed", "data_agriculture.RDS"))
 
 # Save the ascending order of average agricultural land [%] by country
 country_order_by_agrLand <- data_agriculture %>%
@@ -66,7 +69,7 @@ ggplot(data_agriculture, aes(x = factor(Year), y = factor(`Country Name`, levels
   ggtitle("CO2 Emissionen pro Kopf nach Ländern") +
   scale_x_discrete(name = "Jahr", breaks = seq(2000, 2021, by = 1)) +
   scale_y_discrete(name = "Land") +
-  scale_fill_viridis_c(option = "plasma", name = "Logarithmierte CO2 Emissionen\npro Kopf [Mt]",
+  scale_fill_viridis_c(option = "plasma", name = "CO2 Emissionen pro Kopf\n[Mt] (Log10)",
                        direction = -1,
                        breaks = log10(c(0, 10, 100, 1000, 10000) + 1),
                        labels = c("0", "10", "100", "1.000", "10.000")) +
@@ -91,8 +94,8 @@ It appears that occasionally there are immense differences within countries' val
 ggplot(data_agriculture,
        aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = factor(`Country Name`, levels = country_order_by_CO2variance))) +
   geom_boxplot() +
-  ggtitle("Streuungszerlegung der CO2 Emissionen\npro Kopf bezüglich Ländern") +
-  scale_x_continuous(name = "Logarithmierte CO2 Emissionen pro Kopf [Mt]",
+  ggtitle("Streuungszerlegung der CO2 Emissionen pro Kopf bezüglich Ländern") +
+  scale_x_continuous(name = "CO2 Emissionen pro Kopf [Mt] (Log10)",
                      breaks = log10(c(0, 10, 100, 1000, 10000) + 1),
                      labels = c("0", "10", "100", "1.000", "10.000")) +
   scale_y_discrete(name = "Land") +
@@ -113,95 +116,103 @@ The CO2 emissions have high variance within the countries. Simultaneously, there
 <br>
 Furthermore, the distribution of the percentage of agricultural land delivers the following information.
 
-```{r agricultural land, echo = FALSE, warning = FALSE, message = FALSE}
-# Country-facetted line plot displaying the development of agricultural land [%] ordered by ascending mean [%]
+```{r faceted_line_agrLand, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+# Country-faceted line plot displaying the development of agricultural land [%] ordered by ascending mean [%]
 ggplot(data_agriculture, aes(x = Year, y = AG.LND.AGRI.ZS)) +
   geom_line() +  
   ggtitle("Landwirtschaftliche Nutzfläche nach Ländern") +
+  scale_x_continuous(name = "Jahr", breaks = seq(2000, 2020, by = 5),
+                     minor_breaks = seq(2000, 2021, by = 1)) +
+  scale_y_continuous(name = "Landwirtschaftliche Nutzfläche [%]",
+                     limits = c(0, 100)) +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5),
+  theme(axis.text.x = element_text(hjust = 0.5),
         legend.position = "bottom",
         legend.title = element_text(hjust = 0.5),
         legend.title.position = "left",
         legend.direction = "horizontal",
-        axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels
-  labs(x = "Jahr", y = "Anteil [%]") +
-  facet_wrap(~ factor(data_agriculture$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
+        plot.title = element_text(hjust = 0.5)) +
+  facet_wrap(~ factor(data_agriculture$`Country Name`,
+                      levels = country_order_by_agrLand), ncol = 5)
 
 # Get an overview over the agriculture data
-cat("\n", "\n")
 summary(data_agriculture$AG.LND.AGRI.ZS)
-cat("\n", "\n")
+```
+<br>
 
+``` {r boxplot_agrLand, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
 # Compute the between-country variance in CO2 emissions
-data_agriculture_variance_between_agrLand <- var(data_agriculture %>%
-                                                    group_by(`Country Name`) %>%
-                                                    summarise(Average_agrLand = mean(AG.LND.AGRI.ZS)) %>%
-                                                    select(Average_agrLand))
+data_agriculture_variance_between_agrLand <-
+  var(data_agriculture %>%
+        group_by(`Country Name`) %>%
+        summarise(Average_agrLand = mean(AG.LND.AGRI.ZS)) %>%
+        select(Average_agrLand))
 
-# Create boxplots for within-country variances (vertical reference line showing the between-country variance)
+# Create boxplots for within-country variances
 ggplot(data_agriculture,
        aes(x = AG.LND.AGRI.ZS, y = factor(`Country Name`, levels = country_order_by_agrLand))) +
   geom_boxplot() +
-  # geom_vline(xintercept = data_agriculture_variance_between_agrLand,
-  #           color = "black", linetype = "dashed", size = 1.2) +  # Between-country variance
-  labs(title = "Streuungszerlegung der landwirtschaftlichen Nutzfläche bezüglich Ländern",
-       x = "Landwirtschaftliche Nutzfläche [%]", y = "Land") +
+  ggtitle("Streuungszerlegung der landwirtschaftlichen Nutzfläche bezüglich Ländern") +
+  scale_x_continuous(name = "Landwirtschaftliche Nutzfläche [%]") +
+  scale_y_discrete(name = "Land") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
 
 cat("Streuung zwischen den Ländern: ", data_agriculture_variance_between_agrLand)
-
 ```
 <br> 
 In contrast to the CO2 emissions, the percentages of agricultural land have rather low variance within the countries. However, there are recognizable deviations between the countries, spanning from only five to up to eighty percent. As we operate on a capped percentage scale though, comparisons should be possible quite well.
-<br>
-Moving on, we want to bring those two variables back together. For this purpose, analyzing the distribution of the collected data while disregarding the country-specific origin gives us this cloud of data points. Note, that the CO2 emissions are displayed logarithmic to counter the expansive value disparity in the data.
+<br> <br>
+Moving on, we want to bring those two variables back together. For this purpose, analyzing the distribution of the collected data while disregarding the country-specific origin gives us the following cloud of data points. Note, that the CO2 emissions are displayed logarithmic to counter the expansive value disparity in the data.
 
-```{r scatterplot initial position, echo = FALSE, warning = FALSE, message = FALSE}
-# Initial comparison via scatterplot of agricultural land [%] and CO2 emissions per capita [mt]
-ggplot(data_agriculture, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
+```{r scatter_agrLand_co2, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+# Initial comparison via scatter plot of agricultural land [%] and CO2 emissions per capita [Mt]
+ggplot(data_agriculture, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
   geom_point(alpha = .3, size = 2.5) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
-  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
-       x = "Landwirtschaftliche Nutzfläche [%]", y = "Logarithmierte CO2 Emissionen pro Kopf [Mt]") +
-  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
-  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
-  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
-  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
-  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
+  ggtitle("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche") +
+  scale_x_continuous(name = "CO2 Emissionen pro Kopf [Mt] (Log10)",
+                     breaks = log10(c(0, 10, 100, 1000, 10000) + 1),
+                     labels = c("0", "10", "100", "1.000", "10.000")) +
+  scale_y_continuous(name = "Landwirtschaftliche Nutzfläche [%]") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 <br>
-We can recognize a slightly positive linear trend between the variables. However, the development over time and the country-specification of observations are completely ignored. In order to take those factors back into consideration, we first distinguish among the countries by facetting our visualization for an in depth comparison of the indicators for each country over time.
+We can recognize a slightly positive linear trend between the variables. However, the development over time and the country-specification of observations are completely ignored. In order to take those factors back into consideration, we first distinguish among the countries by faceting our visualization for an in-depth comparison of the indicators for each country over time.
+<br>
 
-```{r faceted scatterplot logarithmic, echo = FALSE, warning = FALSE, message = FALSE}
-# Logarithmic CO2 emissions by country, average agricultural land [%] for color and facetting order
+```{r faceted_scatter_agrLand_co2, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+# Logarithmic CO2 emissions by country, average agricultural land [%] for color and faceting order
 ggplot(data_agriculture, aes(x = Year, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
   geom_point(aes(fill = AG.LND.AGRI.ZS), size = 2.5, shape = 21, stroke = 0.5) +
-  scale_fill_viridis_c(option = "plasma", direction = -1, name = "Landwirtschaftliche Nutzfläche [%]") +
-  # scale_color_distiller(name = "Landwirtschaftliche Nutzfläche [%]",
-  #                       palette = "Oranges",
-  #                       direction = 1,
-  #                       breaks = c(0, 20, 40, 60, 80, 100),
-  #                       labels = c("0", "20", "40", "60", "80", "100")) +
-  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche nach Ländern",
-       x = "Jahr", y = "Logarithmierte CO2 Emissionen pro Kopf [Mt]") +
+  ggtitle("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche nach Ländern") +
+  scale_x_continuous(name = "Jahr", breaks = seq(2000, 2020, by = 5),
+                     minor_breaks = seq(2000, 2021, by = 1)) +
+  scale_y_continuous(name = "CO2 Emissionen pro Kopf [Mt] (Log10)",
+                     breaks = log10(c(0, 10, 100, 1000, 10000) + 1),
+                     labels = c("0", "10", "100", "1.000", "10.000")) +
+  scale_fill_viridis_c(name = "Landwirtschaftliche Nutzfläche [%]",
+                       direction = -1, option = "plasma") +
   theme_bw() +
-  theme(legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.background = element_rect(fill = "white")) +  # Change the color for better contrast?
-  facet_wrap(~ factor(data_agriculture$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
+  theme(axis.text.x = element_text(hjust = 0.5),
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        legend.title.position = "left", 
+        legend.title = element_text(hjust = 0.5, vjust = 0.8),
+        plot.title = element_text(hjust = 0.5)) +
+  facet_wrap(~ factor(data_agriculture$`Country Name`,
+                      levels = country_order_by_agrLand), ncol = 5)
 ```
-<br> 
-The in ascending percentage of agricultural land sorted facets show no obvious connection between the two indicators, as the CO2 emissions are developing quite arbitrarily regardless of the associated percentage of agricultural land.
+<br>
+The chosen format of the scatter plot instead of line visualization attempts to counter the false entries for CO2 emissions, as for lines the error-caused outliers are displayed in a more extreme way leading us to scatters instead.
+<br> <br>
+However, the in ascending percentage of agricultural land sorted facets show no obvious connection between the two indicators, as the CO2 emissions are developing quite arbitrarily regardless of the associated percentage of agricultural land.
 <br>
 To dig even further, we now adjust the data by normalizing the CO2 emissions within each country, letting us investigate relative changes on the same scale as the agricultural land.
 
-```{r faceted scatterplot normalized, echo = FALSE, warning = FALSE, message = FALSE}
-# Normalize variable CO2 emissions to same scale as agricultural land [%]
+```{r faceted_normd_scatter_agrLand_co2, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+# (Min; Max)-normalize variable CO2 emissions to same scale as agricultural land [%]
 data_agriculture_normd <- data_agriculture %>%
   group_by(`Country Name`) %>%
   mutate(
@@ -211,9 +222,10 @@ data_agriculture_normd <- data_agriculture %>%
   ) %>%
   ungroup()
 
-# Pivot normalized data_agriculture dataset to longer format for better visualization of two variables
+# Pivot normalized data_agriculture data set to longer format for better visualization of two variables
 data_agriculture_normd_long <- data_agriculture_normd %>%
-  pivot_longer(cols = c(co2_normd, AG.LND.AGRI.ZS), names_to = "variable", values_to = "value") %>%
+  pivot_longer(cols = c(co2_normd, AG.LND.AGRI.ZS),
+               names_to = "variable", values_to = "value") %>%
   mutate(value = case_when(
     variable == "co2_normd" ~ value * 100,  # used for [%] comparison
     variable == "AG.LND.AGRI.ZS" ~ value))
@@ -221,374 +233,25 @@ data_agriculture_normd_long <- data_agriculture_normd %>%
 # Plotting with normalized data over time for each country
 ggplot(data_agriculture_normd_long,
        aes(x = Year, y = value, group = interaction(`Country Name`, variable))) +
-  geom_point(aes(fill = variable), alpha = 0.75, size = 2.5, shape = 21, stroke = 0.5) +  # or geom_line? (And is geom_line overdramatizing the (wrong?) outliers in CO2 emissions?)
-  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche nach Ländern",
-       x = "Jahr", y = "Anteil [%]", fill = "") +
-  scale_fill_brewer(palette = "Set2",  # Colorblind-friendly palette
-                     labels = c("Landwirtschaftliche Nutzfläche [%]",
-                                "(Min, Max)-normalisierte CO2 Emissionen pro Kopf [%]")) +
-  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
-                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
+  geom_point(aes(fill = variable), alpha = 0.75, size = 2.5, shape = 21, stroke = 0.5) +
+  ggtitle("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche nach Ländern") +
+  scale_x_continuous(name = "Jahr", breaks = seq(2000, 2020, by = 5),
+                     minor_breaks = seq(2000, 2021, by = 1)) +
+  scale_y_continuous(name = "Anteil [%]", limits = c(0, 100)) +
+  scale_fill_brewer(name = "", palette = "Set2",  # Colorblind-friendly palette
+                    labels = c("Landwirtschaftliche Nutzfläche [%]",
+                               "(Min; Max)-normalisierte CO2 Emissionen pro Kopf [%]")) +
   theme_bw() +
-  theme(legend.position = "bottom",
-        legend.text = element_text(size = 12),
-        plot.title = element_text(hjust = 0.5),
+  theme(axis.text.x = element_text(hjust = 0.5),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(hjust = 0.5)) +
-  facet_wrap(~ factor(data_agriculture_normd_long$`Country Name`, levels = country_order_by_agrLand), ncol = 5)
-
-```
-<br> 
-As we can see, there seems to be no direct relationship between the countries' percentage of agricultural land and their CO2 emissions per capita. 
-
-### 2. Influence of surface area on previous relationship
-However, one further aspect that might change that non-relationship is the introduction of another variable to take into account, namely the countries' surface areas.
-
-```{r setup surface area, echo = FALSE, warning = FALSE, message = FALSE}
-# Save the ascending order of average surface area
-country_order_by_surface <- data_agriculture %>%
-  group_by(`Country Name`) %>%
-  summarise(avg_AG.SRF.TOTL.K2 = mean(AG.SRF.TOTL.K2)) %>%
-  arrange(avg_AG.SRF.TOTL.K2) %>%
-  pull(`Country Name`)
-
-# Load libraries
-library(scales)
-library(ggradar) # not available for some newer R versions
-
-# Radar chart for first overview of the interaction of the three variables - bounded by country barriers
-# set by the countries we are observing.
-data_agriculture_radar <- data_agriculture %>%
-  mutate(EN.GHG.CO2.MT.CE.AR5 = log10(EN.GHG.CO2.MT.CE.AR5 + 1)) %>%
-  rename(log10_EN.GHG.CO2.MT.CE.AR5 = EN.GHG.CO2.MT.CE.AR5)
-
-data_agriculture_radar <- data_agriculture_radar %>%
-  group_by(`Country Name`) %>%
-  summarize(across(matches("\\."), \(x) mean(x, na.rm = TRUE))) %>%
-  mutate(across(matches("\\."), rescale))
-
-data_agriculture_radar <- data_agriculture_radar %>%
-  pivot_longer(cols = matches("\\."), names_to = "Indicator", values_to = "Value") %>%
-  pivot_wider(names_from = `Country Name`, values_from = Value)
-
-ggradar(data_agriculture_radar,
-        axis.label.size = 3,
-        grid.label.size = 4,
-        gridline.min.colour = "black",
-        gridline.mid.colour = "black",
-        gridline.max.colour = "black",
-        group.line.width = 1,
-        group.point.size = 2) +
-  ggtitle("Indikatordaten im Zeitraum 2000 bis 2021",
-          subtitle = "Mittlere Indikatordaten pro Land pro Indikator") +
-  theme_minimal() +
-  scale_color_brewer(name = "Indikatoren\n(auf 0-100 % der beobachteten Länder)",
-                     palette = "Set2",
-                     labels = c("AG.SRF.TOTL.K2" = "Landfläche",
-                                "AG.LND.AGRI.ZS" = "Landwirtschaftliche Nutzfläche",
-                                "log10_EN.GHG.CO2.MT.CE.AR5" = "Logarithmierte CO2-Emissionen pro Kopf")) +
-  theme(axis.text = element_blank(),
-        legend.position = "right",
-        legend.title = element_text(hjust = 0.5),
-        legend.title.position = "top",
-        panel.grid = element_blank())
-
-# Lineplot to get an overview of the surface area development within each country over time
-ggplot(data_agriculture, aes(x = Year, y = AG.SRF.TOTL.K2)) +
-  geom_line() +
-  labs(title = "Landfläche nach Ländern",
-       x = "Jahr", y = expression(Landfläche ~ "[" ~ km^2 ~ "]")) +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5)) + 
-  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surface), scales = "free_y")
-```
-<br> 
-As we can see, there are several countries with no changes in surface area throughout the interested timespan at all. Therefore, before heading forward, we first want to zoom in on those with changes a little closer.
-
-```{r surface area changeless countries, echo = FALSE, warning = FALSE, message = FALSE}
-# Check in how many and which countries there is any change in surface area throughout the interested timespan
-AG.SRF.TOTL.K2_countriesWithChange <- data_agriculture %>%
-  group_by(`Country Name`) %>%
-  summarize(noChange = all(AG.SRF.TOTL.K2 == AG.SRF.TOTL.K2[[1]])) %>%
-  filter(!noChange) %>%
-  pull(`Country Name`)
-cat("Anzahl der Länder ohne Veränderungen: ", length(AG.SRF.TOTL.K2_countriesWithChange))
-
-# Filter the data for only countries with changes in surface area
-data_agriculture_surfaceChange <- data_agriculture %>%
-  filter(`Country Name` %in% AG.SRF.TOTL.K2_countriesWithChange) %>%
-  select(`Country Name`, `Country Code`, Year, AG.SRF.TOTL.K2)
-```
-<br>
-
-```{r surface area changing countries: absolute, echo = FALSE, warning = FALSE, message = FALSE}
-# Investigate the absolute and relative changes for those countries from year to year
-data_agriculture_surfaceChange <- data_agriculture_surfaceChange %>%
-  arrange(`Country Name`, Year) %>%  # Ensure data is ordered by Country and Year
-  group_by(`Country Name`) %>%
-  mutate(Change = AG.SRF.TOTL.K2 - lag(AG.SRF.TOTL.K2),  # Changes
-         Change = ifelse(is.na(Change), 0, Change),  # Replace NAs for change from 1999 to 2000 with 0
-         absChange = abs(AG.SRF.TOTL.K2 - lag(AG.SRF.TOTL.K2)),  # Absolute Changes
-         absChange = ifelse(is.na(absChange), 0, absChange),  # Replace NAs for change from 1999 to 2000 with 0
-         relChange = ((AG.SRF.TOTL.K2 - lag(AG.SRF.TOTL.K2)) / lag(AG.SRF.TOTL.K2)) * 100,  # Relative changes [%]
-         relChange = ifelse(is.na(relChange), 0, relChange))  # Replace NAs for change from 1999 to 2000 with 0 %
-
-# Save the ascending order of average absolute change in surface area
-country_order_by_surfaceAbs <- data_agriculture_surfaceChange %>%
-  group_by(`Country Name`) %>%
-  summarise(avg_absChange = mean(absChange)) %>%
-  arrange(avg_absChange) %>%
-  pull(`Country Name`)
-
-# Plot the changes in surface area for comparison between countries in order of ascending absolute changes
-ggplot(data_agriculture_surfaceChange, aes(x = Year)) +
-  geom_bar(aes(y = Change, fill = Change < 0), stat = "identity") +
-  scale_fill_brewer(palette = "Set2", guide = "none") +  # Custom colors
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(title = "Landfläche in Ländern mit Veränderungen zwischen 2000 und 2021",
-       x = "Jahr", y = expression(Absolute ~ Änderung ~ "in" ~ Landfläche ~ "[" ~ km^2 ~ "]")) +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5),
-        panel.spacing.y = unit(1, "lines")) + 
-  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surfaceAbs), ncol = 2, scales = "free_y")
-```
-<br>
-For the vast majority of the countries, the changes can be classified as under 1000 square kilometers over the whole timespan. Similar insights can be derived when looking at the relative changes.
-
-```{r surface area changing countries: relative, echo = FALSE, warning = FALSE, message = FALSE}
-# Save the ascending order of average relative change in surface area
-country_order_by_surfaceRel <- data_agriculture_surfaceChange %>%
-  group_by(`Country Name`) %>%
-  summarise(avg_relChange = mean(relChange)) %>%
-  arrange(avg_relChange) %>%
-  pull(`Country Name`)
-
-# Plot the relative changes in surface area for comparison between countries
-ggplot(data_agriculture_surfaceChange, aes(x = Year, y = relChange)) +
-  geom_line() +
-  labs(title = "Landfläche in Ländern mit Veränderungen zwischen 2000 und 2021",
-       x = "Jahr", y = "Relative Änderung in Landfläche [%]") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5)) + 
-  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surfaceRel), ncol = 2)
-
-# Plot the relative changes in surface area with free y-scale to make minimal changes recognizable
-ggplot(data_agriculture_surfaceChange, aes(x = Year, y = relChange)) +
-  geom_line() +
-  labs(title = "Landfläche in Ländern mit Veränderungen zwischen 2000 und 2021",
-       x = "Jahr", y = "Relative Änderung in Landfläche [%]") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5)) + 
-  facet_wrap(~ factor(`Country Name`, levels = country_order_by_surfaceRel), scales = "free_y", ncol = 2)
-```
-<br>
-For each country, even those with changes throughout the timespan, there are at most minimal changes of two percent in surface area. To finally confirm those claims we take a look at the scatter decomposition.
-```{r scatter decomposition surface area, echo = FALSE, warning = FALSE, message = FALSE}
-# Compute the between-country variance in surface area
-data_agriculture_variance_between_surface <- var(data_agriculture %>%
-                                                   group_by(`Country Name`) %>%
-                                                   summarise(Average_surface = mean(AG.SRF.TOTL.K2)) %>%
-                                                   select(Average_surface))
-
-# Create boxplots for within-country variances (vertical reference line showing the between-country variance)
-ggplot(data_agriculture,
-       aes(x = AG.SRF.TOTL.K2, y = factor(`Country Name`, levels = country_order_by_surface))) +
-  geom_boxplot() +
-  # geom_vline(xintercept = data_agriculture_variance_between_surface,
-  #            color = "black", linetype = "dashed", size = 1.2) +  # Between-country variance
-  labs(title = "Streuungszerlegung der Landfläche bezüglich Ländern",
-       x = expression(Landfläche ~ "[" ~ km^2 ~ "]"), y = "Land") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5))
-
-cat("Streuung zwischen den Ländern: " , data_agriculture_variance_between_surface)
-```
-<br> 
-In conclusion, we recognize that the changes in surface area are negligible over time. Therefore, we drop our focus on the development over time considering this variable when moving on. More interesting might be shifting the perspective towards whether the absolute amount of surface area has any influence on the relationship between agricultural land and CO2 emissions for our subset of countries.
-<br>
-<br> 
-For this exploration, we want to distinguish our countries into the following groups:
-```{r grouping initial, echo = FALSE, warning = FALSE, message = FALSE}
-# Load group dictionary
-####################### 
-# TODO: Remove sourcing of funtions.R
-# TODO: Change the readRDS(...) loading to non-hardcode RDS file in Data/Processed - DONE :)
-# TODO: Change grouping of data to read the correct RDS file from Processed instead of grouping here!
-# Source the functions script using `here`
-source(here("Scripts", "functions.R"))
-# Load the grouped dataset using `here`
-data_grouped <- readRDS(here("Data", "Processed", "data_pregrouped.RDS"))
-data_grouped <- group_data(df = data_grouped,
-                               grouping_by = "AG.SRF.TOTL.K2",
-                               column_new = "surfaceArea",
-                               quantile_labels = c("Very Small", "Small", "Moderate", "Large", "Very Large"))
-
-data_surface <- left_join(data_agriculture, data_grouped, by = c("Country Name", "Country Code")) 
-data_surface <- data_surface %>%
-  select(`Country Name`, `Country Code`, Year, AG.LND.AGRI.ZS, AG.SRF.TOTL.K2, EN.GHG.CO2.MT.CE.AR5, cat_surfaceArea)
-
-# Plot the initial comparison via scatterplot, this time in grouped categories. 
-ggplot(data_surface, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
-  geom_point(aes(color = cat_surfaceArea), alpha = .7, size = 3) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
-  labs(title = "Zusammenhang zwischen CO2 Emissionen pro Kopf\nund landwirtschaftlicher Nutzfläche",
-       x = "Logarithmierte CO2 Emissionen pro Kopf [Mt]", y = "Landwirtschaftliche Nutzfläche [%]") +
-  scale_color_brewer(palette = "Set2", name = "Landfläche") +  
-  # TODO: SHOULDN'T THIS BE A SEQUENTIAL COLORGRADING -> WHICH PALETTE?
-  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
-  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
-  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
-  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
-  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.title = element_text(hjust = 0.5))
-
-# Plot the initial comparison via scatterplot, faceted in grouped categories. 
-ggplot(data_surface, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
-  geom_point(alpha = .3, size = 3) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
-  labs(title = paste0("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche",
-                      "\n", "für Ländergruppen bezüglich deren Landfläche"),
-       x = "Landwirtschaftliche Nutzfläche [%]", y = "Logarithmierte CO2 Emissionen pro Kopf [Mt]") +
-  scale_color_brewer(palette = "Set2", name = "Landfläche") +  
-  # TODO: SHOULDN'T THIS BE A SEQUENTIAL COLORGRADING -> WHICH PALETTE?
-  # scale_x_log10(name = "CO2 Emissionen pro Kopf",
-  #               breaks = log10(c(0, 10, 100, 1000, 10000, 100000) + 1),
-  #               labels = c("0", "10", "100", "1.000", "10.000", "100.000")) +
-  # scale_x_log10(breaks = trans_breaks("log10", function(x) 10 ^ x),
-  #               labels = trans_format("log10", function(x) as.character(10 ^ x))) +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.title = element_text(hjust = 0.5)) +
-  facet_wrap(~ data_surface$cat_surfaceArea)
-
-```
-<br>
-We see there is no direct influence obvious through the grouping of the data. Let's dig deeper by looking at the time-specific distribution.
-```{r group-faceted scatterplot logarithmic, echo = FALSE, warning = FALSE, message = FALSE}
-# Load patchwork library for assembled plots
-library(patchwork)
-# Logarithmic CO2 emissions by country, average agricultural land [%] for color - faceted by groups
-plot_surface1_upper_row <- ggplot(data_surface %>%
-                                    filter(cat_surfaceArea %in% c("Very Small", "Small", "Moderate")),
-                                  aes(x = Year,
-                                      y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
-  geom_point(alpha = 0.75, size = 2.5, shape = 21, stroke = 0.5, aes(fill = AG.LND.AGRI.ZS)) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
-  scale_y_continuous(limits = c(0, 5), breaks = seq(0, 5, by = 1)) +
-  scale_fill_viridis_c(option = "plasma", direction = -1) +
-  # scale_fill_distiller(name = "Landwirtschaftliche Nutzfläche [%]",
-  #                       palette = "Greens",
-  #                       direction = 1,
-  #                       breaks = c(0, 20, 40, 60, 80, 100),
-  #                       labels = c("0", "20", "40", "60", "80", "100")) +
-  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
-                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
-  labs(title = paste0("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche",
-                      "\n", "für Ländergruppen bezüglich deren Landfläche"),
-       x = "Jahr", y = "Logarithmierte CO2 Emissionen\npro Kopf [Mt]") +
-  theme_bw() +
-  theme(legend.position = "none",
-        plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(hjust = 0.5),
-        axis.title.x = element_blank(),
-        panel.background = element_rect(fill = "white")) +  # Change the color for better contrast?
-  facet_wrap(~ cat_surfaceArea, ncol = 3)
-
-plot_surface1_bottom_row <- ggplot(data_surface %>%
-                                     filter(cat_surfaceArea %in% c("Large", "Very Large")),
-                                   aes(x = Year,
-                                       y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
-  geom_point(alpha = 0.75, size = 2.5, shape = 21, stroke = 0.5, aes(fill = AG.LND.AGRI.ZS)) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
-  scale_y_continuous(limits = c(0, 5), breaks = seq(0, 5, by = 1)) +
-  scale_fill_viridis_c(name = "Landwirtschaftliche Nutzfläche [%]", option = "plasma", direction = -1) +
-  # scale_color_distiller(name = "Landwirtschaftliche Nutzfläche [%]",
-  #                       palette = "Oranges",
-  #                       direction = 1,
-  #                       breaks = c(0, 20, 40, 60, 80, 100),
-  #                       labels = c("0", "20", "40", "60", "80", "100")) +
-  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
-                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
-  labs(x = "Jahr", y = "Logarithmierte CO2 Emissionen\npro Kopf [Mt]") +
-  theme_bw() +
-  theme(legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5),
-        legend.title = element_text(vjust = 0.8),
-        axis.text.x = element_text(hjust = 0.5),
-        panel.background = element_rect(fill = "white")) +  # Change the color for better contrast?
-  facet_wrap(~ cat_surfaceArea, ncol = 2)
-
-plot_surface1_upper_row /
-  (plot_spacer() + plot_surface1_bottom_row + plot_spacer() + plot_layout(widths = c(.5, 2, .5)))
-```
-<br>
-The biggest anomalies regarding the CO2 emissions with the percentage of agricultural land in mind seem to be the moderate and very large surface area countries. Here on one hand, we can detect comparably high percentages in agricultural land for the moderate area countries, but those do not transfer themselves to any obvious differences in the CO2 emissions compared to the other groups. On the other hand, the very large countries stand out by having the supposedly expectable highest CO2 emissions among all groups. Marginal differences appear between the development over time, as the very large area countries are constant over the two decade timespan, while the other groups have slightly increasing trends.
-<br>
-If we finally pivot back to our normalized comparison we did earlier, we can do the same now with our grouped data according to the surface area categories.
-
-```{r group-faceted scatterplot normalized, echo = FALSE, warning = FALSE, message = FALSE}
-# Join the long normalized data for visualization of two variables on y-axis
-data_surface_normd_long <- (left_join(data_agriculture_normd_long,
-                                      data_grouped,
-                                      by = c("Country Name", "Country Code")))
-
-
-# Plotting with normalized data over time for each group
-plot_surface2_upper_row <- ggplot(data_surface_normd_long %>%
-                                    filter(cat_surfaceArea %in% c("Very Small", "Small", "Moderate")),
-                                  aes(x = Year,
-                                      y = value,
-                                      group = interaction(`Country Name`, variable))) +
-  geom_point(alpha = 0.5, size = 2.5, shape = 21, stroke = 0.5, aes(fill = variable)) +
-  geom_smooth(aes(group = variable), method = "lm", se = FALSE, color = "black", size = 1.5) +
-  geom_smooth(aes(group = variable, color = variable), method = "lm", se = FALSE, size = 1, show.legend = FALSE) +
-  labs(title = paste0("Zusammenhang zwischen CO2 Emissionen pro Kopf und landwirtschaftlicher Nutzfläche",
-                      "\n", "für Ländergruppen bezüglich deren Landfläche"),
-       y = "Anteil [%]") +
-  scale_fill_brewer(palette = "Set2",  # Colorblind-friendly palette
-                     labels = c("Landwirtschaftliche Nutzfläche [%]",
-                                "(Min, Max)-normalisierte CO2 Emissionen pro Kopf [%]")) +
-  scale_color_brewer(palette = "Set2") +
-  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
-                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "none",
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(hjust = 0.5)) +
-  facet_wrap(~ cat_surfaceArea, ncol = 3)
-
-plot_surface2_bottom_row <- ggplot(data_surface_normd_long %>%
-                                     filter(cat_surfaceArea %in% c("Large", "Very Large")),
-                                   aes(x = Year,
-                                       y = value,
-                                       group = interaction(`Country Name`, variable))) +
-  geom_point(alpha = 0.5, size = 2.5, shape = 21, stroke = 0.5, aes(fill = variable)) +
-  geom_smooth(aes(group = variable), method = "lm", se = FALSE, color = "black", size = 1.5) +
-  geom_smooth(aes(group = variable, color = variable), method = "lm", se = FALSE, size = 1, show.legend = FALSE) +
-  labs(x = "Jahr", y = "Anteil [%]", color = "", fill = "") +
-  scale_fill_brewer(palette = "Set2",  # Colorblind-friendly palette
-                     labels = c("Landwirtschaftliche Nutzfläche [%]",
-                                "(Min, Max)-normalisierte CO2 Emissionen pro Kopf [%]")) +
-  scale_color_brewer(palette = "Set2", labels = c("A", "B")) +
-  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020),  # Text labels for x-axis
-                     minor_breaks = seq(2000, 2021, by = 1)) +  # Add ticks
-  theme_bw() +
-  theme(legend.position = "bottom",
+        legend.position = "bottom",
         legend.text = element_text(size = 12),
-        plot.title = element_text(hjust = 0.5),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12),
-        axis.text.x = element_text(hjust = 0.5)) +
-  facet_wrap(~ cat_surfaceArea, ncol = 2)
-
-plot_surface2_upper_row /
-  (plot_spacer() + plot_surface2_bottom_row + plot_spacer() + plot_layout(widths = c(.5, 2, .5)))
+        plot.title = element_text(hjust = 0.5)) +
+  facet_wrap(~ factor(data_agriculture_normd_long$`Country Name`,
+                      levels = country_order_by_agrLand), ncol = 5)
 ```
-
-<br>
-We cannot identify any obvious connection between the CO2 emissions per capita and the percentage of agricultural land even with the interested countries categorized by surface area.
+<br> 
+As we can see, there seems to be no direct relationship between the countries' percentages of agricultural land and their CO2 emissions per capita. 
+<br><br><br>
+**To now further observe the potential influence of countries' surface areas on this relationship, refer to the 'surface.Rmd' file.**
