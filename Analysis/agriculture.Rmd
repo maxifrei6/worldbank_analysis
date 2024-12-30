@@ -40,12 +40,15 @@ data_agriculture <- data_agriculture %>%
 data_agriculture$Year <- as.integer(data_agriculture$Year)
 
 # Save the agriculture data set using 'here' for the file path.
-saveRDS(data_agriculture, file = here("Data", "Processed", "data_agriculture.RDS"))
+if (!file.exists(here("Data", "Processed", "data_agriculture.RDS"))) {
+  saveRDS(data_agriculture, file = here("Data", "Processed", "data_agriculture.RDS"))
+}
 
 # Save the ascending order of average agricultural land [%] by country
 country_order_by_agrLand <- data_agriculture %>%
   group_by(`Country Name`) %>%
   summarise(avg_AG.LND.AGRI.ZS = mean(AG.LND.AGRI.ZS)) %>%
+  ungroup() %>%
   arrange(avg_AG.LND.AGRI.ZS) %>%
   pull(`Country Name`)
 ```
@@ -60,6 +63,7 @@ Starting with the distribution of the CO2 emissions, we get the following inform
 country_order_by_CO2variance <- data_agriculture %>%
   group_by(`Country Name`) %>%
   summarise(avg_EN.GHG.CO2.MT.CE.AR5 = mean(EN.GHG.CO2.MT.CE.AR5)) %>%
+  ungroup() %>%
   arrange(avg_EN.GHG.CO2.MT.CE.AR5) %>%
   pull(`Country Name`)
 
@@ -92,7 +96,8 @@ It appears that occasionally there are immense differences within countries' val
 ```{r boxplot_co2, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
 # Create boxplots for within-country variances
 ggplot(data_agriculture,
-       aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = factor(`Country Name`, levels = country_order_by_CO2variance))) +
+       aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1),
+           y = factor(`Country Name`, levels = country_order_by_CO2variance))) +
   geom_boxplot() +
   ggtitle("Streuungszerlegung der CO2 Emissionen pro Kopf bezüglich Ländern") +
   scale_x_continuous(name = "CO2 Emissionen pro Kopf [Mt] (Log10)",
@@ -106,8 +111,9 @@ ggplot(data_agriculture,
 data_agriculture_variance_between_CO2 <-
   var(data_agriculture %>%
         group_by(`Country Name`) %>%
-        summarise(Average_CO2 = mean(EN.GHG.CO2.MT.CE.AR5)) %>%
-        select(Average_CO2))
+        summarise(avg_CO2 = mean(EN.GHG.CO2.MT.CE.AR5)) %>%
+        ungroup() %>%
+        select(avg_CO2))
 
 cat("Streuung zwischen den Ländern: " , data_agriculture_variance_between_CO2, "\n")
 ```
@@ -146,6 +152,7 @@ data_agriculture_variance_between_agrLand <-
   var(data_agriculture %>%
         group_by(`Country Name`) %>%
         summarise(Average_agrLand = mean(AG.LND.AGRI.ZS)) %>%
+        ungroup() %>%
         select(Average_agrLand))
 
 # Create boxplots for within-country variances
