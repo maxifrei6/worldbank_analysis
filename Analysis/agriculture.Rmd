@@ -3,7 +3,6 @@ title: "Worldbank Agriculture Analysis"
 author: "Robin Billinger"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document:
     self-contained: true
     clean: true
@@ -146,7 +145,7 @@ summary(data_agriculture$AG.LND.AGRI.ZS)
 ```
 <br>
 
-``` {r boxplot_agrLand, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+```{r boxplot_agrLand, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
 # Compute the between-country variance in CO2 emissions
 data_agriculture_variance_between_agrLand <-
   var(data_agriculture %>%
