@@ -6,7 +6,6 @@ output:
   html_document:
     self-contained: true
     clean: true
-  pdf_document: default
 ---
 
 ## Introduction
