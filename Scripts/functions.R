@@ -263,7 +263,7 @@ translate <- function(mapping, column, ...) {
 
 #' FUNCTION 6:
 #' @description
-#' The function 'prepare_join' takes data frames and aligns there columns in several steps in order
+#' The function 'prepare_join' takes data frames and aligns their columns in several steps in order
 #' to simplify the aspired joining of the data frames afterwards. First it removes the columns
 #' 'average' and 'Series Name' from each data frame and then converts columns with column names in
 #' form of year format (i.e. YYYY) to numeric.
@@ -308,4 +308,60 @@ prepare_join <- function(...) {
 
   # Return the adjusted data frame
   return(dfs_cleaned)
+}
+
+
+#' FUNCTION 7:
+#' @description
+#' The function 'kl_div_from_dnorm' takes a single data frame with a column 'Year'
+#' and calculates the Kullback-Leibler divergence of the observed data of 'variable' from
+#' the normal distribution with parameters based on the observed data for each year. 
+#'
+#' Inputs:
+#' @param df One data frame containing containing the column 'Year' and one named
+#' according to the input 'variable'.
+#' @param variable A single string telling the function for which column it shall compute
+#' the KL divergence as well as which variable's mean and standard deviation to use for
+#' the calculation of the compared normal distribution.
+#' @param kernel_bw A single integer used as the bandwidth for estimation of the kernel
+#' density of the observed data. Will further be used to name the column according to the
+#' following concept: 'KLD (BW = kernel_bw)' (e.g. kernel_bw = 2 --> 'KLD (BW = 2)').
+#'
+#' Output:
+#' @returns A data frame of two columns, the column 'Year' with unique entries and another
+#' one with the calculated Kullback-Leibler divergence for each of those years.
+kl_div_from_dnorm <- function(df, variable, kernel_bw) {
+  # Check for valid input
+  require(checkmate)
+  assertDataFrame(df)
+  assertString(variable)
+  assertSubset(c("Year", variable), colnames(df))
+  assertNumber(kernel_bw)
+  
+  require(dplyr)
+  df_adjusted <- df %>%
+    group_by(Year) %>%
+    summarize(kl_divergence = {
+      # Extract right column to work with using '.data[[]]' to retain grouping structure
+      column <- .data[[variable]]
+
+      # Calculate the KDE values, i.e. the empirical distribution, for the observed data
+      # points for each year
+      kde <- density(column, bw = kernel_bw)
+
+      # Calculate the normal distribution values, i.e. the PDF, based on mean and standard
+      # deviation of the observed data for each year
+      norm_distr <- dnorm(kde$x, mean = mean(column), sd = sd(column))
+
+      # Compute the Kullback-Leibler divergence between the observed data and the normal
+      # distribution based on the observed data to determine the accuracy of the normal
+      # distribution to describe the observed data
+      sum(log(kde$y / norm_distr) * kde$y)
+    })
+
+  # Adjust the column name of the Kullback-Leibler divergences
+  colnames(df_adjusted)[2] <- paste0("KLD (BW = ", kernel_bw, ")")
+
+  # Return the adjusted data frame
+  return(df_adjusted)
 }
