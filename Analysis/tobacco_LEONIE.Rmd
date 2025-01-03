@@ -21,7 +21,7 @@ data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
 
 data_processed <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
-data_tob <- data_processed %>%
+data_tob_all <- data_processed %>%
   select(`Country Name`,
          `Country Code`,
          Year,
@@ -35,13 +35,21 @@ data_tob <- data_processed %>%
 Check how many NA's in tobacco variable each Year (excluding years existing only of NA's)
 <br>
 ```{r, message = FALSE, echo = FALSE, warning = FALSE, fig.align = "left"}
-data_tob %>%
+data_table <- data_tob_all %>%
   group_by(Year) %>%
   reframe(num_na = sum(is.na(SH.PRV.SMOK))) %>%
   filter(num_na < 25)
+print(data_table)
 ```
 <br>
-Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba).
+Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba). We again adjust our dataframe.
+<br>
+```{r, echo = FALSE, message = FALSE, fig.align = "left"}
+data_tob <- data_tob_all %>% 
+  filter(Year %in% data_table$Year) %>% 
+  filter(`Country Name` != "Aruba")
+```
+
 <br>
 To take a look at the grouping of our data by tobacco usage, we will display a plot of the most recent data in Year 2020.
 <br>
@@ -129,7 +137,7 @@ data_tob %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-To get a better overview we take a look at all years.
+To get a better overview we take a look at all years. First only on years we have data of their tobacco consumption on.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
@@ -156,6 +164,60 @@ data_tob %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
+Now over all years we have data on their countries BIP.
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob_all %>%
+  group_by(Year, cat_tob_usage) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_line(aes(group = cat_tob_usage)) +
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1,
+    size = 6
+  )) +
+  labs(
+    x = "Jahr",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP",
+    colour = "relativer Tabakkonsum"
+  ) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+But maybe better facett over year to show better the coherence of BIP and tobacco consumption.
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  group_by(cat_tob_usage, Year) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
+  facet_wrap(~Year) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP alle Jahre",
+    colour = "relativer Tabakkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Hier fällt jedoch auf, dass der relative Tabakkonsum nicht immer gut eingeordnet ist, da Gruppen mit weniger Tabakkonsum tatsächlich jedoch mehr Tabak konsumieren.
+Hier sollte man sich überlegen, ob es nicht besser ist die Gruppierung für jedes jahr neu zu bestimmen.
+Dieses Ergebnis wollen wir dann in einem Barplot festhalten. Hier nun also erst mit der allgemeineren Gruppierung:
+<br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage) %>%
@@ -171,6 +233,54 @@ data_tob %>%
     title = "Tabakkonsum vs. BIP"
   )
 ```
-1. dotplot nach jahr faccettiert. x: tabak, y: bip
-2. barplot faccetiert nach jahr, x: jedes jahr neu gruppiert nach tabak und dann bip geplottet
-3 verhältnis
+<br>
+Und nun mit neuer Gruppierung der Daten:
+Hierzu nun erst der nach Jahr gefacettete dotplot:
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+# noch nicht bearbeitet, nur grundgerüst gecopypasted
+data_tob %>%
+  group_by(cat_tob_usage, Year) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
+  facet_wrap(~Year) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP alle Jahre",
+    colour = "relativer Tabakkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Und nun im Barplot:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+# noch nicht bearbeitet, nur grundgerüst gecopypasted
+data_tob %>%
+  group_by(cat_tob_usage) %>%
+  summarise(
+    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    x = "relativer Tabakkonsum",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP"
+  )
+```
+<br>
+und nun barplot faccetiert nach jahr, x: jedes jahr neu gruppiert nach tabak und dann bip geplottet
+<br>
+```{r}
+
+```
+<br>
