@@ -119,6 +119,74 @@ group_data <- function(df, grouping_by, column_new, quantile_labels) {
   return(df)
 }
 
+#' FUNCTION 2.2:
+#' @description
+#' The function 'group_data_year' groups the data frame values according to a certain indicator per year by
+#' comparing the indicator's values of a specific year with self-defined quantile intervals and assigning the
+#' corresponding self-defined group labels.
+#'
+#' Inputs:
+#' @param df A data frame containing at least the columns 'Country Name', 'Country Code' the Series Codes 
+#' (or at least the one we want to group by) and 'Year', further columns are possible.
+#' @param grouping_by A single string being an column of type 'Series Code' specifying the
+#' indicator to group the values by.
+#' @param year A single string containing the year to group the data for.
+#' @param column_new A single string naming the new column, that is added to the end of the minimal
+#' data frame containing the columns specified in input 'df'. The resulting column name is created
+#' according to scheme: 'cat_' + column_new + "_" + year(e.g. column_new = 'population', '2020' --> 'cat_population_2020').
+#' @param quantile_labels A character vector with no missing values defining the category labels,
+#' the grouped data shall be assigned into. Supposed to be inserted in ascending intensity of
+#' occurrence for it to be rightfully allocated.
+#'
+#' Output:
+#' @returns A data frame of the columns 'Country Name', 'Country Code', 'Year' and the newly created column
+#' 'cat_...', where the entries of the column are an ordered factor displaying in which quantile the
+#' countries' values were assigned according to the chosen grouping indicator.
+group_data_year <- function(df, grouping_by, year, column_new, quantile_labels) {
+  # Check for valid input
+  require(checkmate)
+  assertDataFrame(df)
+  assertSubset(c("Country Name",
+                 "Country Code",
+                 "Year",
+                 grouping_by),
+               colnames(df))
+  assertString(grouping_by)
+  assertString(column_new)
+  assertCharacter(quantile_labels, any.missing = FALSE)
+  
+  # Select columns and filter the relevant rows with information to interested grouping variable
+  require(dplyr)
+  df <- df %>% select(`Country Name`, `Country Code`, all_of(grouping_by), Year) %>% 
+    filter(Year == year)
+  
+  # Calculate the n_quantiles of the 'average' column
+  n_quantile <- length(quantile_labels)
+  quantile_probs <- seq(from = 0, to = 1, by = 1 / n_quantile)
+  quantile_data <- quantile(df$grouping_by, probs = quantile_probs, na.rm = TRUE)
+  
+  # Dynamically create the new column name 'column_new'
+  column_new <- paste0("cat_", column_new, "_", year)
+  
+  df <- df %>%
+    mutate(
+      # Add values for the new, dynamically-created column according to case_when assignment
+      {{ column_new }} := quantile_labels[findInterval(df$grouping_by,
+                                                       quantile_data,
+                                                       rightmost.closed = TRUE)],
+      
+      # Convert the new, dynamically-created column to an ordered factor
+      {{ column_new }} := factor(.data[[column_new]], levels = quantile_labels, ordered = TRUE)
+    )
+  
+  # Select the relevant columns
+  df <- df %>%
+    select(`Country Name`, `Country Code`, all_of(column_new))
+  
+  # Return the adjusted data frame
+  return(df)
+}
+
 
 #' FUNCTION 3:
 #' @description
