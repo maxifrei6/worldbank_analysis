@@ -149,7 +149,7 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
-  scale_color_brewer(name = "Regression", palette = "Set2") +
+  scale_color_brewer(name = "", palette = "Set2") +
   theme_bw() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5))
@@ -183,7 +183,7 @@ ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
-  scale_color_brewer(name = "Regression", palette = "Set2") +
+  scale_color_brewer(name = "", palette = "Set2") +
   theme_bw() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5))
@@ -218,8 +218,8 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
   scale_color_manual(name = "",
-                     values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-                                "Linear" = brewer.pal(3, "Set2")[[1]],
+                     values = c("Linear" = brewer.pal(3, "Set2")[[1]],
+                                "Robust-Linear" = brewer.pal(3, "Set2")[[2]],
                                 "Lokal-Polynomiell" = brewer.pal(3, "Set2")[[3]])) +
   theme_bw() +
   theme(axis.text.x = element_text(hjust = 0.5),
@@ -305,6 +305,7 @@ plot_tobacco1_data_bottom <-
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
+        legend.position = "bottom", 
         plot.margin = margin(0, 0, 0, 0)) +
   facet_wrap(~ Year)
 
@@ -350,6 +351,11 @@ plot_tobacco1_density_bottom <-
   geom_line(data = data.frame(x = c(0,0), y = c(0,0)),
             aes(x = x, y = y, color = "Kerndichteschätzer (Bandbreite = 3)"),
             linewidth = 1) +
+  # Add an invisible line by framing dummy line to show 'Robust-Linear' with line
+  # shape in the single legend below the whole assembled plot
+  geom_line(data = data.frame(x = c(0,0), y = c(0,0)),
+            aes(x = x, y = y, color = "Robust-Linear"),
+            linewidth = 1) +
   geom_vline(data = data_tobacco_normdensity %>% filter(Year %in% c(2018, 2019, 2020)),
              aes(xintercept = SH.PRV.SMOK_mean, group = Year),
              color = "black", linetype = "dashed") +
@@ -361,11 +367,14 @@ plot_tobacco1_density_bottom <-
                      breaks = c(0, 0.025, 0.05),
                      minor_breaks = waiver(),
                      limits = c(0, 0.06)) +
-  scale_color_brewer(name = "", palette = "Set2") +
+  scale_color_manual(
+    name = "",
+    values = c("Kerndichteschätzer (Bandbreite = 3)" = brewer.pal(3, "Set2")[[1]],
+               "Normalverteilung" = brewer.pal(3, "Set2")[[2]],
+               "Robust-Linear" = "black")) +
   theme_bw() +
   theme(axis.title.y = element_text(margin = margin(r = 10)),
         legend.position = "bottom",
-        legend.text = element_text(size = 10),
         strip.text = element_blank()) +
   facet_wrap(~ Year)
 
