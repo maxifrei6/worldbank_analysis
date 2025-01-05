@@ -235,13 +235,14 @@ data_tob %>%
 ```
 <br>
 Und nun mit neuer Gruppierung der Daten:
-Hierzu nun erst der nach Jahr gefacettete dotplot:
+<br>
 ```{r}
 ## testing new function in function skript. grouping by tobacco values of year 2020
 ## function 2.2 group_data_year
 group_data_year(df = data_tob, grouping_by = "SH.PRV.SMOK", year = "2020", column_new = "tob_usage", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Viel", "Sehr Viel"))
 ```
-
+<br>
+Hierzu nun erst der nach Jahr gefacettete dotplot:
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 # noch nicht bearbeitet, nur grundgerüst gecopypasted

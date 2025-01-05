@@ -4,6 +4,7 @@
 ### List of functions ###
 #' 1. remove_NA
 #' 2. group_data
+#'  2.2 group_data_year
 #' 3. align_colnames
 #' 4. remove_metadata
 #' 5. translate
@@ -160,18 +161,17 @@ group_data_year <- function(df, grouping_by, year, column_new, quantile_labels) 
   df <- df %>% select(`Country Name`, `Country Code`, all_of(grouping_by), Year) %>% 
     filter(Year == year)
   
-  # Calculate the n_quantiles of the 'average' column
+  # Calculate the n_quantiles of the variable column
   n_quantile <- length(quantile_labels)
   quantile_probs <- seq(from = 0, to = 1, by = 1 / n_quantile)
-  quantile_data <- quantile(df$grouping_by, probs = quantile_probs, na.rm = TRUE)
+  quantile_data <- quantile(df[[grouping_by]], probs = quantile_probs, na.rm = TRUE)
   
   # Dynamically create the new column name 'column_new'
   column_new <- paste0("cat_", column_new, "_", year)
-  
   df <- df %>%
     mutate(
       # Add values for the new, dynamically-created column according to case_when assignment
-      {{ column_new }} := quantile_labels[findInterval(df$grouping_by,
+      {{ column_new }} := quantile_labels[findInterval(df[[grouping_by]],
                                                        quantile_data,
                                                        rightmost.closed = TRUE)],
       
