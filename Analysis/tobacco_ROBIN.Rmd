@@ -39,8 +39,24 @@ dictionary <- data.frame(
                "SH.PRV.SMOK"),
   `Indicator Name` = c("GDP per capita, PPP (constant 2021 international $)",
                        "Prevalence of current tobacco use (% of adults)"),
-  Definition = c("GDP per capita based on purchasing power parity (PPP). PPP GDP is gross domestic product converted to international dollars using purchasing power parity rates. An international dollar has the same purchasing power over GDP as the U.S. dollar has in the United States. GDP at purchaser's prices is the sum of gross value added by all resident producers in the country plus any product taxes and minus any subsidies not included in the value of the products. It is calculated without making deductions for depreciation of fabricated assets or for depletion and degradation of natural resources. Data are in constant 2021 international dollars.",
-                 "The percentage of the population ages 15 years and over who currently use any tobacco product (smoked and/or smokeless tobacco) on a daily or non-daily basis. Tobacco products include cigarettes, pipes, cigars, cigarillos, waterpipes (hookah, shisha), bidis, kretek, heated tobacco products, and all forms of smokeless (oral and nasal) tobacco. Tobacco products exclude e-cigarettes (which do not contain tobacco), “e-cigars”, “e-hookahs”, JUUL and “e-pipes”. The rates are age-standardized to the WHO Standard Population."),
+  Definition = c(
+    paste0("GDP per capita based on purchasing power parity (PPP). PPP GDP is gross ",
+           "domestic product converted to international dollars using purchasing power ",
+           "parity rates. An international dollar has the same purchasing power over ",
+           "GDP as the U.S. dollar has in the United States. GDP at purchaser's prices ",
+           "is the sum of gross value added by all resident producers in the country ",
+           "plus any product taxes and minus any subsidies not included in the value of ",
+           "the products. It is calculated without making deductions for depreciation ",
+           "of fabricated assets or for depletion and degradation of natural resources. ",
+           "Data are in constant 2021 international dollars."),
+    paste0("The percentage of the population ages 15 years and over who currently use ",
+           "any tobacco product (smoked and/or smokeless tobacco) on a daily or non-",
+           "daily basis. Tobacco products include cigarettes, pipes, cigars, cigarillos,",
+           " waterpipes (hookah, shisha), bidis, kretek, heated tobacco products, and ",
+           "all forms of smokeless (oral and nasal) tobacco. Tobacco products exclude ",
+           "e-cigarettes (which do not contain tobacco), “e-cigars”, “e-hookahs”, JUUL ",
+           "and “e-pipes”. The rates are age-standardized to the WHO Standard ",
+           "Population.")),
   check.names = FALSE
 )
 kable(dictionary, caption = "World Bank Indicators")
@@ -133,7 +149,7 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
-  scale_color_brewer(name = "Regression", palette = "Set2") +
+  scale_color_brewer(name = "", palette = "Set2") +
   theme_bw() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5))
@@ -167,7 +183,7 @@ ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
-  scale_color_brewer(name = "Regression", palette = "Set2") +
+  scale_color_brewer(name = "", palette = "Set2") +
   theme_bw() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5))
@@ -202,8 +218,8 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
   scale_color_manual(name = "",
-                     values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-                                "Linear" = brewer.pal(3, "Set2")[[1]],
+                     values = c("Linear" = brewer.pal(3, "Set2")[[1]],
+                                "Robust-Linear" = brewer.pal(3, "Set2")[[2]],
                                 "Lokal-Polynomiell" = brewer.pal(3, "Set2")[[3]])) +
   theme_bw() +
   theme(axis.text.x = element_text(hjust = 0.5),
@@ -289,6 +305,7 @@ plot_tobacco1_data_bottom <-
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
+        legend.position = "bottom", 
         plot.margin = margin(0, 0, 0, 0)) +
   facet_wrap(~ Year)
 
@@ -310,8 +327,9 @@ plot_tobacco1_density_upper <-
                      minor_breaks = waiver(),
                      limits = c(0, 60)) +
   scale_y_continuous(name = "Dichte",
-                     breaks = c(0, 0.02, 0.04),
-                     minor_breaks = waiver()) +
+                     breaks = c(0, 0.025, 0.05),
+                     minor_breaks = waiver(),
+                     limits = c(0, 0.06)) +
   theme_bw() +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_text(margin = margin(r = 10)),
@@ -326,12 +344,17 @@ plot_tobacco1_density_bottom <-
             linewidth = 1, inherit.aes = FALSE) +
   geom_density(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
                aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
-               color = brewer.pal(3, "Set2")[[1]], linewidth = 1, bw = 3, 
+               color = brewer.pal(3, "Set2")[[1]], linewidth = 1, bw = 3,
                show.legend = FALSE) +
   # Add an invisible line by framing dummy line to show 'Kerndichteschaetzer' with line
   # shape instead of hollow square in legend
   geom_line(data = data.frame(x = c(0,0), y = c(0,0)),
             aes(x = x, y = y, color = "Kerndichteschätzer (Bandbreite = 3)"),
+            linewidth = 1) +
+  # Add an invisible line by framing dummy line to show 'Robust-Linear' with line
+  # shape in the single legend below the whole assembled plot
+  geom_line(data = data.frame(x = c(0,0), y = c(0,0)),
+            aes(x = x, y = y, color = "Robust-Linearer Zusammenhang"),
             linewidth = 1) +
   geom_vline(data = data_tobacco_normdensity %>% filter(Year %in% c(2018, 2019, 2020)),
              aes(xintercept = SH.PRV.SMOK_mean, group = Year),
@@ -341,13 +364,17 @@ plot_tobacco1_density_bottom <-
                      minor_breaks = waiver(),
                      limits = c(0, 60)) +
   scale_y_continuous(name = "Dichte",
-                     breaks = c(0, 0.02, 0.04),
-                     minor_breaks = waiver()) +
-  scale_color_brewer(name = "", palette = "Set2") +
+                     breaks = c(0, 0.025, 0.05),
+                     minor_breaks = waiver(),
+                     limits = c(0, 0.06)) +
+  scale_color_manual(
+    name = "",
+    values = c("Kerndichteschätzer (Bandbreite = 3)" = brewer.pal(3, "Set2")[[1]],
+               "Normalverteilung" = brewer.pal(3, "Set2")[[2]],
+               "Robust-Linearer Zusammenhang" = "black")) +
   theme_bw() +
   theme(axis.title.y = element_text(margin = margin(r = 10)),
         legend.position = "bottom",
-        legend.text = element_text(size = 10),
         strip.text = element_blank()) +
   facet_wrap(~ Year)
 
@@ -369,7 +396,7 @@ This can be proven by calculating the Kullback-Leibler divergence for each of th
 # Source the functions.R script to access the 'kl_div_from_dnorm' function using 'here'
 source(here("Scripts", "functions.R"))
 
-# Compute Kullback-Leibler divergences for each year with differing kernel bandwiths
+# Compute Kullback-Leibler divergences for each year with differing kernel bandwidths
 data_tobacco_kld <-
   kl_div_from_dnorm(data_tobacco, "SH.PRV.SMOK", kernel_bw = 2) %>%
   left_join(kl_div_from_dnorm(data_tobacco, "SH.PRV.SMOK", kernel_bw = 3)) %>%
