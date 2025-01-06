@@ -116,7 +116,7 @@ data_tobacco %>%
   count(Year) %>%
   print(n = 22)
 
-# Convert column `Year` to data type Integer
+# Convert column 'Year' to data type Integer
 data_tobacco$Year <- as.integer(data_tobacco$Year)
 ```
 

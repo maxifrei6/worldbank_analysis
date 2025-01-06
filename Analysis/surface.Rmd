@@ -404,7 +404,7 @@ plot_surface1_bottom_row <-
 
 # Assemble the plot
 wrap_elements(full = textGrob("Landwirtschaftliche Nutzfläche [%]",
-                              rot = 90, gp = gpar(fontsize = 12))) +
+                              rot = 90, gp = gpar(fontsize = 11))) +
   (plot_surface1_upper_row /
      (plot_spacer() +
         plot_surface1_bottom_row +
@@ -470,7 +470,7 @@ plot_surface2_bottom_row <-
 
 # Assemble the plot
 wrap_elements(full = textGrob("CO2 Emissionen pro Kopf [Mt] (Log10)",
-                              rot = 90, gp = gpar(fontsize = 12))) +
+                              rot = 90, gp = gpar(fontsize = 11))) +
   (plot_surface2_upper_row /
      (plot_spacer() +
         plot_surface2_bottom_row +
@@ -558,7 +558,7 @@ plot_surface3_bottom_row <-
   facet_wrap(~ cat_surface_area, ncol = 2)
 
 # Assemble the plot
-wrap_elements(full = textGrob("Anteil [%]", rot = 90, gp = gpar(fontsize = 12))) +
+wrap_elements(full = textGrob("Anteil [%]", rot = 90, gp = gpar(fontsize = 11))) +
   (plot_surface3_upper_row /
      (plot_spacer() +
         plot_surface3_bottom_row +
