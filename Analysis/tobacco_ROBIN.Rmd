@@ -70,6 +70,8 @@ data_tobacco <- data_tobacco %>%
 ```
 
 ## Agenda
+1.) GDP per capita and prevalence of current tobacco use
+<br><br>
 1.1.) Scatter plot of interested variables
 <br><br>
 1.2.) Scatter plot of interested variables; except outlier Qatar
@@ -78,6 +80,9 @@ data_tobacco <- data_tobacco %>%
 <br><br>
 1.4.) Scatter plot of interested variables with faceted years with density curves
 <br><br>
+1.5.) Kullback-Leibler divergence for tobacco usage
+<br><br>
+2.) Summary
 
 ### 1. GDP per capita and prevalence of current tobacco use
 We analyze how the GDP per capita for the observed countries relates to the prevalence of current tobacco use, representing the percentage of adults currently consuming tobacco. To get an overview over the interested data and be able to evaluate future insights correctly, we start by looking at the data available to us.
@@ -111,7 +116,7 @@ data_tobacco %>%
   count(Year) %>%
   print(n = 22)
 
-# Convert column `Year` to data type Integer
+# Convert column 'Year' to data type Integer
 data_tobacco$Year <- as.integer(data_tobacco$Year)
 ```
 
@@ -389,7 +394,9 @@ plot_tobacco1_density_bottom <-
 We recognize the basically neutral relation in the year 2000 changing over time. Each year the trend gains slight positive increase, meaning over time, it changes towards the relationship of the more the country's GDP per capita, the higher its prevalence of tobacco use among adults. Further, it gets obvious that the general distribution of the data points moves to the left on the x-axis, so generally smaller occurrences of tobacco prevalence as time goes by. The same phenomenon can be observed when looking at the dashed vertical line in the density visualization below the scatter plots, as the mean decreases from each observed year to the next. Having said that, we recognize slightly contrary movement on y-axis, meaning higher GDP per capita for some of the countries, especially the points in the middle of the facets increase in GDP per capita. 
 <br>
 Moreover, the kernel density estimation seems to assimilate towards the normal distribution around the observed datas' means and standard deviations comparing the start and end of the timeframe.
-<br>
+
+#### 1.5. Kullback-Leibler divergence for tobacco usage
+
 This can be proven by calculating the Kullback-Leibler divergence for each of the years, comparing the KDE with the underlying normal distribution to check the accuracy of describing our empirical distribution by normal distribution.
 
 ```{r kl_divergence, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
@@ -414,4 +421,7 @@ kable(data_tobacco_kld)
 ```
 
 As we can see, there are clear differences between 2000 and 2020, regardless of granularity determined by the chosen bandwidth. Compared to the start of the time span, the empirical  distribution clearly attunes closer to the normal distribution at the end. However, the closest for each of the bandwidths is always 2010, although being very close for the small bandwidths (2, 3). For the bandwidth of two it is also the only one which decreases from 2010 onwards till the end. The wider bandwidths on the other hand, which smooth out the individual data points more with the risk of over-smoothing, decrease only for the first three facets and then increase again, all be it with marginal differences from 2018 to 2020. <br><br>
+
+### 2. Summary
+
 In summary though, seeing the small values of KL divergence in general, the marginal differences in the last years, and the shift of the mean towards the low-percentage area, we can conclude that the prevalence of tobacco usage among adults nears a normally distributed data cloud. After a clear convergence in the early 2000s, the convergence stagnated slightly over the last years tending to a backwards development but not strong enough to make any assumptions for future developments. Still, with the general average consumption decreasing.
