@@ -235,11 +235,25 @@ data_tob %>%
 ```
 <br>
 Und nun mit neuer Gruppierung der Daten:
+Grouping by tobacco values each year and saving this full dataset in data_tob_cat_year using function 2.2 group_data_year
 <br>
-```{r}
-## testing new function in function skript. grouping by tobacco values of year 2020
-## function 2.2 group_data_year
-group_data_year(df = data_tob, grouping_by = "SH.PRV.SMOK", year = "2020", column_new = "tob_usage", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Viel", "Sehr Viel"))
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob_cat_year <- data_tob %>% 
+  mutate(cat_tob_usage_per_year = rep(NA, nrow(data_tob)))
+
+data_tob_cat_year <- for (year in as.character(data_table$Year)) {
+  
+  new_cat <- group_data_year(df = data_tob_cat_year, grouping_by = "SH.PRV.SMOK", year = "2020", column_new = "tob_usage", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Viel", "Sehr Viel"))
+  
+  data_filtered <- data_tob_cat_year %>% 
+    filter(Year == "2020") %>% 
+    mutate(cat_tob_usage_per_year = new_cat[ , 3, drop = FALSE])
+  
+  data_tob_cat_year <- data_tob_cat_year %>% 
+    full_join(data_filtered, by = c("Year", "Country Name", "Country Code", "NY.GDP.PCAP.PP.KD", "SH.PRV.SMOK", "cat_tob_usage")) %>% 
+    mutate(cat_tob_usage_per_year = coalesce(cat_tob_usage_per_year.x, cat_tob_usage_per_year.y)) %>% 
+    select(-cat_tob_usage_per_year.x, -cat_tob_usage_per_year.y)
+}
 ```
 <br>
 Hierzu nun erst der nach Jahr gefacettete dotplot:
