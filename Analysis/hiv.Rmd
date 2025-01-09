@@ -370,7 +370,44 @@ data_hiv %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-we want to create a plot of the averages over alll years grouped by education level. For interest first with x-axis education and second as bar plot (x axis the education level)
+New try: Now we take a look at all years, facetted by cat_education, all countries each a line
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = `Country Name`)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_line(aes(group = `Country Name`)) +
+  facet_wrap(~cat_education)
+  labs(
+    title = "HIV Prävalenz über alle Jahre facettiert nach relativen Bildungsstand der Arbeiterschaft",
+    x = "Anteil grundlegend gebildeter Arbeitskräfte",
+    y = "HIV Prävalenz",
+    colour = "Land"
+  )  +
+  scale_colour_brewer(palette = "Set2")
+```
+
+<br>
+Here we see clearly that some countries change their education group to belong to over the years. Therfore we should try to group the data per year later.
+But first the next try: Now we take a look at all years, facetted by cat_education, all countries each a line
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  ggplot(aes(Year, SH.DYN.AIDS.ZS, colour = `Country Name`)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_line(aes(group = `Country Name`)) +
+  facet_wrap(~cat_education)
+  labs(
+    title = "HIV Prävalenz über alle Jahre facettiert nach relativen Bildungsstand der Arbeiterschaft",
+    x = "Jahr",
+    y = "HIV Prävalenz",
+    colour = "Land"
+  )  +
+  scale_colour_brewer(palette = "Set2")
+```
+
+<bt>
+we want to create a plot of the averages over all years grouped by education level. For interest first with x-axis education and second as bar plot (x axis the education level)
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
@@ -408,3 +445,16 @@ data_hiv %>%
   )
 ```
 <br>
+nun bar plots facettiert nach jahr. Nur um zu sehen, dass die Unterschiede der verschiedenen Gruppen betragsmäßig zurückgegangen sind. Die HIV-Prävalenz ist über die Jahre insgesamt gesunken, besonders aber bei Ländern mit ehemals den mit Abstand höchsten HIV Werten.
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_hiv %>%
+  ggplot(aes(x = cat_education, y = SH.DYN.AIDS.ZS)) +
+  geom_col(fill = "steelblue") +
+  facet_wrap(~Year) +
+  labs(
+    x = "relatives Bildungslevel der arbeitsfähigen Bevölkerung",
+    y = "HIV Prävalenz in %",
+    title = "Bildungsstand vs. HIV Prävalenz pro Jahr"
+  )
+```
