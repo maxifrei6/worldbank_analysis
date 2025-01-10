@@ -276,63 +276,84 @@ data_tob %>%
 ```
 <br>
 Und nun mit neuer Gruppierung der Daten:
-Grouping by tobacco values each year and saving this full dataset in data_tob_cat_year using function 2.2 group_data_year
+Grouping by tobacco values each year and saving this full dataset in data_tob_per_year using function 2.2 group_data_year
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob_cat_year <- data_tob %>% 
-  mutate(cat_tob_usage_per_year = rep(NA, nrow(data_tob)))
+data_tob_per_year <- data_tob_cat_year %>%
+  group_by(Year) %>%
+  mutate(cat_tob_usage_per_year = 
+           group_data_year(df = data_tob_cat_year, grouping_by = "SH.PRV.SMOK", year = Year, column_new = "tob_usage_per_year", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Viel", "Sehr Viel"))$cat_tob_usage_per_year)
 
-data_tob_cat_year <- for (year in as.character(data_table$Year)) {
-  
-  new_cat <- group_data_year(df = data_tob_cat_year, grouping_by = "SH.PRV.SMOK", year = year, column_new = "tob_usage", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Viel", "Sehr Viel"))
-  
-  data_filtered <- data_tob_cat_year %>% 
-    filter(Year == year) %>% 
-    mutate(cat_tob_usage_per_year = new_cat[ , 3, drop = FALSE])
-  
-  data_tob_cat_year <- data_tob_cat_year %>% 
-    full_join(data_filtered, by = c("Year", "Country Name", "Country Code", "NY.GDP.PCAP.PP.KD", "SH.PRV.SMOK", "cat_tob_usage")) %>% 
-    mutate(cat_tob_usage_per_year = coalesce(cat_tob_usage_per_year.x, cat_tob_usage_per_year.y)) %>% 
-    select(-cat_tob_usage_per_year.x, -cat_tob_usage_per_year.y)
-}
+# data_tob_cat_year <- for (year in as.character(data_table$Year)) {
+# 
+#   new_cat <- group_data_year(df = data_tob_cat_year, grouping_by = "SH.PRV.SMOK", year = year, column_new = "tob_usage_per_year", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Viel", "Sehr Viel"))
+# 
+#   data_filtered <- data_tob_cat_year %>%
+#     filter(Year == year) %>%
+#     mutate(cat_tob_usage_per_year = new_cat[ , 3, drop = FALSE])
+# 
+#   data_tob_cat_year <- data_tob_cat_year %>%
+#     full_join(data_filtered, by = c("Year", "Country Name", "Country Code", "NY.GDP.PCAP.PP.KD", "SH.PRV.SMOK", "cat_tob_usage"))
+# }
+
+# data_tob_cat_year <- data_tob %>%
+#   mutate(cat_tob_usage_per_year = rep(NA, nrow(data_tob)))
+# %>%
+#     mutate(cat_tob_usage_per_year = coalesce(cat_tob_usage_per_year.x, cat_tob_usage_per_year.y)) %>%
+#     select(-cat_tob_usage_per_year.x, -cat_tob_usage_per_year.y)
 ```
 <br>
 Hierzu nun erst der nach Jahr gefacettete dotplot:
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 # noch nicht bearbeitet, nur grundgerüst gecopypasted
-data_tob %>%
-  group_by(cat_tob_usage, Year) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  facet_wrap(~Year) +
-  geom_point(size = 3, alpha = 0.7) +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP alle Jahre",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
+# data_tob %>%
+#   group_by(cat_tob_usage, Year) %>%
+#   summarise(
+#     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+#     SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
+#     .groups = "drop"
+#   ) %>%
+#   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
+#   facet_wrap(~Year) +
+#   geom_point(size = 3, alpha = 0.7) +
+#   labs(
+#     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
+#     y = "BIP pro Kopf in $",
+#     title = "Tabakkonsum vs. BIP alle Jahre",
+#     colour = "relativer Tabakkonsum"
+#   ) +
+#   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
+#   scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Und nun im Barplot:
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 # noch nicht bearbeitet, nur grundgerüst gecopypasted
+# data_tob %>%
+#   group_by(cat_tob_usage) %>%
+#   summarise(
+#     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
+#     .groups = "drop"
+#   ) %>%
+#   ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
+#   geom_col(fill = "steelblue") +
+#   labs(
+#     x = "relativer Tabakkonsum",
+#     y = "BIP pro Kopf in $",
+#     title = "Tabakkonsum vs. BIP"
+#   )
+```
+<br>
+und nun barplot faccetiert nach jahr, x: gruppiert nach tabakdurchschnittskonsum und dann bip geplottet
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
   ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
   geom_col(fill = "steelblue") +
+  facet_wrap(~Year)
   labs(
     x = "relativer Tabakkonsum",
     y = "BIP pro Kopf in $",
@@ -342,7 +363,15 @@ data_tob %>%
 <br>
 und nun barplot faccetiert nach jahr, x: jedes jahr neu gruppiert nach tabak und dann bip geplottet
 <br>
-```{r}
-
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob_per_year %>%
+  group_by(cat_tob_usage_per_year) %>%
+  ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
+  geom_col(fill = "steelblue") +
+  facet_wrap(~Year)
+  labs(
+    x = "relativer Tabakkonsum",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP"
+  )
 ```
-<br>
