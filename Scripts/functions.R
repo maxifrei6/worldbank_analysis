@@ -181,7 +181,7 @@ group_data_year <- function(df, grouping_by, year, column_new, quantile_labels) 
   quantile_data <- quantile(df[[grouping_by]], probs = quantile_probs, na.rm = TRUE)
   
   # Dynamically create the new column name 'column_new'
-  column_new <- paste0("cat_", column_new, "_", year)
+  column_new <- paste0("cat_", column_new)
   df <- df %>%
     mutate(
       # Add values for the new, dynamically-created column according to case_when assignment
