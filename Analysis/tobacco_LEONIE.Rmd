@@ -151,7 +151,6 @@ data_tob %>%
   ) %>%
   ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
-  geom_line(aes(group = cat_tob_usage)) +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -164,6 +163,7 @@ data_tob %>%
     colour = "relativer Tabakkonsum"
   ) +
   scale_colour_brewer(palette = "Set2")
+# geom_line(aes(group = cat_tob_usage)) +  ## problematisch, da stetiges Wachstum innerhalb eines Jahres durch diskrete Daten nicht gegeben
 ```
 <br>
 Now over all years we have data on their countries BIP.
@@ -178,7 +178,6 @@ data_tob_all %>%
   ) %>%
   ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
-  geom_line(aes(group = cat_tob_usage)) +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -191,6 +190,8 @@ data_tob_all %>%
     colour = "relativer Tabakkonsum"
   ) +
   scale_colour_brewer(palette = "Set2")
+# filter(-is.na(cat_tob_usage)) %>% 
+# geom_line(aes(group = cat_tob_usage)) +  ## problematisch, da stetiges Wachstum innerhalb eines Jahres durch diskrete Daten nicht gegeben
 ```
 <br>
 But maybe better facett over year to show better the coherence of BIP and tobacco consumption.
@@ -239,7 +240,7 @@ data_tob %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Wenn wir nun für jede Gruppe alle Länder anzeigen lassen, sieht der plot so aus:
+Wenn wir nun für jede Gruppe alle Länder anzeigen lassen, sieht der Plot so aus:
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>% 
@@ -258,7 +259,9 @@ data_tob %>%
 <br>
 Hier fällt jedoch auf, dass der relative Tabakkonsum nicht immer gut eingeordnet ist, da Gruppen mit weniger Tabakkonsum tatsächlich jedoch mehr Tabak konsumieren.
 Hier sollte man sich überlegen, ob es nicht besser ist die Gruppierung für jedes jahr neu zu bestimmen.
-Dieses Ergebnis wollen wir dann in einem Barplot festhalten. Hier nun also erst mit der allgemeineren Gruppierung:
+Dieses Ergebnis wollen wir dann in einem Barplot festhalten. 
+<br>
+Hier nun also erst mit der allgemeineren Gruppierung:
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
@@ -283,7 +286,7 @@ Und nun mit neuer Gruppierung der Daten:
 data_tob_per_year <- data_tob %>%
   group_by(Year) %>%
   mutate(cat_tob_usage_per_year = 
-           group_data_year(df = data_tob, grouping_by = "SH.PRV.SMOK", year = Year, column_new = "tob_usage_per_year", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Viel", "Sehr Viel"))$cat_tob_usage_per_year)
+           group_data_year(df = data_tob, grouping_by = "SH.PRV.SMOK", year = Year, column_new = "tob_usage_per_year", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß"))$cat_tob_usage_per_year)
 ```
 <br>
 Hierzu nun erst der nach Jahr gefacettete Dotplot:
@@ -385,7 +388,7 @@ data_tob %>%
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
-    size = 10
+    size = 8
   )) +
   labs(
     x = "relativer Tabakkonsum",
@@ -406,7 +409,7 @@ data_tob_per_year %>%
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
-    size = 10
+    size = 8
   )) +
   labs(
     x = "relativer Tabakkonsum",
@@ -415,3 +418,6 @@ data_tob_per_year %>%
     subtitle = "Pro Jahr gruppierte Daten"
   )
 ```
+So how does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
+<br>
+<br>

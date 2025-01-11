@@ -20,17 +20,17 @@ data_grouped_agr <- group_data(df = data_processed,
 # 2. Relevant for HIV evaluation
 # 2.1 Grouping by alcohol consumption 
 data_grouped_alc <- group_data(df = data_processed, grouping_by = "SH.ALC.PCAP.LI", column_new = "alc",
-                               quantile_labels = c("Very Low", "Low", "Medium", "High", "Very High"))
+                               quantile_labels =c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß"))
 
 # 2.2 Grouping by basic education of the labor force
 data_grouped_edu <- group_data(df = data_processed, grouping_by = "SL.TLF.BASC.ZS",
                                column_new = "education", quantile_labels = 
-                                 c("Very Low", "Low", "Medium", "High", "Very High"))
+                                 c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß"))
 
 # 3. Relevant for tobacco evaluation - grouping by tobacco usage
 data_grouped_tob <- group_data(df = data_processed, grouping_by = "SH.PRV.SMOK",
                                column_new = "tob_usage", quantile_labels = 
-                                 c("Very Low", "Low", "Medium", "High", "Very High"))
+                                 c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß"))
 
 # 4. Grouping by population size
 data_grouped_pop <- group_data(df = data_processed, grouping_by = "SP.POP.TOTL",
