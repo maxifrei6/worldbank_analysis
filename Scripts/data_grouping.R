@@ -25,7 +25,7 @@ data_grouped_alc <- group_data(df = data_processed, grouping_by = "SH.ALC.PCAP.L
 # 2.2 Grouping by basic education of the labor force
 data_grouped_edu <- group_data(df = data_processed, grouping_by = "SL.TLF.BASC.ZS",
                                column_new = "education", quantile_labels = 
-                                 c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß"))
+                                 c("Sehr schlecht", "Schlecht", "Mittel", "Gut", "Sehr gut"))
 
 # 3. Relevant for tobacco evaluation - grouping by tobacco usage
 data_grouped_tob <- group_data(df = data_processed, grouping_by = "SH.PRV.SMOK",
