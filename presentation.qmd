@@ -37,7 +37,29 @@ knitr::opts_chunk$set(fig.align = "center")
 # Load the dataset
 data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
+
+# data for education
 data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+
+# data for tobacco vs BIP
+source(here("Scripts", "functions.R"))
+data_tob <- data_merged %>%
+  select(`Country Name`,
+         `Country Code`,
+         Year,
+         NY.GDP.PCAP.PP.KD,
+         SH.PRV.SMOK)
+data_table <- data_tob %>%
+  group_by(Year) %>%
+  reframe(num_na = sum(is.na(SH.PRV.SMOK))) %>%
+  filter(num_na < 25)
+data_tob <- data_tob %>% 
+  filter(`Country Name` != "Aruba") %>% 
+  filter(Year %in% data_table$Year)
+data_tob <- data_tob %>%
+  group_by(Year) %>%
+  mutate(cat_tob_usage_per_year = 
+           group_data_year(df = data_tob, grouping_by = "SH.PRV.SMOK", year = Year, column_new = "tob_usage_per_year", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß"))$cat_tob_usage_per_year)
 ```
 
 ## Agenda
@@ -297,37 +319,22 @@ data_tobacco_normdensity <- data_tobacco_normdensity %>%
 ```
 
 ```{r tobacco_plot1_}
-
-data_tob <- data_processed %>%
-  select(`Country Name`,
-         `Country Code`,
-         Year,
-         NY.GDP.PCAP.PP.KD,
-         SH.PRV.SMOK,
-         cat_tob_usage)
-
 data_tob %>%
-  group_by(Year, cat_tob_usage) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  geom_point(size = 3, alpha = 0.7) +
-  geom_line(aes(group = cat_tob_usage)) +
+  group_by(cat_tob_usage_per_year) %>%
+  ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
+  geom_col(fill = "steelblue") +
+  facet_wrap(~Year) +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
-    size = 6
+    size = 9
   )) +
   labs(
-    x = "Jahr",
+    x = "relativer Tabakkonsum",
     y = "BIP pro Kopf in $",
     title = "Tabakkonsum vs. BIP",
-    colour = "relativer Tabakkonsum"
-  ) +
-  scale_colour_brewer(palette = "Set2")
+    subtitle = "Pro Jahr gruppierte Daten"
+  )
 ```
 
 ## 2.4 Tabakkonsum (2/2) {.smaller}

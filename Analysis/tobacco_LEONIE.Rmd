@@ -47,9 +47,11 @@ print(data_table)
 Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba). We again adjust our dataframe.
 <br>
 ```{r, echo = FALSE, message = FALSE, fig.align = "left"}
-data_tob <- data_tob_all %>% 
-  filter(Year %in% data_table$Year) %>% 
+data_tob_all <- data_tob_all %>% 
   filter(`Country Name` != "Aruba")
+  
+data_tob <- data_tob_all %>% 
+  filter(Year %in% data_table$Year)
 ```
 
 <br>
@@ -190,7 +192,6 @@ data_tob_all %>%
     colour = "relativer Tabakkonsum"
   ) +
   scale_colour_brewer(palette = "Set2")
-# filter(-is.na(cat_tob_usage)) %>% 
 # geom_line(aes(group = cat_tob_usage)) +  ## problematisch, da stetiges Wachstum innerhalb eines Jahres durch diskrete Daten nicht gegeben
 ```
 <br>
@@ -388,7 +389,7 @@ data_tob %>%
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
-    size = 8
+    size = 9
   )) +
   labs(
     x = "relativer Tabakkonsum",
@@ -409,7 +410,7 @@ data_tob_per_year %>%
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
-    size = 8
+    size = 9
   )) +
   labs(
     x = "relativer Tabakkonsum",
@@ -421,3 +422,21 @@ data_tob_per_year %>%
 So how does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
 <br>
 <br>
+Was bedeutet BIP pro Kopf genau?
+Bruttoinlandsprodukt (BIP): Der Gesamtwert aller Waren und Dienstleistungen, die innerhalb eines Landes in einem bestimmten Zeitraum (z. B. ein Jahr) produziert werden.
+Pro Kopf: Das BIP wird durch die Gesamtbevölkerung des Landes geteilt, um eine durchschnittliche Wirtschaftskraft pro Einwohner zu ermitteln.
+Das BIP soll einen Blick in den Lebensstandard einer Bevölkerung geben können, da es möglichst kaufkraftbereinigt ist.
+<br>
+Zu beachten ist, dass eindeutige Aussagen nicht getroffen werden können, da hier ein Land je nach durchschnittlichem Tabakkonsum einer Kategorie zugeordnet wird, wobei das BIP pro Kopf wiederum ein Durchschnittswert ist. Die Aussage beispielsweise, dass wenn ein Mensch viel Tabak konsumiert, er im Durchschnitt auch ein recht hohes Einkommen/Umsatz hat, ist nicht zu treffen, einerseits da die Daten eine derartige Interpretation nicht zulassen und BIP nicht das Einkommen charakterisiert. So kann nämlich gerade in Ländern mit hohem BIP die arme Bevölkerung besonders viel Tabak konsumieren, wenn die relativ sehr extreme Armut (bei einem eher hohen Lebensstandard im Land) als Ursache von diesem gesehen werden will. Dadurch werden Werte verzerrt.  Wie sich diese Werte dann bilden, ist aber ebenfalls nicht bekannt, da die Einkommensverteilung im BIP nicht berücksichtigt wird. (Anmerkung: fiktives Beispiel). Diese Verhältnisse können wir aus den Daten also mit Sicherheit nicht herauslesen.
+<br>
+Jedoch können wir folgende Aussagen, anhand der letzten Grafik treffen:
+<br>
+Sichtbar ist, dass je größer der durchschnittliche Tabakkonsum im Land desto tendentiell geringer ist das BIP pro Kopf. 
+<br>
+Einzelne Ausnahmen, fallen jedoch auf:
+<br>
+Für die Jahre 2000, 2005 und 2010 ist festzustellen, dass Länder mit großem durchschnittlichen Tabakkonsum das höchste BIP pro Kopf der im Datensatz aufgeführten Länder aufgewiesen hatten.
+<br>
+Dies ändert sich in den Jahren 2015, 2018, 2019 und 2020. Hier ist auffällig, dass Länder mit relativ gesehen sehr geringem Tabakkonsum das gerinste BIP pro Kopf aller aufgeführten Länder aufwiesen.
+<br>
+Für alle anderen Kategorien an relativem Tabakkonsum, gilt die anfängliche Erkenntnisse, dass mit relativ gesehen größeren Tabakkonsum der BIP pro Kopf relativ gesehen geringer ist.
