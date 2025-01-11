@@ -47,10 +47,10 @@ print(data_table)
 Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba). We again adjust our dataframe.
 <br>
 ```{r, echo = FALSE, message = FALSE, fig.align = "left"}
-data_tob_all <- data_tob_all %>% 
+data_tob_all <- data_tob_all %>%
   filter(`Country Name` != "Aruba")
-  
-data_tob <- data_tob_all %>% 
+
+data_tob <- data_tob_all %>%
   filter(Year %in% data_table$Year)
 ```
 
@@ -206,7 +206,7 @@ data_tob %>%
     .groups = "drop"
   ) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -229,7 +229,7 @@ data_tob %>%
     .groups = "drop"
   ) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -244,9 +244,9 @@ data_tob %>%
 Wenn wir nun für jede Gruppe alle Länder anzeigen lassen, sieht der Plot so aus:
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>% 
+data_tob %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   geom_point(size = 2, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -270,14 +270,10 @@ data_tob %>%
   summarise(
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
     .groups = "drop"
-  ) %>%
+    ) %>%
   ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
   geom_col(fill = "steelblue") +
-  labs(
-    x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP"
-  )
+  labs(x = "relativer Tabakkonsum", y = "BIP pro Kopf in $", title = "Tabakkonsum vs. BIP")
 ```
 <br>
 Und nun mit neuer Gruppierung der Daten:
@@ -286,8 +282,16 @@ Und nun mit neuer Gruppierung der Daten:
 # Grouping by tobacco values each year and saving this full dataset in data_tob_per_year using function 2.2 group_data_year
 data_tob_per_year <- data_tob %>%
   group_by(Year) %>%
-  mutate(cat_tob_usage_per_year = 
-           group_data_year(df = data_tob, grouping_by = "SH.PRV.SMOK", year = Year, column_new = "tob_usage_per_year", quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß"))$cat_tob_usage_per_year)
+  mutate(
+    cat_tob_usage_per_year =
+      group_data_year(
+        df = data_tob,
+        grouping_by = "SH.PRV.SMOK",
+        year = Year,
+        column_new = "tob_usage_per_year",
+        quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß")
+      )$cat_tob_usage_per_year
+  )
 ```
 <br>
 Hierzu nun erst der nach Jahr gefacettete Dotplot:
@@ -301,7 +305,7 @@ data_tob_per_year %>%
     .groups = "drop"
   ) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -325,7 +329,7 @@ data_tob_per_year %>%
     .groups = "drop"
   ) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -344,7 +348,7 @@ Und nun mit Datenpunkt pro Land:
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -367,7 +371,7 @@ data_tob_per_year %>%
   summarise(
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
     .groups = "drop"
-  ) %>%
+    ) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
   geom_col(fill = "steelblue") +
   labs(
@@ -385,7 +389,7 @@ data_tob %>%
   group_by(cat_tob_usage) %>%
   ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
   geom_col(fill = "steelblue") +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -406,7 +410,7 @@ data_tob_per_year %>%
   group_by(cat_tob_usage_per_year) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
   geom_col(fill = "steelblue") +
-  facet_wrap(~Year) +
+  facet_wrap( ~ Year) +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
