@@ -1,11 +1,12 @@
 ---
-title: "Worldbank Tobacco Analysis"
+title: "World Bank Tobacco Analysis"
 author: "Robin Billinger"
 date: "`r Sys.Date()`"
 output:
   html_document:
     self-contained: true
     clean: true
+    css: customstyle.scss
 ---
 
 ## Introduction
@@ -59,7 +60,7 @@ dictionary <- data.frame(
            "Population.")),
   check.names = FALSE
 )
-kable(dictionary, caption = "World Bank Indicators")
+kable(dictionary, caption = "World Bank Indicators", align = c("c", "c", "c"))
 
 # Load the 'data_merged' dataset
 data_tobacco <- readRDS(here("Data", "Processed", "data_merged.RDS"))
@@ -156,7 +157,9 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
                      limits = c(0, 125000)) +
   scale_color_brewer(name = "", palette = "Set2") +
   theme_bw() +
-  theme(legend.position = "bottom",
+  theme(axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10)),
+        legend.position = "bottom",
         plot.title = element_text(hjust = 0.5))
 ```
 
@@ -190,7 +193,9 @@ ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
                      limits = c(0, 125000)) +
   scale_color_brewer(name = "", palette = "Set2") +
   theme_bw() +
-  theme(legend.position = "bottom",
+  theme(axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10)),
+        legend.position = "bottom",
         plot.title = element_text(hjust = 0.5))
 ```
 
@@ -227,12 +232,14 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
                                 "Robust-Linear" = brewer.pal(3, "Set2")[[2]],
                                 "Lokal-Polynomiell" = brewer.pal(3, "Set2")[[3]])) +
   theme_bw() +
-  theme(legend.position = "bottom",
+  theme(axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10)),
+        legend.position = "bottom",
         plot.title = element_text(hjust = 0.5)) +
   facet_wrap(~ Year, ncol = 4)
 
 ##########################################################################################
-# ALTERNATIVE: 3-1-3 SCHEME
+# TODO: ALTERNATIVE: 3-1-3 SCHEME
 # Scatter plot of interested variables with faceted years
 # plot_tobacco1_upper_row <-
 #   data_tobacco %>%
