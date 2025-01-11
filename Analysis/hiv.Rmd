@@ -638,7 +638,8 @@ data_edu_per_year %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
   geom_point(size = 3, alpha = 0.7) +
   labs(
-    colour = "relativer Bildungsstand",
+    colour = "relativer Anteil an Arbeitenden
+    mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Jahre",
     subtitle = "Pro Jahr neu gruppiert",
