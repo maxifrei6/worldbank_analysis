@@ -1,0 +1,185 @@
+---
+title: "Electricity Access and National Income Analysis"
+author: "Iman Saffari"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(plotly)
+library(leaflet)
+library(corrplot)
+library(broom)
+library(readxl)
+```
+
+## Questions
+
+## Data Preparation and Cleaning
+TO DO 
+write here some information about the type of data collected
+
+```{r data_cleaning}
+
+worldbank1 <- read_xlsx("../Data/Raw/Worldbank1.xlsx")
+# Clean and reshape the data
+worldbank1_clean <- worldbank1 %>%
+  # Filter only the rows we need (electricity access and national income)
+  filter(`Series Code` %in% c("EG.ELC.ACCS.ZS", "NY.ADJ.NNTY.PC.CD")) %>%
+  # Select relevant columns
+  select(`Country Name`, `Country Code`, `Series Code`, 
+         starts_with("20"), -average) %>%
+  # Pivot longer to convert years to a single column
+  pivot_longer(
+    cols = starts_with("20"),
+    names_to = "year",
+    values_to = "value"
+  ) %>%
+  # Clean year column
+  mutate(
+    year = as.numeric(str_extract(year, "\\d{4}")),
+    value = na_if(value, ".."),
+    value = as.numeric(value)
+  ) %>%
+  # Pivot wider to get electricity and income as separate columns
+  pivot_wider(
+    names_from = `Series Code`,
+    values_from = value
+  ) %>%
+  # Rename columns for clarity
+  rename(
+    country_name = `Country Name`,
+    country_code = `Country Code`,
+    electricity_access = EG.ELC.ACCS.ZS,
+    national_income = NY.ADJ.NNTY.PC.CD
+  )
+
+# Calculate summary statistics by country
+summary_stats <- worldbank1_clean %>%
+  group_by(country_name, country_code) %>%
+  summarize(
+    avg_electricity = mean(electricity_access, na.rm = TRUE),
+    avg_income = mean(national_income, na.rm = TRUE),
+    n_observations = sum(!is.na(electricity_access) & !is.na(national_income)),
+    .groups = "drop"
+  ) %>%
+  filter(n_observations > 0)  # Remove countries with no valid observations
+
+# Show the first few rows of cleaned data
+head(summary_stats)
+```
+
+## Exploratory Data Analysis
+
+TO DO
+write here some info about the correlation and and interpret the correlation
+```{r correlation_plot}
+
+# Create correlation matrix
+cor_data <- worldbank1_clean %>%
+  select(electricity_access, national_income) %>%
+  drop_na()
+
+correlation <- cor(cor_data, use = "complete.obs")
+
+# Create a more professional correlation plot
+par(mar = c(4, 4, 4, 4))  # Adjust margins for better title placement
+corrplot(correlation, 
+         method = "color",
+         type = "upper",
+         addCoef.col = "black",
+         number.cex = 0,
+         tl.col = "black",
+         tl.srt = 45,
+         tl.cex = 0.8,
+         cl.cex = 0.8,
+         col = COL2("RdBu", 10),
+         mar = c(0,0,2,0),
+         main = "Correlation between Electricity Access\nand National Income",
+         family = "serif")
+
+# Reset par to default if needed
+par(mar = c(5.1, 4.1, 4.1, 2.1))
+```
+
+
+
+## Geographic Visualization
+
+TO DO
+write here about the reginioal disparties spcially in african countries in study
+```{r map}
+# Get world map data
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Join with our summary statistics
+map_data <- world %>%
+  left_join(summary_stats, by = c("iso_a3" = "country_code"))
+
+# Create interactive map
+electricity_map <- ggplot(data = map_data) +
+  geom_sf(aes(fill = avg_electricity,
+              text = paste(country_name, 
+                         "\nElectricity Access:", 
+                         round(avg_electricity, 1), "%\n",
+                         "Income per capita:", 
+                         round(avg_income, 0), "USD"))) +
+  scale_fill_viridis_c(option = "plasma", na.value = "gray80") +
+  theme_minimal() +
+  labs(title = "Global Access to Electricity",
+       fill = "Access to\nElectricity (%)")
+
+# Convert to interactive plot
+ggplotly(electricity_map)
+```
+
+## Trends over time Analysis
+interpret the evlote trend of electricity access
+```{r time_series}
+# Select a few representative countries for visualization
+selected_countries <- c("USA", "CHN", "IND", "NGA", "BRA")  # adjust codes as needed
+
+# Create time series plot
+worldbank1_clean %>%
+  filter(country_code %in% selected_countries) %>%
+  ggplot(aes(x = year, y = electricity_access, color = country_name)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Trends in Electricity Access (2000-2021)",
+       y = "Access to Electricity (%)",
+       x = "Year",
+       color = "Country") +
+  theme(legend.position = "bottom")
+
+# Create income trends plot
+worldbank1_clean %>%
+  filter(country_code %in% selected_countries) %>%
+  ggplot(aes(x = year, y = national_income, color = country_name)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Trends in National Income (2000-2021)",
+       y = "Adjusted Net National Income per Capita (USD)",
+       x = "Year",
+       color = "Country") +
+  theme(legend.position = "bottom")
+```
+
+## Conclusions
+
+Our analysis reveals several key findings:
+
+1.  There is a strong positive correlation between electricity access and national income.
+2.  Geographical patterns show clear regional disparities in electricity access.
+3.  Many countries have made significant progress in expanding electricity access over the past two decades.
+
+These findings suggest that electricity access and economic development are closely intertwined, though the exact nature of this relationship would require more detailed causal analysis to understand fully.
