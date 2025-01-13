@@ -68,6 +68,7 @@ data_tob %>%
     title = "Gruppierung der Daten im Jahr 2020",
     colour = "relativer Tabakkonsum"
   ) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -84,6 +85,7 @@ data_tob %>%
   group_by(cat_tob_usage) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -107,6 +109,7 @@ data_tob %>%
   ) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -131,6 +134,7 @@ data_tob %>%
   filter(cat_tob_usage != "Very Low") %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -153,6 +157,7 @@ data_tob %>%
   ) %>%
   ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -180,6 +185,7 @@ data_tob_all %>%
   ) %>%
   ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -208,6 +214,7 @@ data_tob %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -231,6 +238,7 @@ data_tob %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -248,6 +256,7 @@ data_tob %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   facet_wrap( ~ Year) +
   geom_point(size = 2, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -272,8 +281,11 @@ data_tob %>%
     .groups = "drop"
     ) %>%
   ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col(fill = "steelblue") +
-  labs(x = "relativer Tabakkonsum", y = "BIP pro Kopf in $", title = "Tabakkonsum vs. BIP")
+  geom_col() +
+  theme_bw() +
+  labs(x = "relativer Tabakkonsum", 
+       y = "BIP pro Kopf in $", 
+       title = "Tabakkonsum vs. BIP")
 ```
 <br>
 Und nun mit neuer Gruppierung der Daten:
@@ -307,6 +319,7 @@ data_tob_per_year %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
   facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -330,6 +343,7 @@ data_tob_per_year %>%
   ) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
   facet_wrap( ~ Year) +
+  theme_bw() +
   geom_point(size = 3, alpha = 0.7) +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
@@ -350,6 +364,7 @@ data_tob_per_year %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
   facet_wrap( ~ Year) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil der tabakkonsumierenden Erwachsenen in %",
     y = "BIP pro Kopf in $",
@@ -373,7 +388,8 @@ data_tob_per_year %>%
     .groups = "drop"
     ) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
+  theme_bw() +
   labs(
     x = "relativer Tabakkonsum",
     y = "BIP pro Kopf in $",
@@ -388,8 +404,9 @@ Hier Barplots facettiert nach jahr, wobei nach Tabakdurchschnittskonsum gruppier
 data_tob %>%
   group_by(cat_tob_usage) %>%
   ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
   facet_wrap( ~ Year) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -409,8 +426,9 @@ Und nun Barplots facettiert nach Jahr, wobei jedes jahr neu nach Tabakkonsum gru
 data_tob_per_year %>%
   group_by(cat_tob_usage_per_year) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
   facet_wrap( ~ Year) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
