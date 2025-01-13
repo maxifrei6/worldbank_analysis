@@ -1,0 +1,133 @@
+---
+title: "Analysis of Access to Electricity and National Income"
+author: "Iman"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(sf) # For maps
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(leaflet) # For interactive maps
+library(broom)
+library(knitr)
+```
+
+## Introduction
+
+This report explores the relationship between access to electricity and adjusted net national income per capita across different countries, while considering the impact of population and country size. The analysis includes exploratory data visualizations and a linear regression model to uncover trends and relationships.
+
+## Data Preparation
+
+```{r load-data}
+# Load the dataset
+data <- read.csv("data/merged_data_elect.csv")
+
+# Check for missing values to assess data completeness
+summary(data)
+```
+
+## Exploratory Data Analysis
+
+### Trends in Access to Electricity by Continent
+
+This plot shows how access to electricity has evolved over the years, grouped by continent. This helps identify regional trends and variations.
+
+```{r electricity-trend-continent}
+# Add continent information (assuming data contains this or can be joined)
+# Example code assumes `Continent` is available in the data or a lookup is used
+world <- ne_countries(scale = "medium", returnclass = "sf")
+data <- data %>% 
+  left_join(world %>% select(admin, continent), by = c("Country_Name" = "admin"))
+
+# Plot trends grouped by continent
+ggplot(data, aes(x = Year, y = Access_to_Electricity, color = continent)) +
+  geom_line(stat = "summary", fun = "mean") +
+  labs(title = "Trends in Access to Electricity by Continent", x = "Year", y = "Access to Electricity (%)", color = "Continent") +
+  theme_minimal()
+```
+
+### Scatter Plot: Electricity vs Income
+
+This scatter plot illustrates the relationship between access to electricity and adjusted net national income per capita. Each point represents a country-year observation. a smooth line is added to show the general trend in the data.
+
+```{r scatter-plot}
+ggplot(data, aes(x = Adjusted_Net_National_Income_Per_Capita, y = Access_to_Electricity)) +
+  geom_point(aes(color = Country_Name)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title = "Access to Electricity vs Income", x = "Income per Capita (USD)", y = "Access to Electricity (%)", color = "Country") +
+  theme_minimal()
+```
+
+### Population Density and Electricity Access
+
+This bar chart provides insights into how population density correlates with access to electricity across countries. Countries are grouped into categories based on their population density.
+
+```{r population-density-bar}
+data <- data %>%
+  mutate(Population_Density_Category = cut(Population_density, breaks = c(0, 50, 100, 200, 500, Inf), 
+                                           labels = c("0-50", "51-100", "101-200", "201-500", ">500")))
+
+ggplot(data, aes(x = Population_Density_Category, y = Access_to_Electricity)) +
+  geom_boxplot() +
+  labs(title = "Access to Electricity by Population Density", x = "Population Density (people per sq. km)", y = "Access to Electricity (%)") +
+  theme_minimal()
+```
+
+### Geographical Maps
+
+This map visualizes access to electricity across different countries. Countries are shaded according to their electricity access percentage. Additionally, an interactive map for income per capita is included for enhanced exploration.
+
+#### Access to Electricity
+```{r map-electricity, warning=FALSE, message=FALSE}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+world_data <- world %>% 
+  left_join(data, by = c("iso_a3" = "Country_Code"))
+
+leaflet(world_data) %>% 
+  addTiles() %>% 
+  addPolygons(fillColor = ~colorNumeric("YlGn", Access_to_Electricity)(Access_to_Electricity),
+              color = "black", weight = 1, opacity = 1, fillOpacity = 0.7,
+              label = ~paste(admin, "Electricity:", Access_to_Electricity, "%")) %>% 
+  addLegend(pal = colorNumeric("YlGn", world_data$Access_to_Electricity), values = world_data$Access_to_Electricity, 
+            title = "Access to Electricity (%)")
+```
+
+#### Adjusted Net National Income per Capita
+```{r map-income, warning=FALSE, message=FALSE}
+leaflet(world_data) %>% 
+  addTiles() %>% 
+  addPolygons(fillColor = ~colorNumeric("Blues", Adjusted_Net_National_Income_Per_Capita)(Adjusted_Net_National_Income_Per_Capita),
+              color = "black", weight = 1, opacity = 1, fillOpacity = 0.7,
+              label = ~paste(admin, "Income Per Capita:", Adjusted_Net_National_Income_Per_Capita, "USD")) %>% 
+  addLegend(pal = colorNumeric("Blues", world_data$Adjusted_Net_National_Income_Per_Capita), 
+            values = world_data$Adjusted_Net_National_Income_Per_Capita, 
+            title = "Income Per Capita (USD)")
+```
+
+## Modeling
+
+### Linear Regression Model
+
+A linear regression model is used to evaluate the influence of adjusted net national income per capita, population, and surface area on access to electricity. Results are displayed in tabular format for clarity.
+
+```{r linear-model}
+lm_model <- lm(Access_to_Electricity ~ Adjusted_Net_National_Income_Per_Capita + Population + Surface_area, data = data)
+
+# Display regression results as a table
+kable(tidy(lm_model), caption = "Linear Regression Results")
+```
+
+## Conclusions
+
+- Access to electricity generally increases with higher income per capita.
+- Countries with larger populations or greater land areas show varying levels of electricity access, suggesting additional influencing factors.
+
