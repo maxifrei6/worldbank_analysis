@@ -30,6 +30,7 @@ for (repo in names(github_packages)) {
 packages <- c("readxl",  # for reading .xlsx files
               "tidyr",  # for pivoting data frames
               "dplyr",  # for cleansing purposes
+              "gridExtra",  # for presentation (???)
               "stringr",
               "checkmate",  # for input validation checks
               "lubridate",
