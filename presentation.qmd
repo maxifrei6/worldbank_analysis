@@ -253,7 +253,7 @@ plot_1 <- data_alc %>%
   geom_col() +
   theme_bw(base_size = 25) +
   labs(
-    x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
+    x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz in %",
     title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre",
     subtitle = "Pro Jahr neu gruppiert"
@@ -274,8 +274,7 @@ plot_2 <- data_alc %>%
     y = "HIV Prävalenz in %",
     title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Gruppierung",
     subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Anteil an Arbeitenden
-    mit grundlegender Bildung"
+    colour = "relativer Alkoholkonsum"
   ) +
   geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
   scale_colour_brewer(palette = "Set2")
