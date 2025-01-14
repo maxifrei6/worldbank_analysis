@@ -8,11 +8,13 @@ output:
 
 ## Introduction
 This analysis explores relationships of HIV prevalence in the population aged 15-49 to the total alcohol consumption per capita as well as its coherence to percentage of labor force with basic education. Therefore we have two main parts:
+<br>
 1. How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
+<br>
 2. Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
 <br>
-```{r setup, message = FALSE, echo = FALSE, warning = FALSE}
+```{r hiv setup, message = FALSE, echo = FALSE, warning = FALSE}
 # Load necessary libraries
 library(here)
 library(dplyr)
@@ -36,9 +38,20 @@ data_hiv <- data_processed %>%
     cat_alc,
     cat_education
   )
+
+## HIV Variable:  Prevalence of HIV, total (% of population ages 15-49)
+#                 SH.DYN.AIDS.ZS
+
+#                 Total alcohol consumption per capita
+#                 (liters of pure alcohol, projected estimates, 15+ years of age)
+#                 SH.ALC.PCAP.LI
+
+#                 Labor force with basic education
+#                 (% of total working-age population with basic education)
+#                 SL.TLF.BASC.ZS
 ```
 <br>
-Check how many NA's in HIV, alcohol and education variable each Year (excluding years existing only of NA's)
+Check how many NA's are in HIV, alcohol and education variable each Year (excluding years existing only of NA's)
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_table <- data_hiv %>%
@@ -52,17 +65,48 @@ data_table <- data_hiv %>%
 print(data_table)
 ```
 <br> 
-Auffällig ist, dass es überhaupt keine Daten für Aruba zu geben scheint, daher wird dieses Land im folgenden aus dem Datensatz entfernt, den wir für diese Fragestellung brauchen. Außerdem gibt es keine Daten für Alkoholkonsum 2021.
+Auffällig ist, dass es überhaupt keine Daten für Aruba zu geben scheint, daher wird dieses Land im folgenden aus dem Datensatz entfernt, den wir für diese Fragestellung brauchen. Außerdem gibt es keine Daten für den Alkoholkonsum im Jahr 2021.
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv <- data_hiv %>%
-  filter(`Country Name` != "Aruba") 
-data_alc <- data_hiv %>% 
+  filter(`Country Name` != "Aruba")
+data_alc <- data_hiv %>%
   filter(Year %in% data_table$Year)
 ```
 <br>
 <br>
 ### 1. HIV Prevalence and alcohol consumption
+<br>
+Als erstes wollen wir uns die existenten Daten über die relevanten Variablen anschauen.
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc %>% 
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz"
+  ) +
+  theme_bw()
+```
+<br>
+Nun schauen wir uns die Gruppierung dieser Daten im Allgemeinen an.
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS ,colour = cat_alc)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Gruppierung der Daten",
+    subtitle = "Allgemeine Gruppierung",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Set2")
+```
 <br>
 To take a look at the grouping of our data by alcohol consumption, we will display a plot of the most recent data in Year 2020.
 <br>
@@ -75,8 +119,9 @@ data_alc %>%
     y = "Alkoholkonsum in Litern pro Kopf",
     x = "Land",
     title = "Gruppierung der Daten im Jahr 2020",
-    colour = "verhältnismäßiger Alkoholkonsum"
+    colour = "relativer Alkoholkonsum"
   ) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -95,6 +140,7 @@ data_alc %>%
   group_by(cat_alc) %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Alkoholkonsum in Litern pro Kopf",
     y = "HIV Prävalenz in %",
@@ -105,7 +151,7 @@ data_alc %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-In the following we view the same plot, but without the extreme value. Therefore the country Tanzania is removed.
+In the following we view the same plot, but without the extreme value. Therefore the country Tanzania is removed. (only for interest, how relations are moved)
 <br>
 ```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc %>%
@@ -114,6 +160,7 @@ data_alc %>%
   group_by(cat_alc) %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Alkoholkonsum in Litern pro Kopf",
     y = "HIV Prävalenz in %",
@@ -137,6 +184,7 @@ data_alc %>%
   ) %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     title = "Alkoholkonsum vs. HIV Prävalenz im Jahr 2020",
     x = "Alkoholkonsum in Litern pro Kopf",
@@ -161,6 +209,7 @@ data_alc %>%
   ) %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     title = "Alkoholkonsum vs. HIV Prävalenz im Jahr 2020",
     x = "Alkoholkonsum in Litern pro Kopf",
@@ -183,6 +232,7 @@ data_hiv %>%
   ) %>%
   ggplot(aes(Year, SH.DYN.AIDS.ZS, colour = cat_alc)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -195,7 +245,6 @@ data_hiv %>%
     colour = "relativer Alkoholkonsum"
   ) +
   scale_colour_brewer(palette = "Set2")
-# geom_line(aes(group = cat_alc)) + ## nicht korrekt anzunehmen, dass der Verlauf zwischen den jahren stetig/monoton/linear verläuft
 ```
 <br>
 Now we take a look over the average of all years, where we categorize by relative alcohol consumption and compare to HIV Prevalence.
@@ -206,8 +255,11 @@ data_hiv %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             .groups = "drop") %>%
   ggplot(aes(x = cat_alc, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
-  labs(x = "relativer Alkoholkonsum", y = "HIV Prävalenz in %", title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre")
+  geom_col() +
+  theme_bw() +
+  labs(x = "relativer Alkoholkonsum",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre")
 ```
 <br>
 to take a look at the categorization, we plot the same data in slightly different way:
@@ -222,6 +274,7 @@ data_hiv %>%
   ) %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Alkoholkonsum in Litern pro Kopf",
     y = "HIV Prävalenz in %",
@@ -238,16 +291,17 @@ Wir wollen uns das Verhältnis pro Jahr anschauen und facetten deswegen nun übe
 data_hiv %>%
   group_by(cat_alc) %>%
   ggplot(aes(x = cat_alc, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
-  facet_wrap( ~ Year) +
+  geom_col() +
+  facet_wrap(~ Year) +
+  theme_bw() +
   theme(
     axis.text.x = element_text(
-      angle = 90,
+      angle = 45,
       hjust = 1,
       vjust = 0.5,
-      size = 6
+      size = 8
     ),
-    axis.text.y = element_text(size = 5)
+    axis.text.y = element_text(size = 7)
   ) +
   labs(
     x = "relativer Alkoholkonsum",
@@ -255,7 +309,7 @@ data_hiv %>%
     title = "Alkoholkonsum vs. HIV Prävalenz",
     subtitle = "Allgemeine Gruppierung"
   ) +
-  theme(strip.text = element_text(size = 6, margin = margin(0, 0, 0, 0)))
+  theme(strip.text = element_text(size = 7, margin = margin(0.2, 0.2, 0.2, 0.2)))
 ```
 <br>
 Erkennbar sind hier nur ganz leichte Schwankungen der Verteilung. Nun wollen wir nochmal auf die Idee mit dem jährlichen gruppieren zurückkommen. 
@@ -276,6 +330,87 @@ data_alc_per_year <- data_alc %>%
   )
 ```
 <br>
+Hier nun erstmal die Gruppierung geplottet:
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS ,colour = cat_alc_per_year)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Gruppierung der Daten",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Pro Jahr geplottete Daten zeigen die korrekte Einordnung der Quantile:
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS ,colour = cat_alc_per_year)) +
+  facet_wrap( ~ Year) +
+  geom_point(size = 2.5, alpha = 0.7) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Gruppierung der Daten",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Nun pro Kategorie nur einen Punkt plotten.
+<br>
+```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  group_by(Year, cat_alc_per_year) %>% 
+  summarise(SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+            SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+            .groups = "drop") %>% 
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS ,colour = cat_alc_per_year)) +
+  facet_wrap( ~ Year) +
+  geom_point(size = 2.5, alpha = 0.7) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Gruppierung der Daten",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Zusammengelegt in einen plot würden die Daten folgendes ergeben:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  group_by(cat_alc_per_year, Year) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc_per_year)) +
+  geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Gruppierung",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
 Wenn wir uns nun nochmal den Durchschnittsbarplot anschauen, nur dass die Daten jährlich neu gruppiert wurden, sieht dies nun so aus:
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
@@ -284,7 +419,8 @@ data_alc_per_year %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             .groups = "drop") %>%
   ggplot(aes(x = cat_alc_per_year, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
+  theme_bw() +
   labs(
     x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz in %",
@@ -301,7 +437,8 @@ data_hiv %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             .groups = "drop") %>%
   ggplot(aes(x = cat_alc, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
+  theme_bw() +
   labs(
     x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz in %",
@@ -322,6 +459,7 @@ data_alc_per_year %>%
   ) %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc_per_year)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Alkoholkonsum in Litern pro Kopf",
     y = "HIV Prävalenz in %",
@@ -341,11 +479,12 @@ Wenn wir uns nun die Plots nach Jahr facettiert anschauen wollen mit der neuen G
 data_alc_per_year %>%
   group_by(cat_alc_per_year) %>%
   ggplot(aes(x = cat_alc_per_year, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
-  facet_wrap( ~ Year) +
+  geom_col() +
+  facet_wrap(~ Year) +
+  theme_bw() +
   theme(
     axis.text.x = element_text(
-      angle = 90,
+      angle = 45,
       hjust = 1,
       vjust = 0.5,
       size = 6
@@ -361,12 +500,87 @@ data_alc_per_year %>%
   theme(strip.text = element_text(size = 6, margin = margin(0.2, 0.2, 0.2, 0.2)))
 ```
 <br>
+Andererseits wollen wir die Daten auch nicht zu vereinfacht darstellen. Schließlich soll man noch erkennen, wie sich der Graph zusammensetzt. Hier nun also erstmal ein plot mit derselben Aussage über die Durchschnitte aller Jahre mit jährlich neu gruppierten Daten. Jedoch werden hier pro Jahr ein Punkt dargestellt und ein Polynom (LOESS Methode, span = 1.05) darüber gelegt.
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  group_by(cat_alc_per_year, Year) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc_per_year)) +
+  geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Gruppierung",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Hier wird nun pro Land im Schnitt über alle Jahre ein Punkt dargestellt und ein Polynom darüber gelegt.
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  group_by(cat_alc_per_year, `Country Name`) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc_per_year)) +
+  geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Länder",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.4) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
+Problematisch ist hier, dass Länder die über die Jahre mehreren Kategorien angehören mehrere Datenpunkte als einen beanspruchen. 
+Dadurch bekommen diese Datenpunkte mehr Gewicht.
+<br>
+Vergleichsweise hier nochmal mit allen Datenpunkten geplottet:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  group_by(cat_alc_per_year) %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc_per_year)) +
+  geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  ) +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.05) +
+  scale_colour_brewer(palette = "Set2")
+```
+We see that Tansania shows a very high HIV Prevalence. We also see that there are no clear lines of our quantiles. This comes from grouping the data every year new. The quantile borders vary over time.
+<br>
+1. How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
+<br>
+Ganz allgemein ist erkennbar, dass mit Länder mit großem Alkoholkonsum im Schnitt über alle Jahre eine höhere HIV Prävalenz aufwiesen.
+<br>
 <br>
 ### 2. HIV prevalence and basic education
 <br>
-```{r}
-data_edu <- data_hiv %>% 
-  filter(`Country Name` != "China") %>% 
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_edu <- data_hiv %>%
+  filter(`Country Name` != "China") %>%
   filter(`Country Name` != "Kasachstan")
 ```
 <br>
@@ -381,8 +595,9 @@ data_edu %>%
     y = "Anteil an Arbeitenden mit grundlegender Bildung",
     x = "Land",
     title = "Gruppierung der Daten im Jahr 2021",
-    colour = "verhältnismägies Bildungslevel"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
   ) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -402,11 +617,12 @@ data_edu %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
   geom_point(size = 3, alpha = 0.7) +
   coord_cartesian(ylim = c(0, 1.75)) +
+  theme_bw() +
   labs(
     x = "Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2021",
-    colour = "relativer Bildungsstand"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
@@ -424,14 +640,15 @@ data_edu %>%
   ) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2021",
-    colour = "relativer Bildungsstand"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2") 
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Now we see a upwards tendency (even without the extreme value).
@@ -443,11 +660,12 @@ data_edu %>%
   group_by(cat_education) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2020",
-    colour = "relativer Bildungsstand"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
@@ -466,17 +684,18 @@ data_edu %>%
   ) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Bildungsstand vs. HIV Prävalenz im Jahr 2020",
-    colour = "relativer Bildungsstand"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Unfortunately in mean the graph is still upwards. Maybe plot over years to get an overview.
+Unfortunately calculating with the mean of each group the graph is still upwards. Maybe plot over years to get an overview.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_edu %>%
@@ -488,6 +707,7 @@ data_edu %>%
   ) %>%
   ggplot(aes(Year, SH.DYN.AIDS.ZS, colour = cat_education)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   theme(axis.text.x = element_text(
     angle = 45,
     hjust = 1,
@@ -497,7 +717,7 @@ data_edu %>%
     title = "HIV Prävalenz über die Jahre",
     x = "Jahr",
     y = "HIV Prävalenz",
-    colour = "relativer Bildungsstand"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
   )  +
   scale_colour_brewer(palette = "Set2")
 ```
@@ -505,24 +725,22 @@ data_edu %>%
 The 60 % with higher education level also show a higher HIV Prevalence. Their Prevalence is falling over the years, while countries with lower education level have an small tendency to increasing HIV prevalence. The labor force with relativly medium
 education have a higher HIV Prevalence than the others.
 <br>
-Now we take a look at all years, facetted by cat_education, all countries each a line
+Now we take a look at all years, facetted by our categorization, all countries displayed
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_edu %>%
   ggplot(aes(Year, SH.DYN.AIDS.ZS)) +
   geom_point(size = 2, alpha = 0.4) +
-  facet_wrap( ~ cat_education) +
-  geom_line(aes(group = `Country Name`)) +
+  facet_wrap(~ cat_education) +
+  theme_bw() +
   labs(
-    title = "HIV Prävalenz vs Grundbildung je nach relativem Bildungsstand",
+    title = "HIV Prävalenz vs Grundbildung je nach relativem Anteil an Arbeitenden mit grundlegender Bildung",
     x = "Anteil grundlegend gebildeter Arbeitskräfte",
     y = "HIV Prävalenz",
     colour = "Land"
   )  +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Here we see clearly that some countries change their education group to belong to over the years. Therefore we should try to group the data per year later.
 <br>
 We want to create a plot of the averages over all years grouped by education level. For interest first with x-axis education and second as bar plot (x axis the education level)
 <br>
@@ -536,15 +754,20 @@ data_edu %>%
   ) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_education)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
     x = "Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Bildungsstand vs. HIV Prävalenz im Schnitt über die Jahre",
-    colour = "relativer Bildungsstand"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
+<br>
+Hier sehen wir jedoch besonders stark, dass die Gruppierung so nicht akzeptabel ist.
+<br>
+Trotzdem plotten wir hier nochmal den Bar plot mit den Durchschnittswerten pro Kategorie.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_edu %>%
@@ -552,25 +775,25 @@ data_edu %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
     .groups = "drop"
-  ) %>%
+    ) %>%
   ggplot(aes(x = cat_education, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
-  labs(
-    x = "relatives Bildungslevel der arbeitsfähigen Bevölkerung",
-    y = "HIV Prävalenz in %",
-    title = "Bildungsstand vs. HIV Prävalenz im Schnitt über die Jahre"
-  )
+  geom_col() +
+  theme_bw() +
+  labs(x = "relativer Anteil an Arbeitenden mit grundlegender Bildung", 
+       y = "HIV Prävalenz in %", 
+       title = "Bildungsstand vs. HIV Prävalenz im Schnitt über die Jahre")
 ```
 <br>
-nun bar plots facettiert nach jahr. Nur um zu sehen, dass die Unterschiede der verschiedenen Gruppen betragsmäßig zurückgegangen sind. Die HIV-Prävalenz ist über die Jahre insgesamt gesunken, besonders aber bei Ländern mit ehemals den mit Abstand höchsten HIV Werten.
+Nun schauen wir uns bar plots facettiert nach Jahr an, um zu sehen, dass die Unterschiede der verschiedenen Gruppen betragsmäßig zurückgegangen sind. Die HIV-Prävalenz ist über die Jahre insgesamt gesunken, besonders aber bei Ländern mit ehemals den mit Abstand höchsten HIV Werten.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_edu %>%
   ggplot(aes(x = cat_education, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
-  facet_wrap(~Year) +
+  geom_col() +
+  facet_wrap( ~ Year) +
+  theme_bw() +
   labs(
-    x = "relatives Bildungslevel der arbeitsfähigen Bevölkerung",
+    x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Bildungsstand vs. HIV Prävalenz pro Jahr",
     subtitle = "Allgemeine Gruppierung"
@@ -600,12 +823,30 @@ data_edu <- data_edu %>%
         grouping_by = "SL.TLF.BASC.ZS",
         year = Year,
         column_new = "edu_per_year",
-        quantile_labels = c("Sehr schlecht", "Schlecht", "Mittel", "Gut", "Sehr gut")
+        quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß")
       )$cat_edu_per_year
   )
 # sehr viele NA values in neuer Spalte cat_edu_per_year
 data_edu <- data_edu %>% 
   filter(!is.na(cat_edu_per_year))
+```
+<br>
+Als erstes wollen wir die Daten mit der neuen Gruppierung gefaceted anschauen:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_edu %>%
+  ggplot(aes(x = SL.TLF.BASC.ZS, y = SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
+  geom_point(size =2.5, alpha = 0.7) +
+  facet_wrap(~ Year) +
+  theme_bw() +
+  labs(
+    x = "Anteil an Arbeitenden mit grundlegender Bildung",
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung",
+    y = "HIV Prävalenz in %",
+    title = "Grundbildung vs. HIV Prävalenz",
+    subtitle = "Pro Jahr neu gruppiert"
+  ) +
+  scale_colour_brewer(palette = "Set2")
 ```
 <br>
 Wenn wir uns nun nochmal den Durchschnittsbarplot anschauen, nur dass die Daten jährlich neu gruppiert wurden, sieht dies nun so aus:
@@ -616,9 +857,10 @@ data_edu %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             .groups = "drop") %>%
   ggplot(aes(x = cat_edu_per_year, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
+  theme_bw() +
   labs(
-    x = "relativer Bildungsstand",
+    x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Jahre",
     subtitle = "Pro Jahr neu gruppiert"
@@ -628,7 +870,7 @@ data_edu %>%
 Um hier auch nochmal die Gruppierung genauer zu betrachten, plotten wir die Daten inklusive Grundbildungsvariable:
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_edu_per_year %>%
+data_edu %>%
   group_by(cat_edu_per_year) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -637,13 +879,35 @@ data_edu_per_year %>%
   ) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
   geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
   labs(
-    colour = "relativer Bildungsstand",
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Jahre",
     subtitle = "Pro Jahr neu gruppiert",
     x = "Anteil an Arbeitenden mit grundlegender Bildung"
-  ) + 
+  ) +
+  scale_colour_brewer(palette = "Set2")
+```
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+hiv_plot_4 <- data_edu %>%
+  group_by(cat_edu_per_year) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SL.TLF.BASC.ZS,  SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
+  geom_point(size = 5, alpha = 0.7) +
+  theme_bw(base_size = 19) +
+  labs(
+    colour = "relativer Anteil an Arbeitenden
+    mit grundlegender Bildung",
+    y = "HIV Prävalenz in %",
+    title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Jahre",
+    subtitle = "Pro Jahr neu gruppiert",
+    x = "Anteil an Arbeitenden mit grundlegender Bildung"
+  ) +
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
@@ -652,14 +916,15 @@ Hier sehen wir nun die tatsächlich verbesserte Gruppierung sehr deutlich.
 Wenn wir uns nun die Plots nach Jahr facettiert anschauen wollen mit der neuen Gruppierung, sieht das so aus:
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_edu_per_year %>%
+data_edu %>%
   group_by(cat_edu_per_year) %>%
   ggplot(aes(x = cat_edu_per_year, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
-  facet_wrap( ~ Year) +
+  geom_col() +
+  facet_wrap(~ Year) +
+  theme_bw() +
   theme(
     axis.text.x = element_text(
-      angle = 90,
+      angle = 45,
       hjust = 1,
       vjust = 0.5,
       size = 9
@@ -667,10 +932,16 @@ data_edu_per_year %>%
     axis.text.y = element_text(size = 8)
   ) +
   labs(
-    x = "relativer Bildungsstand",
+    x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Grundbildung vs. HIV Prävalenz",
     subtitle = "Pro Jahr neu gruppiert"
   ) +
   theme(strip.text = element_text(size = 8, margin = margin(0.2, 0.2, 0.2, 0.2)))
 ```
+<br>
+Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
+<br>
+Aus den letzten 3 Grafen, lässt sich sehr deutlich herauslesen, dass sich bei einem größeren Anteil an Arbeitenden mit grundlegender Bildung eines Landes auch eine größere HIV Prävalenz beobachten lässt. Somit lässt sich diese Frage in Bezug auf die Daten verneinen.
+<br>
+2.3) boxplot with grouped countries by education and HIV prevalence values
