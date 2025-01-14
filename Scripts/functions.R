@@ -9,6 +9,8 @@
 #' 4. remove_metadata
 #' 5. translate
 #' 6. prepare_join
+#' 7. kl_div_from_dnorm
+#' 8. source_rmd
 
 
 #' FUNCTION 1:
@@ -460,4 +462,42 @@ kl_div_from_dnorm <- function(df, variable, kernel_bw) {
 
   # Return the adjusted data frame
   return(df_adjusted)
+}
+
+
+
+
+
+##########################################################################################
+#' FUNCTION 8:
+#' @description
+#' The function 'source_rmd' takes a file path to a .Rmd file and sources the file by
+#' generating a temporary .R file from the .Rmd, sources this temporary file into the
+#' by argument specified environment - by default the global environment. Afterwards it
+#' deletes the temporarily generated .R file, so no changes to the files are done.
+#' However, the code chunks inside the inputted .Rmd (via its file path) are now saved in
+#' the specified environment and can be accessed outside the .Rmd file.
+#'
+#' Inputs:
+#' @param file A single string stating the file path to .Rmd file, that shall be sourced.
+#' @param envir A valid environment to save the assigned variables from the .Rmd file in.
+#' If left empty, the default case of global environment is used.
+#'
+#' Output:
+#' @returns Nothing per se. All assigned variables are sourced and save in the assigned
+#' environment. 
+source_rmd <- function(file, envir = globalenv()) {
+  
+  # Generate a temporary .R file from the .Rmd stored at the location, the inputted file
+  # path is referring to
+  require(knitr)
+  temp_r_file <- knitr::purl(file, quiet = TRUE)
+  
+  # Source the temporarily generated .R file into the specified environment, so the in the
+  # .Rmd file assigned variables are accessible afterwards
+  source(temp_r_file, local = envir)
+  
+  # Delete the temporary .R file to clean up and not leave changes to the file structure
+  # from before the function call
+  unlink(temp_r_file)
 }
