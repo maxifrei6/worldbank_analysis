@@ -786,8 +786,8 @@ hiv_plot_4 <- data_edu %>%
     SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
-  geom_point(size = 6, alpha = 0.7) +
+  ggplot(aes(SL.TLF.BASC.ZS,  SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
+  geom_point(size = 5, alpha = 0.7) +
   theme_bw(base_size = 19) +
   labs(
     colour = "relativer Anteil an Arbeitenden

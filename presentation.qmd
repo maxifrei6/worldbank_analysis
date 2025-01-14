@@ -241,19 +241,46 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS, color = ca
 
 Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren** zum **gesamten Alkoholkonsum pro Kopf**?
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-data_alc %>%
+```{r, fig.height=9, fig.width=20, message=FALSE, warning=FALSE, echo=FALSE}
+# install.packages("gridExtra")
+library(gridExtra)
+
+plot_1 <- data_alc %>%
   group_by(cat_alc_per_year) %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             .groups = "drop") %>%
   ggplot(aes(x = cat_alc_per_year, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
+  theme_bw(base_size = 25) +
   labs(
     x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre",
     subtitle = "Pro Jahr neu gruppiert"
   ) 
+
+plot_2 <- data_alc %>%
+  group_by(cat_alc_per_year, Year) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc_per_year)) +
+  geom_point(size = 3, alpha = 0.7) +
+  theme_bw(base_size =  25) +
+  labs(
+    x = "Alkoholkonsum in Litern pro Kopf",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Gruppierung",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Anteil an Arbeitenden
+    mit grundlegender Bildung"
+  ) +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
+  scale_colour_brewer(palette = "Set2")
+
+grid.arrange(plot_1, plot_2, ncol = 2, widths = c(2, 3))
 ```
 
 ## 2.3 HIV (2/3) {.smaller}
@@ -286,7 +313,7 @@ data_edu %>%
 
 ## 2.3 HIV (3/3) {.smaller}
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
+```{r, message=FALSE, fig.height=8, fig.width=12, warning=FALSE, echo=FALSE}
 data_edu %>%
   group_by(cat_edu_per_year) %>%
   summarise(
@@ -295,8 +322,8 @@ data_edu %>%
     .groups = "drop"
   ) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
-  geom_point(size = 6) +
-  theme_bw(base_size = 19) +
+  geom_point(size = 5) +
+  theme_bw(base_size = 21) +
   labs(
     colour = "relativer Anteil an Arbeitenden
     mit grundlegender Bildung",
