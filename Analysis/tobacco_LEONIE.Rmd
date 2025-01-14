@@ -30,6 +30,12 @@ data_tob_all <- data_processed %>%
          NY.GDP.PCAP.PP.KD,
          SH.PRV.SMOK,
          cat_tob_usage)
+
+# Variables:  GDP per capita, PPP (constant 2021 international $)
+#             NY.GDP.PCAP.PP.KD
+
+#             Prevalence of current tobacco use (% of adults)
+#             SH.PRV.SMOK
 ```
 <br>
 ### 1. Tobacco Prevalence and GDP

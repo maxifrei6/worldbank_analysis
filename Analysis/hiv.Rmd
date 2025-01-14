@@ -38,6 +38,17 @@ data_hiv <- data_processed %>%
     cat_alc,
     cat_education
   )
+
+## HIV Variable:  Prevalence of HIV, total (% of population ages 15-49)
+#                 SH.DYN.AIDS.ZS
+
+#                 Total alcohol consumption per capita
+#                 (liters of pure alcohol, projected estimates, 15+ years of age)
+#                 SH.ALC.PCAP.LI
+
+#                 Labor force with basic education
+#                 (% of total working-age population with basic education)
+#                 SL.TLF.BASC.ZS
 ```
 <br>
 Check how many NA's are in HIV, alcohol and education variable each Year (excluding years existing only of NA's)
@@ -800,3 +811,5 @@ data_edu %>%
 Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
 Aus den letzten 3 Grafen, lässt sich sehr deutlich herauslesen, dass sich bei einem größeren Anteil an Arbeitenden mit grundlegender Bildung eines Landes auch eine größere HIV Prävalenz beobachten lässt. Somit lässt sich diese Frage in Bezug auf die Daten verneinen.
+<br>
+2.3) boxplot with grouped countries by education and HIV prevalence values
