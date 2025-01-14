@@ -65,7 +65,7 @@ data_tob <- data_tob %>%
         grouping_by = "SH.PRV.SMOK",
         year = Year,
         column_new = "tob_usage_per_year",
-        quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß")
+        quantile_labels = c("Sehr\ngering", "Gering", "Mittel", "Groß", "Sehr\ngroß")
       )$cat_tob_usage_per_year
   )
 
@@ -258,9 +258,7 @@ data_alc %>%
 
 ## 2.3 HIV (2/3) {.smaller}
 
-Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**?
-
-\<\<\<\<\<\<\< HEAD
+Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**? 
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data_edu %>%
@@ -288,10 +286,6 @@ data_edu %>%
 
 ## 2.3 HIV (3/3) {.smaller}
 
-weitere Analyse zu: Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**?
-
-\<\<\<\<\<\<\< HEAD
-
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data_edu %>%
   group_by(cat_edu_per_year) %>%
@@ -301,7 +295,8 @@ data_edu %>%
     .groups = "drop"
   ) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
-  geom_point(size = 3, alpha = 0.7) +
+  geom_point(size = 6) +
+  theme_bw(base_size = 19) +
   labs(
     colour = "relativer Anteil an Arbeitenden
     mit grundlegender Bildung",
@@ -315,7 +310,7 @@ data_edu %>%
 
 ## 2.4 Tabakkonsum (1/2) {.smaller}
 
-In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen innerhalb eines Landes?
+In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Prävalenz des aktuellen Tabakkonsums unter Erwachsenen**?
 
 ```{r tobacco_setup}
 # Load the dataset
@@ -362,17 +357,13 @@ data_tobacco_normdensity <- data_tobacco_normdensity %>%
   filter(norm_x_val <= 60)
 ```
 
-```{r tobacco_plot1_}
+```{r tobacco_plot1_, echo = FALSE, warning=FALSE, message=FALSE}
 data_tob %>%
   group_by(cat_tob_usage_per_year) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col(fill = "steelblue") +
+  geom_col() +
   facet_wrap( ~ Year) +
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1,
-    size = 9
-  )) +
+  theme_bw(base_size = 16) +
   labs(
     x = "relativer Tabakkonsum",
     y = "BIP pro Kopf in $",

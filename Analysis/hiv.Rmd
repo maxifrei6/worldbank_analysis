@@ -14,7 +14,7 @@ This analysis explores relationships of HIV prevalence in the population aged 15
 2. Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
 <br>
-```{r setup, message = FALSE, echo = FALSE, warning = FALSE}
+```{r hiv setup, message = FALSE, echo = FALSE, warning = FALSE}
 # Load necessary libraries
 library(here)
 library(dplyr)
@@ -768,6 +768,27 @@ data_edu %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
   geom_point(size = 3, alpha = 0.7) +
   theme_bw() +
+  labs(
+    colour = "relativer Anteil an Arbeitenden
+    mit grundlegender Bildung",
+    y = "HIV Prävalenz in %",
+    title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Jahre",
+    subtitle = "Pro Jahr neu gruppiert",
+    x = "Anteil an Arbeitenden mit grundlegender Bildung"
+  ) +
+  scale_colour_brewer(palette = "Set2")
+```
+```{r_hiv_plot_4, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+hiv_plot_4 <- data_edu %>%
+  group_by(cat_edu_per_year) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
+  geom_point(size = 6, alpha = 0.7) +
+  theme_bw(base_size = 19) +
   labs(
     colour = "relativer Anteil an Arbeitenden
     mit grundlegender Bildung",
