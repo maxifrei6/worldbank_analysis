@@ -755,7 +755,7 @@ Secondly, the few countries with mainly decreasing values catch the eye, namely 
 
 Making it more representative by using the grouping for the faceting and investigating the relationship within the groups, shows the following.
 
-```{r focused_co2_per_basis, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
+```{r focused_co2_per_basis, echo=FALSE, fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
 ggplot(data_surface_long,
        aes(x = Year,
            # Transform the CO2 emissions from Megatonnes to Gigatonnes

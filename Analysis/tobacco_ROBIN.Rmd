@@ -6,7 +6,7 @@ output:
   html_document:
     self-contained: true
     clean: true
-    css: customstyle.scss
+    css: "../customstyle.scss"
 ---
 
 ## Introduction
@@ -16,7 +16,7 @@ This analysis explores relationships between indicators across countries such as
 <br><br>
 For this analysis, we consider the following indicators:
 
-```{r setup, echo = FALSE, message = FALSE}
+```{r tobacco_setup, echo = FALSE, message = FALSE}
 # Load libraries
 library(knitr)
 library(here)
@@ -116,9 +116,6 @@ data_tobacco %>%
   group_by(!is.na(SH.PRV.SMOK)) %>%
   count(Year) %>%
   print(n = 22)
-
-# Convert column 'Year' to data type Integer
-data_tobacco$Year <- as.integer(data_tobacco$Year)
 ```
 
 ```{r missing_filter_ext, echo=FALSE, message=FALSE, warning=FALSE}
@@ -509,13 +506,14 @@ plot_tobacco1_density_bottom <-
 
 
 # Assemble the plot
-(plot_tobacco1_data_upper /
+plot_tobacco_data_density <- (plot_tobacco1_data_upper /
     plot_tobacco1_density_upper /
     plot_spacer() /
     (plot_tobacco1_data_bottom + plot_spacer() + plot_layout(widths = c(3, 1))) /
     (plot_tobacco1_density_bottom + plot_spacer() + plot_layout(widths = c(3, 1))) +
     plot_layout(heights = c(1.9, 0.4, 0.1, 1.9, 0.4, 0.3), widths = c(1, 1, 1, 1))) &
   theme(plot.margin = margin(0, 0, 0, 0))
+plot_tobacco_data_density
 
 # TODO: REMOVE THE ASSEMBLING CODE OR IMPLEMENT IN FINAL VERSION
 # Assemble the plot with small margins between the data and density plots in both rows.
