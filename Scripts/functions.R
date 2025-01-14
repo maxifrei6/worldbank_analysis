@@ -465,10 +465,6 @@ kl_div_from_dnorm <- function(df, variable, kernel_bw) {
 }
 
 
-
-
-
-##########################################################################################
 #' FUNCTION 8:
 #' @description
 #' The function 'source_rmd' takes a file path to a .Rmd file and sources the file by
