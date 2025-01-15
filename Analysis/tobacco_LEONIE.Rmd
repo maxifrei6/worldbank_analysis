@@ -422,6 +422,39 @@ data_tob_per_year_format %>%
   )
 ```
 <br>
+Nun wollen wir noch die Varianz für jede Gruppe in ihren HIV Werten überprüfen, da Mittelwertsberechnungen schnell verzerrt sein können. Dafür betrachten wir nun botplots für jede Kategorie.
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob_per_year %>%
+  ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
+  geom_boxplot(alpha = 0.7) +
+  scale_y_log10() +
+  theme_bw() +
+  labs(
+    x = "relativer Tabakkonsum",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP",
+    subtitle = "Pro Jahr gruppierte Daten"
+  )
+```
+<br>
+Hier nochmal nach Jahr facetiert:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob_per_year %>%
+  ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
+  geom_boxplot(alpha = 0.7) +
+  scale_y_log10() +
+  facet_wrap( ~ Year) +
+  theme_bw() +
+  labs(
+    x = "relativer Tabakkonsum",
+    y = "BIP pro Kopf in $",
+    title = "Tabakkonsum vs. BIP",
+    subtitle = "Pro Jahr gruppierte Daten"
+  )
+```
+<br>
 Hier Barplots facettiert nach jahr, wobei nach Tabakdurchschnittskonsum gruppiert wurde:
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}

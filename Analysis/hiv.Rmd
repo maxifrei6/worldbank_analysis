@@ -336,6 +336,7 @@ Hier nun erstmal die Gruppierung geplottet:
 data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS ,colour = cat_alc_per_year)) +
   geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(aes(group = 1), method = "lm", size = 0.8) +
   labs(
     x = "Alkoholkonsum in Litern pro Kopf",
     y = "HIV Prävalenz in %",
@@ -409,6 +410,22 @@ data_alc_per_year %>%
   ) +
   geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
   scale_colour_brewer(palette = "Set2")
+```
+<br>
+Um hier aber nochmal die Streuung der Werte beizubehalten, dieselben Daten nochmal in einem Boxplot dargestellt:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_per_year %>%
+  ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
+  geom_boxplot(alpha = 0.7) +
+  theme_bw() +
+  labs(
+    x = "relativer Alkoholkonsum",
+    y = "HIV Prävalenz in %",
+    title = "Alkoholkonsum vs. HIV Prävalenz",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Alkoholkonsum"
+  )
 ```
 <br>
 Wenn wir uns nun nochmal den Durchschnittsbarplot anschauen, nur dass die Daten jährlich neu gruppiert wurden, sieht dies nun so aus:
@@ -524,6 +541,8 @@ data_alc_per_year %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
+Schwierig ist hier, dass die Mittelwertsberechnun die Daten verziehen kann.
+<br>
 Hier wird nun pro Land im Schnitt über alle Jahre ein Punkt dargestellt und ein Polynom darüber gelegt.
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
@@ -573,7 +592,7 @@ We see that Tansania shows a very high HIV Prevalence. We also see that there ar
 <br>
 1. How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
 <br>
-Ganz allgemein ist erkennbar, dass mit Länder mit großem Alkoholkonsum im Schnitt über alle Jahre eine höhere HIV Prävalenz aufwiesen.
+Ganz allgemein ist erkennbar, dass mit Länder mit großem Alkoholkonsum im Schnitt über alle Jahre eine höhere HIV Prävalenz aufwiesen. Angemerkt sollte sein, dass dies nur im Schnitt erkennbar ist. Bei einer Analyse über Mediane ist diese Aussage nicht mehr zu treffen. Hier kommt eher hervor, dass Länder mit relativ gesehen größerem Alkoholkonsum eine höhere Varianz in ihrer HIV Prävalenz aufweisen.
 <br>
 <br>
 ### 2. HIV prevalence and basic education
@@ -671,7 +690,7 @@ data_edu %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Is there really an downwards tendency?
+Is there still an downwards tendency, when each category is displayed only by one point?
 <br>
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_edu %>%
@@ -911,6 +930,29 @@ hiv_plot_4 <- data_edu %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
+Hier nun nochmal mit mehr Datenpunkten, dabei wird für jede Gruppierung pro Jahr ein Punkt für diese Mittelwerte geplottet:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_edu %>%
+  group_by(cat_edu_per_year, Year) %>%
+  summarise(
+    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
+    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
+  geom_point(size = 3, alpha = 0.7) +
+  theme_bw() +
+  labs(
+    x = "Anteil der Erwerbstätigen mit grundlegender Bildung",
+    y = "HIV Prävalenz in %",
+    title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Gruppierung",
+    subtitle = "Pro Jahr gruppierte Daten",
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
+  ) +
+  scale_colour_brewer(palette = "Set2")
+```
+<br>
 Hier sehen wir nun die tatsächlich verbesserte Gruppierung sehr deutlich.
 <br>
 Wenn wir uns nun die Plots nach Jahr facettiert anschauen wollen mit der neuen Gruppierung, sieht das so aus:
@@ -940,8 +982,25 @@ data_edu %>%
   theme(strip.text = element_text(size = 8, margin = margin(0.2, 0.2, 0.2, 0.2)))
 ```
 <br>
+Aber sind die Daten möglicherweise durch die Mittelwertsberechnun verzerrt? 
+Hierzu schauen wir uns nun die Boxplots zu jeder Kategorie an:
+<br>
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_edu %>%
+  ggplot(aes(cat_edu_per_year, SH.DYN.AIDS.ZS)) +
+  geom_boxplot(alpha = 0.7) +
+  scale_y_log10() +
+  theme_bw() +
+  labs(
+    x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
+    y = "Logarithmierte HIV Prävalenz in %",
+    title = "Grundbildung vs. HIV Prävalenz",
+    subtitle = "Pro Jahr neu gruppiert"
+  )
+```
+<br>
 Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
-Aus den letzten 3 Grafen, lässt sich sehr deutlich herauslesen, dass sich bei einem größeren Anteil an Arbeitenden mit grundlegender Bildung eines Landes auch eine größere HIV Prävalenz beobachten lässt. Somit lässt sich diese Frage in Bezug auf die Daten verneinen.
+Aus den letzten 4 Grafen, lässt sich sehr deutlich herauslesen, dass sich bei einem größeren Anteil an Arbeitenden mit grundlegender Bildung eines Landes auch eine größere HIV Prävalenz beobachten lässt. Somit lässt sich diese Frage in Bezug auf die Daten verneinen.
 <br>
 2.3) boxplot with grouped countries by education and HIV prevalence values
