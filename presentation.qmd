@@ -38,6 +38,8 @@ library(RColorBrewer)
 library(patchwork)
 library(grid)
 
+source(here("Scripts", "functions.R"))
+
 # Globally center all plots while displaying knitted version in HTML
 knitr::opts_chunk$set(fig.align = "center")
 
@@ -48,77 +50,6 @@ data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
 # data for education
 data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 
-# data for tobacco vs BIP Leonie
-source(here("Scripts", "functions.R"))
-data_tob <- data_merged %>%
-  select(`Country Name`,
-         `Country Code`,
-         Year,
-         NY.GDP.PCAP.PP.KD,
-         SH.PRV.SMOK)
-data_table <- data_tob %>%
-  group_by(Year) %>%
-  reframe(num_na = sum(is.na(SH.PRV.SMOK))) %>%
-  filter(num_na < 25)
-data_tob <- data_tob %>%
-  filter(`Country Name` != "Aruba") %>%
-  filter(Year %in% data_table$Year)
-data_tob <- data_tob %>%
-  group_by(Year) %>%
-  mutate(
-    cat_tob_usage_per_year =
-      group_data_year(
-        df = data_tob,
-        grouping_by = "SH.PRV.SMOK",
-        year = Year,
-        column_new = "tob_usage_per_year",
-        quantile_labels = c("Sehr\ngering", "Gering", "Mittel", "Groß", "Sehr\ngroß")
-      )$cat_tob_usage_per_year
-  )
-
-# data for HIV
-data_hiv <- data_merged %>%
-  select(
-    `Country Name`,
-    `Country Code`,
-    Year,
-    SH.DYN.AIDS.ZS,
-    SH.ALC.PCAP.LI,
-    SL.TLF.BASC.ZS
-  ) %>%
-  filter(`Country Name` != "Aruba")
-
-data_alc <- data_hiv %>%
-  filter(Year != "2021")
-data_alc <- data_alc %>%
-  group_by(Year) %>%
-  mutate(
-    cat_alc_per_year =
-      group_data_year(
-        df = data_alc,
-        grouping_by = "SH.ALC.PCAP.LI",
-        year = Year,
-        column_new = "alc_per_year",
-        quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß")
-      )$cat_alc_per_year
-  )
-
-data_edu <- data_hiv %>%
-  filter(`Country Name` != "China") %>%
-  filter(`Country Name` != "Kasachstan")
-data_edu <- data_edu %>%
-  group_by(Year) %>%
-  mutate(
-    cat_edu_per_year =
-      group_data_year(
-        df = data_edu,
-        grouping_by = "SL.TLF.BASC.ZS",
-        year = Year,
-        column_new = "edu_per_year",
-        quantile_labels = c("Sehr gering", "Gering", "Mittel", "Groß", "Sehr groß")
-      )$cat_edu_per_year
-  ) %>% 
-  filter(!is.na(cat_edu_per_year))
 ```
 
 ## Agenda
@@ -244,101 +175,37 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS, color = ca
 
 ```
 
-## 2.3 HIV (1/3) {.smaller}
+## 2.3 HIV (1/4) {.smaller}
 
 Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren** zum **gesamten Alkoholkonsum pro Kopf**?
-
-```{r, fig.height=9, fig.width=20, message=FALSE, warning=FALSE, echo=FALSE}
-# install.packages("gridExtra")
-library(gridExtra)
-
-plot_1 <- data_alc %>%
-  group_by(cat_alc_per_year) %>%
-  summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
-            .groups = "drop") %>%
-  ggplot(aes(x = cat_alc_per_year, y = SH.DYN.AIDS.ZS)) +
-  geom_col() +
-  theme_bw(base_size = 25) +
-  labs(
-    x = "relativer Alkoholkonsum",
-    y = "HIV Prävalenz in %",
-    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Jahre",
-    subtitle = "Pro Jahr neu gruppiert"
-  ) 
-
-plot_2 <- data_alc %>%
-  group_by(cat_alc_per_year, Year) %>%
-  summarise(
-    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
-    SH.ALC.PCAP.LI = mean(SH.ALC.PCAP.LI, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc_per_year)) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw(base_size =  25) +
-  labs(
-    x = "Alkoholkonsum in Litern pro Kopf",
-    y = "HIV Prävalenz in %",
-    title = "Alkoholkonsum vs. HIV Prävalenz im Schnitt über die Gruppierung",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Alkoholkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
-  scale_colour_brewer(palette = "Set2")
-
-grid.arrange(plot_1, plot_2, ncol = 2, widths = c(2, 3))
+```{r, include=FALSE}
+source_rmd(here("Analysis", "hiv.Rmd"))
 ```
 
-## 2.3 HIV (2/3) {.smaller}
+```{r, fig.height=7, fig.width=12}
+plot_alc_hiv_grouped_dotplot
+```
+
+
+## 2.3 HIV (2/4) {.smaller}
+
+```{r, fig.height=7, fig.width=12}
+plot_alc_hiv_boxplot
+```
+
+
+## 2.3 HIV (3/4) {.smaller}
 
 Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**?
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-data_edu %>%
-  group_by(cat_edu_per_year) %>%
-  ggplot(aes(x = cat_edu_per_year, y = SH.DYN.AIDS.ZS)) +
-  geom_col(fill = "steelblue") +
-  facet_wrap(~ Year) +
-  theme(
-    axis.text.x = element_text(
-      angle = 90,
-      hjust = 1,
-      vjust = 0.5,
-      size = 9
-    ),
-    axis.text.y = element_text(size = 8)
-  ) +
-  labs(
-    x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
-    y = "HIV Prävalenz in %",
-    title = "Grundbildung vs. HIV Prävalenz",
-    subtitle = "Pro Jahr neu gruppiert"
-  ) +
-  theme(strip.text = element_text(size = 8, margin = margin(0.2, 0.2, 0.2, 0.2)))
+```{r, fig.height=7, fig.width=12}
+plot_edu_hiv_grouped_dotplot
 ```
 
-## 2.3 HIV (3/3) {.smaller}
+## 2.3 HIV (4/4) {.smaller}
 
-```{r, message=FALSE, fig.height=8, fig.width=12, warning=FALSE, echo=FALSE}
-data_edu %>%
-  group_by(cat_edu_per_year) %>%
-  summarise(
-    SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
-    SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
-  geom_point(size = 5) +
-  theme_bw(base_size = 21) +
-  labs(
-    colour = "relativer Anteil an Arbeitenden
-    mit grundlegender Bildung",
-    y = "HIV Prävalenz in %",
-    title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Jahre",
-    subtitle = "Pro Jahr neu gruppiert",
-    x = "Anteil an Arbeitenden mit grundlegender Bildung"
-  ) +
-  scale_colour_brewer(palette = "Set2")
+```{r, fig.height=7, fig.width=12}
+plot_edu_hiv_boxplot
 ```
 
 ## 2.4 Tabakkonsum (1/2) {.smaller}
@@ -391,19 +258,12 @@ In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Pr
 
 ```
 
-```{r tobacco_plot1_, echo = FALSE, warning=FALSE, message=FALSE}
-data_tob %>%
-  group_by(cat_tob_usage_per_year) %>%
-  ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col() +
-  facet_wrap( ~ Year) +
-  theme_bw(base_size = 16) +
-  labs(
-    x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten"
-  )
+```{r, include=FALSE} 
+source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
+```
+
+```{r tobacco_plot1_, fig.height=8, fig.width=15, echo = FALSE, warning=FALSE, message=FALSE}
+plot_BIP_tob_barplot_year
 ```
 
 ## 2.4 Tabakkonsum (2/2) {.smaller}

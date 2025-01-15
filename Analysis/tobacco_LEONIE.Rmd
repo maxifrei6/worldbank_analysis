@@ -10,7 +10,7 @@ This analysis explores the relationship of prevalence of current tobacco use (% 
 1. How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
 <br>
 <br>
-```{r tobacco Leonie setup, message = FALSE, echo = FALSE, warning = FALSE}
+```{r tobL_setup, message = FALSE, echo = FALSE, warning = FALSE}
 # Load necessary libraries
 library(here)
 library(dplyr)
@@ -42,7 +42,7 @@ data_tob_all <- data_processed %>%
 <br>
 Check how many NA's in tobacco variable each Year (excluding years existing only of NA's)
 <br>
-```{r, message = FALSE, echo = FALSE, warning = FALSE, fig.align = "left"}
+```{r tobL_1, message = FALSE, echo = FALSE, warning = FALSE, fig.align = "left"}
 data_table <- data_tob_all %>%
   group_by(Year) %>%
   reframe(num_na = sum(is.na(SH.PRV.SMOK))) %>%
@@ -52,7 +52,7 @@ print(data_table)
 <br>
 Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba). We again adjust our dataframe.
 <br>
-```{r, echo = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_2, echo = FALSE, message = FALSE, fig.align = "left"}
 data_tob_all <- data_tob_all %>%
   filter(`Country Name` != "Aruba")
 
@@ -63,7 +63,7 @@ data_tob <- data_tob_all %>%
 <br>
 To take a look at the grouping of our data by tobacco usage, we will display a plot of the most recent data in Year 2020.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_3, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
   ggplot(aes(`Country Name`, SH.PRV.SMOK, colour = cat_tob_usage)) +
@@ -85,7 +85,7 @@ data_tob %>%
 <br>
 For an overview we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore we group by the relative tobacco usage.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_4, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
   group_by(cat_tob_usage) %>%
@@ -104,7 +104,7 @@ data_tob %>%
 <br>
 Now we view only one dot per category of relative tobacco usage.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_5, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
   group_by(cat_tob_usage) %>%
@@ -128,7 +128,7 @@ data_tob %>%
 <br>
 Now take a look of the coherence of the variables without our extreme value of the group "Very Low".
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_6, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
   group_by(cat_tob_usage) %>%
@@ -153,7 +153,7 @@ data_tob %>%
 <br>
 To get a better overview we take a look at all years. First only on years we have data of their tobacco consumption on.
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_7, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(Year, cat_tob_usage) %>%
   summarise(
@@ -181,7 +181,7 @@ data_tob %>%
 <br>
 Now over all years we have data on their countries BIP.
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_8, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_all %>%
   group_by(Year, cat_tob_usage) %>%
   summarise(
@@ -209,7 +209,7 @@ data_tob_all %>%
 <br>
 But maybe better facett over year to show better the coherence of BIP and tobacco consumption.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_9, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage, Year) %>%
   summarise(
@@ -235,7 +235,7 @@ Hier sehen wir, dass die Gruppierung nicht für jedes Jahr angebracht ist. Spät
 <br>
 Nun aber nochmal ohne unser lineares Modell, da durch den Wert für unser sehr niedrigen Tabbakkonsum dieses nicht geeignet ist.
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_10, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage, Year) %>%
   summarise(
@@ -259,7 +259,7 @@ data_tob %>%
 <br>
 Wenn wir nun für jede Gruppe alle Länder anzeigen lassen, sieht der Plot so aus:
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_11, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
   facet_wrap( ~ Year) +
@@ -281,7 +281,7 @@ Dieses Ergebnis wollen wir dann in einem Barplot festhalten.
 <br>
 Hier nun also erst mit der allgemeineren Gruppierung:
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_12, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage) %>%
   summarise(
@@ -299,7 +299,7 @@ data_tob %>%
 <br>
 Und nun mit neuer Gruppierung der Daten:
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_13, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 # Grouping by tobacco values each year and saving this full dataset in data_tob_per_year using function 2.2 group_data_year
 data_tob_per_year <- data_tob %>%
   group_by(Year) %>%
@@ -331,7 +331,7 @@ data_tob_per_year_format <- data_tob %>%
 <br>
 Hierzu nun erst der nach Jahr gefacettete Dotplot:
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_14, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   group_by(cat_tob_usage_per_year, Year) %>%
   summarise(
@@ -356,7 +356,7 @@ data_tob_per_year %>%
 <br>
 Und nun mit nicht-linearer smooth line:
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_15, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   group_by(cat_tob_usage_per_year, Year) %>%
   summarise(
@@ -383,7 +383,7 @@ Auffällig ist, dass anders als bei den allgemein gruppierten Daten (über den D
 <br>
 Und nun mit Datenpunkt pro Land:
 <br>
-```{r, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_16, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
   facet_wrap( ~ Year) +
@@ -404,7 +404,7 @@ Hier sieht man nun deutlich, wie der Ausreißer einer anderen Gruppe zugeordnet 
 <br>
 Und nun im Barplot:
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_17, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year) %>%
   summarise(
@@ -424,7 +424,7 @@ data_tob_per_year_format %>%
 <br>
 Nun wollen wir noch die Varianz für jede Gruppe in ihren HIV Werten überprüfen, da Mittelwertsberechnungen schnell verzerrt sein können. Dafür betrachten wir nun botplots für jede Kategorie.
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_18, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
   geom_boxplot(alpha = 0.7) +
@@ -432,7 +432,7 @@ data_tob_per_year %>%
   theme_bw() +
   labs(
     x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
+    y = "Logarithmiertes BIP pro Kopf in $",
     title = "Tabakkonsum vs. BIP",
     subtitle = "Pro Jahr gruppierte Daten"
   )
@@ -440,7 +440,7 @@ data_tob_per_year %>%
 <br>
 Hier nochmal nach Jahr facetiert:
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_19, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
   geom_boxplot(alpha = 0.7) +
@@ -449,7 +449,7 @@ data_tob_per_year %>%
   theme_bw() +
   labs(
     x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
+    y = "Logarithmiertes BIP pro Kopf in $",
     title = "Tabakkonsum vs. BIP",
     subtitle = "Pro Jahr gruppierte Daten"
   )
@@ -457,7 +457,7 @@ data_tob_per_year %>%
 <br>
 Hier Barplots facettiert nach jahr, wobei nach Tabakdurchschnittskonsum gruppiert wurde:
 <br>
-```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_20, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage) %>%
   ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
@@ -479,7 +479,7 @@ data_tob %>%
 <br>
 Und nun Barplots facettiert nach Jahr, wobei jedes jahr neu nach Tabakkonsum gruppiert wurde:
 <br>
-```{r, echo=FALSE, fig.align="left", message=FALSE, warning=FALSE}
+```{r tobL_21, echo=FALSE, fig.align="left", message=FALSE, warning=FALSE}
 data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
@@ -498,14 +498,13 @@ data_tob_per_year_format %>%
  #    hjust = 1,
  #    size = 9
  #  ))
-```
-```{r tobacco leonie graph 1, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-tobacco_leonie_graph_1 <- data_tob_per_year_format %>%
+
+plot_BIP_tob_barplot_year <- data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
   geom_col() +
   facet_wrap( ~ Year) +
-  theme_bw(base_size = 16) +
+  theme_bw(base_size = 21) +
   labs(
     x = "relativer Tabakkonsum",
     y = "BIP pro Kopf in $",
@@ -513,6 +512,7 @@ tobacco_leonie_graph_1 <- data_tob_per_year_format %>%
     subtitle = "Pro Jahr gruppierte Daten"
   )
 ```
+<br>
 So how does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
 <br>
 <br>
