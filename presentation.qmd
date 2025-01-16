@@ -94,15 +94,15 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
 
 -   verteilt auf Quantile
 
-| **Quantil**              | Q1            | Q2          | Q3          | Q4          | Q5           |
-|--------------------------|----------------|-------------|-------------|-------------|--------------|
-| Prävalenz Alkoholkonsum | Sehr gering   | Gering      | Mittel      | Groß        | Sehr groß    |
-| Anteil Grundbildung  | Sehr gering   | Gering      | Mittel      | Groß        | Sehr groß  |
-| Bevölkerungsdichte   | -             | Niedrig     | Mittel      | Hoch        | -           |
-| Einwohnerzahl        | -             | Gering     | Mittel      | Hoch        | -           |
-| Einkommensniveau     | -             | Gering      | Mittel      | Hoch        | -            |
-| Prävalenz Tabakkonsum| Sehr gering   | Gering      | Mittel      | Groß        | Sehr groß    |
-| Landesfläche         | Sehr klein    | Klein       | Mittel      | Groß        | Sehr groß    |
+| **Quantil**             | Q1          | Q2      | Q3     | Q4   | Q5        |
+|-------------------------|-------------|---------|--------|------|-----------|
+| Prävalenz Alkoholkonsum | Sehr gering | Gering  | Mittel | Groß | Sehr groß |
+| Anteil Grundbildung     | Sehr gering | Gering  | Mittel | Groß | Sehr groß |
+| Bevölkerungsdichte      | \-          | Niedrig | Mittel | Hoch | \-        |
+| Einwohnerzahl           | \-          | Gering  | Mittel | Hoch | \-        |
+| Einkommensniveau        | \-          | Gering  | Mittel | Hoch | \-        |
+| Prävalenz Tabakkonsum   | Sehr gering | Gering  | Mittel | Groß | Sehr groß |
+| Landesfläche            | Sehr klein  | Klein   | Mittel | Groß | Sehr groß |
 
 ## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
@@ -157,7 +157,7 @@ p2
 ## 2.3 Bildung {.custom-smaller}
 
 ```{r edu_slide_3}
-#p3
+p3
 ```
 
 ## 2.3 Bildung {.custom-smaller}
@@ -222,9 +222,9 @@ presentation_agriculture_plot3
 
 Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern könnten:
 
-- zur Quantifizierung von Bildungsqualität
+-   zur Quantifizierung von Bildungsqualität
 
-- zu urbaner, forstwirtschaftlicher Fläche sowie Wasserfläche [% oder km<sup>2</sup>]
+-   zu urbaner, forstwirtschaftlicher Fläche sowie Wasserfläche \[% oder km<sup>2</sup>\]
 
 ## Anhang {.custom-smaller}
 
