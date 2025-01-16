@@ -330,11 +330,11 @@ plot_tobacco1_density_upper <-
   geom_line(data = data_tobacco_normdensity %>%
               filter(Year %in% c(2000, 2005, 2010, 2015)),
             aes(x = norm_x_val, y = norm_y_val, group = Year),
-            color = brewer.pal(4, "Set2")[[2]], linewidth = 1, inherit.aes = FALSE) +
+            color = brewer.pal(4, "Set2")[[3]], linewidth = 1, inherit.aes = FALSE) +
   geom_density(data = data_tobacco %>%
                  filter(Year %in% c(2000, 2005, 2010, 2015)),
                aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
-               color = brewer.pal(4, "Set2")[[1]], linewidth = 1, bw = 3) +
+               color = brewer.pal(4, "Set2")[[2]], linewidth = 1, bw = 3) +
   geom_vline(data = data_tobacco_normdensity %>%
                filter(Year %in% c(2000, 2005, 2010, 2015)),
              aes(xintercept = SH.PRV.SMOK_mean, group = Year),
@@ -363,7 +363,7 @@ plot_tobacco1_density_bottom <-
             linewidth = 1, inherit.aes = FALSE) +
   geom_density(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
                aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
-               color = brewer.pal(3, "Set2")[[1]], linewidth = 1, bw = 3,
+               color = brewer.pal(3, "Set2")[[2]], linewidth = 1, bw = 3,
                show.legend = FALSE) +
   # Add an invisible line by framing dummy line to show 'Kerndichteschaetzer' with line
   # shape instead of hollow square in legend
@@ -388,8 +388,8 @@ plot_tobacco1_density_bottom <-
                      limits = c(0, 0.06)) +
   scale_color_manual(
     name = "",
-    values = c("Kerndichteschätzer (Bandbreite = 3)" = brewer.pal(3, "Set2")[[1]],
-               "Normalverteilung" = brewer.pal(3, "Set2")[[2]],
+    values = c("Kerndichteschätzer (Bandbreite = 3)" = brewer.pal(3, "Set2")[[2]],
+               "Normalverteilung" = brewer.pal(3, "Set2")[[3]],
                "Robust-Linearer Zusammenhang" = "black")) +
   theme_bw() +
   theme(axis.text = element_text(size = 12),
