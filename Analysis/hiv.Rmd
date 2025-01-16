@@ -334,32 +334,30 @@ Hier nun erstmal die Gruppierung geplottet:
 <br>
 ```{r hiv_15, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
-  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS ,colour = cat_alc_per_year)) +
-  geom_point(size = 3, alpha = 0.7) +
-  geom_smooth(aes(group = 1), method = "lm", size = 0.8) +
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
+  geom_point(aes(fill = cat_alc_per_year), size = 3, alpha = 0.5, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Alkoholkonsum", option = "plasma", direction = -1, guide = guide_legend(reverse = TRUE)) +
+  geom_smooth(aes(group = 1), method = "lm", size = 0.8, colour = "black") +
   labs(
     x = "Alkoholkonsum in Litern pro Kopf",
     y = "HIV Prävalenz in %",
     title = "Gruppierung der Daten",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Alkoholkonsum"
+    subtitle = "Pro Jahr gruppierte Daten"
   ) +
-  theme_bw() +
-  scale_colour_brewer(palette = "Set2")
+  theme_bw()
 
 plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
-  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS ,colour = cat_alc_per_year)) +
-  geom_point(size = 4, alpha = 0.7) +
-  geom_smooth(aes(group = 1), method = "lm", size = 0.8) +
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
+  geom_point(aes(fill = cat_alc_per_year), size = 4, alpha = 0.5, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Alkoholkonsum", direction = -1, option = "plasma", guide = guide_legend(reverse = TRUE)) +
+  geom_smooth(aes(group = 1), method = "lm", size = 0.8, colour = "black") +
   labs(
     x = "Alkoholkonsum in Litern pro Kopf",
     y = "HIV Prävalenz in %",
     title = "Gruppierung der Daten",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Alkoholkonsum"
+    subtitle = "Pro Jahr gruppierte Daten"
   ) +
-  theme_bw(base_size = 20) +
-  scale_colour_brewer(palette = "Set2")
+  theme_bw(base_size = 21)
 ```
 <br>
 Pro Jahr geplottete Daten zeigen die korrekte Einordnung der Quantile:
@@ -966,17 +964,16 @@ data_edu %>%
     SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
-  geom_point(size = 3, alpha = 0.7) +
+  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS)) +
+  geom_point(aes(fill = cat_edu_per_year), size = 3, alpha = 0.7, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung", option = "plasma", direction = -1, guide = guide_legend(reverse = TRUE)) +
   theme_bw() +
   labs(
     x = "Anteil der Erwerbstätigen mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Gruppierung",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
-  ) +
-  scale_colour_brewer(palette = "Set2")
+    subtitle = "Pro Jahr gruppierte Daten"
+  )
 
 plot_edu_hiv_grouped_dotplot <- data_edu %>%
   group_by(cat_edu_per_year, Year) %>%
@@ -985,17 +982,16 @@ plot_edu_hiv_grouped_dotplot <- data_edu %>%
     SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
-  geom_point(size = 5, alpha = 0.7) +
-  theme_bw(base_size = 20) +
+  ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS)) +
+  geom_point(aes(fill = cat_edu_per_year), size = 5, alpha = 0.7, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung", option = "plasma", direction = -1, guide = guide_legend(reverse = TRUE)) +
+  theme_bw(base_size = 21) +
   labs(
     x = "Anteil der Erwerbstätigen mit grundlegender Bildung",
     y = "HIV Prävalenz in %",
     title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Gruppierung",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung"
-  ) +
-  scale_colour_brewer(palette = "Set2")
+    subtitle = "Pro Jahr gruppierte Daten"
+  )
 ```
 <br>
 Hier sehen wir nun die tatsächlich verbesserte Gruppierung sehr deutlich.

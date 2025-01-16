@@ -262,7 +262,7 @@ In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Pr
 source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
 ```
 
-```{r tobacco_plot1_, fig.height=8, fig.width=15, echo = FALSE, warning=FALSE, message=FALSE}
+```{r tobacco_plot1_, fig.height=7, fig.width= 15, echo = FALSE, warning=FALSE, message=FALSE}
 plot_BIP_tob_barplot_year
 ```
 

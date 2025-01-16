@@ -503,8 +503,8 @@ plot_BIP_tob_barplot_year <- data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year) %>%
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
   geom_col() +
-  facet_wrap( ~ Year) +
-  theme_bw(base_size = 21) +
+  facet_wrap( ~ Year, ncol = 4) +
+  theme_bw(base_size = 20) +
   labs(
     x = "relativer Tabakkonsum",
     y = "BIP pro Kopf in $",
