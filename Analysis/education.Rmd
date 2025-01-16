@@ -23,7 +23,6 @@ library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-library(MASS)
 
 # Load the dataset
 data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
@@ -199,7 +198,7 @@ We can observe a certain clustering of our data points that seem to show opposit
 ```{r scatter-debt-education-facet, echo = FALSE, message=FALSE, warning=FALSE}
 # Faceted scatter plot: Debt vs Education by Income Level
 # Calculate correlations for each income level
-cor_matrix <- data_education %>%
+cor_matrix_1 <- data_education %>%
   group_by(cat_income_level) %>%
   summarise(
     correlation = round(cor(GC.DOD.TOTL.GD.ZS, SL.TLF.BASC.ZS, method = "spearman", use = "complete.obs"), 2)
@@ -207,7 +206,7 @@ cor_matrix <- data_education %>%
 
 # Merge correlations back into the original data for placement
 data_with_cor <- data_education %>%
-  left_join(cor_matrix, by = "cat_income_level")
+  left_join(cor_matrix_1, by = "cat_income_level")
 
 # Update geom_text with the corrected label formatting
 p2 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
@@ -221,7 +220,7 @@ p2 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   ) +
   theme_bw() +
   geom_text(
-    data = cor_matrix,
+    data = cor_matrix_1,
     aes(
       x = Inf, 
       y = Inf, 
@@ -411,7 +410,7 @@ p4
 <br>
 ```{r edu_999, message=FALSE, warning=FALSE, echo=FALSE}
 # Calculate Spearman correlation for each population density category
-cor_matrix <- data_education %>%
+cor_matrix_2 <- data_education %>%
   group_by(cat_population_density) %>%
   summarise(
     correlation = round(cor(SE.TER.ENRL.TC.ZS, SL.TLF.BASC.ZS, method = "spearman", use = "complete.obs"), 2)
@@ -419,7 +418,7 @@ cor_matrix <- data_education %>%
 
 # Merge correlations back into the original data for placement
 data_with_cor <- data_education %>%
-  left_join(cor_matrix, by = "cat_population_density")
+  left_join(cor_matrix_2, by = "cat_population_density")
 
 # Create the scatter plot with the correlations
 p5 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
@@ -433,7 +432,7 @@ p5 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   ) +
   theme_bw() +
   geom_text(
-    data = cor_matrix,
+    data = cor_matrix_2,
     aes(
       x = Inf, 
       y = Inf, 
