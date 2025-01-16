@@ -218,13 +218,13 @@ presentation_agriculture_plot2
 presentation_agriculture_plot3
 ```
 
-## 2.5 Landwirtschaft {.custom-smaller}
-
-```{r fig.height=7, fig.width=12}
-presentation_agriculture_plot4
-```
-
 ## Ausblick {.custom-smaller}
+
+Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern könnten:
+
+- zur Quantifizierung von Bildungsqualität
+
+- zu urbaner, forstwirtschaftlicher Fläche sowie Wasserfläche [% oder km<sup>2</sup>]
 
 ## Anhang {.custom-smaller}
 
