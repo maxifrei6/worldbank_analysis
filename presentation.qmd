@@ -114,7 +114,7 @@ Hängt dies auch von der Größe des Landes oder der Einwohnerzahl ab?
 
 ## 2.2 HIV {.custom-smaller}
 
-Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren** zum **gesamten Alkoholkonsum pro Kopf**?
+Wie verhält sich die HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren zum gesamten Alkoholkonsum pro Kopf?
 
 ```{r, fig.height=7, fig.width=12}
 plot_alc_hiv_grouped_dotplot
@@ -128,7 +128,7 @@ plot_alc_hiv_boxplot
 
 ## 2.2 HIV {.custom-smaller}
 
-Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**?
+Haben Länder mit einem höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung eine niedrigere HIV-Prävalenz in der Bevölkerung zwischen 15 und 49?
 
 ```{r, fig.height=7, fig.width=12}
 plot_edu_hiv_grouped_dotplot
@@ -184,7 +184,7 @@ p6
 
 ## 2.4 Tabakkonsum {.custom-smaller}
 
-In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Prävalenz des aktuellen Tabakkonsums unter Erwachsenen** innerhalb eines Landes?
+In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen innerhalb eines Landes?
 
 ```{r tobacco_plot1_, fig.height=7, fig.width= 15, echo = FALSE, warning=FALSE, message=FALSE}
 plot_BIP_tob_barplot_year
@@ -198,7 +198,7 @@ presentation_tobacco_plot2
 
 ## 2.5 Landwirtschaft {.custom-smaller}
 
-Gibt es einen Zusammenhang zwischen dem **Anteil der landwirtschaftlichen Nutzfläche** und den **CO2 Emissionen pro Kopf** eines Landes?
+Gibt es einen Zusammenhang zwischen dem Anteil der landwirtschaftlichen Nutzfläche und den CO2 Emissionen pro Kopf eines Landes?
 
 ```{r fig.height=7, fig.width=12}
 presentation_agriculture_plot1
@@ -206,7 +206,7 @@ presentation_agriculture_plot1
 
 ## 2.5 Landwirtschaft {.custom-smaller}
 
-Welcher Bedeutung fällt hierbei die **Landesfläche eines Landes** zu?
+Welcher Bedeutung fällt hierbei die Landesfläche eines Landes zu?
 
 ```{r fig.height=8, fig.width=14}
 presentation_agriculture_plot2
