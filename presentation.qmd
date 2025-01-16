@@ -71,7 +71,7 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
     2.4 Tabakkonsum\
     2.5 Landwirtschaft
 
-3.  Ausblick und weitere Schritte
+3.  Ausblick
 :::
 
 ## Überblick {.custom-smaller}
@@ -107,15 +107,15 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
 -   Bildungsniveau
 :::
 
-## 2.1 Elektrizität und nationales Einkommen (1/2) {.custom-smaller}
+## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
 Wie korreliert der Zugang zu Elektrizität mit dem bereinigten Nettonationaleinkommen pro Kopf in verschiedenen Ländern?
 
-## 2.1 Elektrizität und nationales Einkommen (2/2) {.custom-smaller}
+## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
 Hängt dies auch von der Größe des Landes oder der Einwohnerzahl ab?
 
-## 2.2 HIV (1/4) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
 Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren** zum **gesamten Alkoholkonsum pro Kopf**?
 
@@ -124,13 +124,13 @@ Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Ja
 plot_alc_hiv_grouped_dotplot
 ```
 
-## 2.2 HIV (2/4) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
 plot_alc_hiv_boxplot
 ```
 
-## 2.2 HIV (3/4) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
 Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**?
 
@@ -138,58 +138,57 @@ Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grund
 plot_edu_hiv_grouped_dotplot
 ```
 
-## 2.2 HIV (4/4) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
 plot_edu_hiv_boxplot
 ```
 
 
-## 2.3 Bildung (1/6) {.custom-smaller}
+## 2.3 Bildung {.custom-smaller}
 
-Haben Länder mit **höherer Staatsverschuldung (in % des BIP)** einen **geringeren Anteil an Erwerbspersonen mit Grundbildung**?
+Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung?
 
 ```{r edu_slide_1}
 p1
 ```
 
-## 2.3 Bildung (2/6) {.custom-smaller}
+## 2.3 Bildung {.custom-smaller}
 
 ```{r edu_slide_2}
 p2
 ```
 
-## 2.3 Bildung (3/6) {.custom-smaller}
+## 2.3 Bildung {.custom-smaller}
 
 ```{r edu_slide_3}
 #p3
 ```
 
-## 2.3 Bildung (4/6) {.custom-smaller}
+## 2.3 Bildung {.custom-smaller}
 
-Sind Länder mit einem höheren Prozentsatz an Erwerbstätigen mit Grundbildung in der Lage, eine **niedrigere** Schüler-Lehrer-Relation beizubehalten, und welche Auswirkungen könnte dies auf die Bildungsqualität haben?
+Führen mehr Erwerbstätige mit Grundbildung zu einer niedrigeren Schüler-Lehrer-Relation?
 
 ```{r edu_slide_4}
 p4
 ```
 
-## 2.3 Bildung (5/6) {.custom-smaller}
+## 2.3 Bildung {.custom-smaller}
 
-Sind Länder mit einem höheren Prozentsatz an Erwerbstätigen mit Grundbildung in der Lage, eine **niedrigere** Schüler-Lehrer-Relation beizubehalten?
 
 ```{r edu_slide_5}
 p5
 ```
 
-## 2.3 Bildung (6/6) {.custom-smaller}
+## 2.3 Bildung {.custom-smaller}
 
-und welche Auswirkungen könnte dies auf die Bildungsqualität haben?
+Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqualität?
 
 ```{r edu_slide_6}
 p6
 ```
 
-## 2.4 Tabakkonsum (1/2) {.custom-smaller}
+## 2.4 Tabakkonsum {.custom-smaller}
 
 In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Prävalenz des aktuellen Tabakkonsums unter Erwachsenen** innerhalb eines Landes?
 
@@ -197,13 +196,13 @@ In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Pr
 plot_BIP_tob_barplot_year
 ```
 
-## 2.4 Tabakkonsum (2/2) {.custom-smaller}
+## 2.4 Tabakkonsum {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
 presentation_tobacco_plot2
 ```
 
-## 2.5 Landwirtschaft (1/4) {.custom-smaller}
+## 2.5 Landwirtschaft {.custom-smaller}
 
 Gibt es einen Zusammenhang zwischen dem **Anteil der landwirtschaftlichen Nutzfläche** und den **CO2 Emissionen pro Kopf** eines Landes?
 
@@ -211,7 +210,7 @@ Gibt es einen Zusammenhang zwischen dem **Anteil der landwirtschaftlichen Nutzfl
 presentation_agriculture_plot1
 ```
 
-## 2.5 Landwirtschaft (2/4) {.custom-smaller}
+## 2.5 Landwirtschaft {.custom-smaller}
 
 Welcher Bedeutung fällt hierbei die **Landesfläche eines Landes** zu?
 
@@ -219,16 +218,29 @@ Welcher Bedeutung fällt hierbei die **Landesfläche eines Landes** zu?
 presentation_agriculture_plot2
 ```
 
-## 2.5 Landwirtschaft (3/4) {.custom-smaller}
+## 2.5 Landwirtschaft {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
 presentation_agriculture_plot3
 ```
 
-## 2.5 Landwirtschaft (4/4) {.custom-smaller}
+## 2.5 Landwirtschaft {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
 presentation_agriculture_plot4
 ```
 
 ## Zusammenfassung und Diskussion {.custom-smaller}
+
+
+## Anhang {.custom-smaller}
+
+```{r}
+p8
+```
+
+## Anhang  {.custom-smaller}
+
+```{r}
+p9
+```
