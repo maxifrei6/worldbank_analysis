@@ -612,7 +612,7 @@ presentation_agriculture_plot4 <-
               method = MASS::"rlm", se = FALSE, color = "black", size = 1.5) +
   geom_smooth(aes(group = variable, color = variable),
               method = MASS::"rlm", se = FALSE, size = 1, show.legend = FALSE) +
-  ggtitle(bquote("CO"[2] * " Emissionen pro Kopf - mit Landergruppen bezüglich " *
+  ggtitle(bquote("CO"[2] * " Emissionen pro Kopf - mit Ländergruppen bezüglich " *
                    "deren Landesfläche")) +
   scale_x_continuous(name = "Jahr",
                      breaks = seq(2000, 2020, by = 5),

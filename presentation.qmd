@@ -85,7 +85,7 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
 
 -   18 verschiedene Indikatoren
 
--   Jährliche Messungen über 22 Jahre (Zeitraum: 2000 - 2021)
+-   Jährliche Messungen von 2000 bis 2021
 :::
 
 ## Terminologie {.custom-smaller}
@@ -227,13 +227,8 @@ plot_BIP_tob_barplot_year
 
 ## 2.4 Tabakkonsum (2/2) {.custom-smaller}
 
-```{r, include=FALSE}
-# tobacco_plot2_faceted_scatter_and_density
-
-```
-
 ```{r, fig.height=7, fig.width=12}
-plot_tobacco_data_density
+presentation_tobacco_plot2
 ```
 
 ## 2.5 Landwirtschaft (1/4) {.custom-smaller}
