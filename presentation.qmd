@@ -90,22 +90,19 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
 
 ## Gruppierungen {.custom-smaller}
 
-::: incremental
-
 -   durchschnittliche Ausprägung über die Jahre
 
 -   verteilt auf Quantile
 
-:::
-
-::: incremental
-
--   Einkommensniveau
--   Bevölkerungsdichte
--   Alkoholkonsum
--   Tabakkonsum
--   Bildungsniveau
-:::
+| **Quantil**              | Q1            | Q2          | Q3          | Q4          | Q5           |
+|--------------------------|----------------|-------------|-------------|-------------|--------------|
+| Prävalenz Alkoholkonsum | Sehr gering   | Gering      | Mittel      | Groß        | Sehr groß    |
+| Anteil Grundbildung  | Sehr gering   | Gering      | Mittel      | Groß        | Sehr groß  |
+| Bevölkerungsdichte   | -             | Niedrig     | Mittel      | Hoch        | -           |
+| Einwohnerzahl        | -             | Gering     | Mittel      | Hoch        | -           |
+| Einkommensniveau     | -             | Gering      | Mittel      | Hoch        | -            |
+| Prävalenz Tabakkonsum| Sehr gering   | Gering      | Mittel      | Groß        | Sehr groß    |
+| Landesfläche         | Sehr klein    | Klein       | Mittel      | Groß        | Sehr groß    |
 
 ## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
@@ -118,7 +115,6 @@ Hängt dies auch von der Größe des Landes oder der Einwohnerzahl ab?
 ## 2.2 HIV {.custom-smaller}
 
 Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren** zum **gesamten Alkoholkonsum pro Kopf**?
-
 
 ```{r, fig.height=7, fig.width=12}
 plot_alc_hiv_grouped_dotplot
@@ -143,7 +139,6 @@ plot_edu_hiv_grouped_dotplot
 ```{r, fig.height=7, fig.width=12}
 plot_edu_hiv_boxplot
 ```
-
 
 ## 2.3 Bildung {.custom-smaller}
 
@@ -174,7 +169,6 @@ p4
 ```
 
 ## 2.3 Bildung {.custom-smaller}
-
 
 ```{r edu_slide_5}
 p5
@@ -230,8 +224,7 @@ presentation_agriculture_plot3
 presentation_agriculture_plot4
 ```
 
-## Zusammenfassung und Diskussion {.custom-smaller}
-
+## Ausblick {.custom-smaller}
 
 ## Anhang {.custom-smaller}
 
@@ -239,7 +232,7 @@ presentation_agriculture_plot4
 p8
 ```
 
-## Anhang  {.custom-smaller}
+## Anhang {.custom-smaller}
 
 ```{r}
 p9
