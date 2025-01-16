@@ -157,7 +157,7 @@ p2
 ## 2.3 Bildung {.custom-smaller}
 
 ```{r edu_slide_3}
-#p3
+p3
 ```
 
 ## 2.3 Bildung {.custom-smaller}

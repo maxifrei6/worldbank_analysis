@@ -256,6 +256,63 @@ We first look at which other attributes define these countries in both income gr
 
 insert correlation matrix
 
+```{r contingency tables, echo = FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(forcats)
+
+correlation_data <- data_education %>%
+  group_by(cat_income_level, cat_population_size) %>%
+  summarise(
+    count_pairs = sum(!is.na(GC.DOD.TOTL.GD.ZS) & !is.na(SL.TLF.BASC.ZS)), # Count complete data pairs
+    correlation = tryCatch({
+      round(cor(
+        GC.DOD.TOTL.GD.ZS,
+        SL.TLF.BASC.ZS,
+        method = "spearman",
+        use = "complete.obs"
+      ), 2)
+    }, error = function(e) NA_real_),
+    .groups = "drop"
+  ) %>%
+  mutate(correlation = ifelse(count_pairs < 10, NA, correlation)) # Set correlation to NA if <10 pairs
+
+# Convert to tidy format for plotting
+tidy_correlation <- correlation_data %>%
+  mutate(
+    cat_income_level = factor(cat_income_level, levels = rev(c("High", "Medium", "Low"))), # Reverse Income order
+    cat_population_size = factor(cat_population_size, levels = rev(c("High", "Medium", "Low"))) # Reverse Population order
+  ) %>%
+  mutate(
+    cat_income_level = fct_recode(cat_income_level, "Hoch" = "High", "Mittel" = "Medium", "Gering" = "Low"),
+    cat_population_size = fct_recode(cat_population_size, "Hoch" = "High", "Mittel" = "Medium", "Gering" = "Low")
+  )
+
+# Create heatmap with dynamically calculated correlation coefficients
+p3 <- ggplot(tidy_correlation, aes(x = cat_income_level, y = cat_population_size, fill = correlation)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = ifelse(is.na(correlation), "", round(correlation, 2))), color = "black", size = 4) + # Add text labels
+  scale_fill_gradient2(
+    low = "blue", mid = "white", high = "red", midpoint = 0,
+    limit = c(-1, 1), na.value = "grey80", name = "Spearman\nKorrelation" # Use grey for missing values
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(vjust = 1, hjust = 1)
+  ) +
+  labs(
+    title = "Zentralstaatliche Verschuldung vs Anteil grundlegender Bildung",
+    x = "Einkommensniveau",
+    y = "Einwohnerzahl"
+  )
+
+p3
+
+```
+
+
+
 maybe extend to encompass also density of countries or better do the same just for density
 
 #### Further questions and interpretations:
