@@ -210,7 +210,7 @@ plot_edu_hiv_boxplot
 
 ## 2.4 Tabakkonsum (1/2) {.smaller}
 
-In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Prävalenz des aktuellen Tabakkonsums unter Erwachsenen** innerhalb eines Landes?
+In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Prävalenz des aktuellen Tabakkonsums unter Erwachsenen**?
 
 ```{r}
 # # Load the dataset
