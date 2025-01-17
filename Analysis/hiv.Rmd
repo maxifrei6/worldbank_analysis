@@ -350,12 +350,11 @@ plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
   geom_point(aes(fill = cat_alc_per_year), size = 4, alpha = 0.5, shape = 21) +
   scale_fill_viridis_d(name = "relativer Alkoholkonsum", direction = -1, option = "plasma", guide = guide_legend(reverse = TRUE)) +
-  geom_smooth(aes(group = 1), method = "lm", size = 0.8, colour = "black") +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE, size = 0.8, colour = "black") +
   labs(
-    x = "Alkoholkonsum in Litern pro Kopf",
-    y = "HIV Prävalenz in %",
-    title = "Gruppierung der Daten",
-    subtitle = "Pro Jahr gruppierte Daten"
+    x = "Alkoholkonsum pro Kopf [l]",
+    y = "HIV Prävalenz [%]",
+    title = "Gruppierung der Daten mit jährlich gruppierten Daten"
   ) +
   theme_bw(base_size = 21)
 ```
@@ -445,9 +444,8 @@ plot_alc_hiv_boxplot <- data_alc_per_year %>%
   theme_bw(base_size = 20) +
   labs(
     x = "relativer Alkoholkonsum",
-    y = "HIV Prävalenz in %",
-    title = "Alkoholkonsum vs. HIV Prävalenz",
-    subtitle = "Pro Jahr gruppierte Daten",
+    y = "HIV Prävalenz [%]",
+    title = "Alkoholkonsum vs. HIV Prävalenz mit jährlich gruppierten Daten",
     colour = "relativer Alkoholkonsum"
   )
 ```
@@ -987,10 +985,9 @@ plot_edu_hiv_grouped_dotplot <- data_edu %>%
   scale_fill_viridis_d(name = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung", option = "plasma", direction = -1, guide = guide_legend(reverse = TRUE)) +
   theme_bw(base_size = 21) +
   labs(
-    x = "Anteil der Erwerbstätigen mit grundlegender Bildung",
-    y = "HIV Prävalenz in %",
-    title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Gruppierung",
-    subtitle = "Pro Jahr gruppierte Daten"
+    x = "Erwerbstätige mit grundlegender Bildung [%]",
+    y = "HIV Prävalenz [%]",
+    title = "Grundbildung vs. HIV Prävalenz im Schnitt über die jährliche Gruppierung"
   )
 ```
 <br>
@@ -1045,8 +1042,8 @@ plot_edu_hiv_boxplot <- data_edu %>%
   scale_y_log10() +
   theme_bw(base_size = 20) +
   labs(
-    x = "relativer Anteil an Arbeitenden mit grundlegender Bildung",
-    y = "Logarithmierte HIV Prävalenz in %",
+    x = "Arbeitende mit grundlegender Bildung [%]",
+    y = "HIV Prävalenz [%] (log10)",
     title = "Grundbildung vs. HIV Prävalenz",
     subtitle = "Pro Jahr neu gruppiert"
   )

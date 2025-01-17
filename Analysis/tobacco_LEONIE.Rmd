@@ -507,9 +507,8 @@ plot_BIP_tob_barplot_year <- data_tob_per_year_format %>%
   theme_bw(base_size = 20) +
   labs(
     x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten"
+    y = "BIP pro Kopf [$]",
+    title = "Tabakkonsum vs. BIP mit jährlich gruppierten Daten"
   )
 ```
 <br>
