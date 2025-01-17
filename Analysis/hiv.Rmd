@@ -20,6 +20,7 @@ library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(RColorBrewer)
 
 source(here("Scripts", "functions.R"))
 
@@ -346,11 +347,15 @@ data_alc_per_year %>%
   ) +
   theme_bw()
 
+data_alc_per_year_without_outlier <- data_alc_per_year %>% 
+  filter(`Country Name` != "Tansania")
 plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
-  geom_point(aes(fill = cat_alc_per_year), size = 4, alpha = 0.5, shape = 21) +
-  scale_fill_viridis_d(name = "relativer Alkoholkonsum", direction = -1, option = "plasma", guide = guide_legend(reverse = TRUE)) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE, size = 0.8, colour = "black") +
+  geom_point(size = 3.5, alpha = 0.5) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE, size = 1.2, colour = brewer.pal(3, "Set2")[[2]]) +
+  geom_smooth(data = data_alc_per_year_without_outlier,
+              method = "lm", se= FALSE, size = 1.2,
+              colour = brewer.pal(3, "Set2")[[3]]) +
   labs(
     x = "Alkoholkonsum pro Kopf [l]",
     y = "HIV Prävalenz [%]",
@@ -438,10 +443,15 @@ data_alc_per_year %>%
     colour = "relativer Alkoholkonsum"
   )
 
+data_alc_cat_n <- data_alc_per_year %>%
+  group_by(cat_alc_per_year) %>%
+  summarise(n = n())
+
 plot_alc_hiv_boxplot <- data_alc_per_year %>%
   ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
-  theme_bw(base_size = 20) +
+  theme_bw(base_size = 20) + 
+  scale_x_discrete(labels = paste0(data_alc_per_year$cat_alc_per_year, "\nn = ", data_alc_cat_n$n)) +
   labs(
     x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz [%]",
@@ -930,6 +940,7 @@ data_edu %>%
   ) +
   scale_colour_brewer(palette = "Set2")
 ```
+
 ```{r hiv_42, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 hiv_plot_4 <- data_edu %>%
   group_by(cat_edu_per_year) %>%
@@ -981,8 +992,7 @@ plot_edu_hiv_grouped_dotplot <- data_edu %>%
     .groups = "drop"
   ) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS)) +
-  geom_point(aes(fill = cat_edu_per_year), size = 5, alpha = 0.7, shape = 21) +
-  scale_fill_viridis_d(name = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung", option = "plasma", direction = -1, guide = guide_legend(reverse = TRUE)) +
+  geom_point(size = 3.5, alpha = 0.7) +
   theme_bw(base_size = 21) +
   labs(
     x = "Erwerbstätige mit grundlegender Bildung [%]",
@@ -1036,16 +1046,20 @@ data_edu %>%
     subtitle = "Pro Jahr neu gruppiert"
   )
 
-plot_edu_hiv_boxplot <- data_edu %>%
+data_edu_cat_n <- data_edu %>%
+  group_by(cat_edu_per_year) %>%
+  summarise(n = n())
+
+plot_edu_hiv_boxplot <- data_edu %>% 
   ggplot(aes(cat_edu_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   scale_y_log10() +
-  theme_bw(base_size = 20) +
+  theme_bw(base_size = 20) + 
+  scale_x_discrete(labels = paste0(data_edu$cat_edu_per_year, "\nn = ", data_edu_cat_n$n)) +
   labs(
     x = "Arbeitende mit grundlegender Bildung [%]",
     y = "HIV Prävalenz [%] (log10)",
-    title = "Grundbildung vs. HIV Prävalenz",
-    subtitle = "Pro Jahr neu gruppiert"
+    title = "Grundbildung vs. HIV Prävalenz mit jährlich grupppierten Daten"
   )
 ```
 <br>

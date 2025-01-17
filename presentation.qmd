@@ -205,7 +205,7 @@ p6
 
 ## 2.4 Tabakkonsum {.custom-smaller}
 
-In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen innerhalb eines Landes?
+In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen?
 
 ```{r tobacco_plot1_, fig.height=7, fig.width= 15, echo = FALSE, warning=FALSE, message=FALSE}
 plot_BIP_tob_barplot_year
