@@ -273,7 +273,8 @@ data_tobacco_normdensity <- data_tobacco_normdensity %>%
 # Plot the upper row of the data points for the assembled tobacco plotting
 plot_tobacco1_data_upper <-
   ggplot(data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015))) +
-  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +
+  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+             alpha = 0.5, size = 2.5) +
   geom_smooth(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015)),
               aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
               method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +
@@ -300,7 +301,8 @@ plot_tobacco1_data_upper <-
 # Plot the bottom row of the data points for the assembled tobacco plotting
 plot_tobacco1_data_bottom <-
   ggplot(data_tobacco %>% filter(Year %in% c(2018, 2019, 2020))) +
-  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year), alpha = 0.5) +
+  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+             alpha = 0.5, size = 2.5) +
   geom_smooth(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
               aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
               method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +

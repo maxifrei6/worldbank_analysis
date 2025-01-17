@@ -265,19 +265,19 @@ Moving on, we want to bring those two variables back together. For this purpose,
 # Initial comparison via scatter plot of agricultural land [%] and CO2 emissions per
 # capita [Mt]
 presentation_agriculture_plot1 <-
-  ggplot(data_agriculture, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
-  geom_point(alpha = .3, size = 2.5) +
+  ggplot(data_agriculture, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
+  geom_point(alpha = .3, size = 3.5) +
   geom_smooth(method = MASS::"rlm", se = FALSE, color = "black") +
-  ggtitle(bquote("CO"[2] * " Emissionen pro Kopf vs. landwirtschaftliche Nutzfläche")) +
-  scale_x_continuous(name = bquote("CO"[2] * " Emissionen pro Kopf [Mt] (Log10)"),
+  ggtitle(bquote("Landwirtschaftliche Nutzfläche vs. CO"[2] * " Emissionen pro Kopf")) +
+  scale_x_continuous(name = "Landwirtschaftliche Nutzfläche [%]") +
+  scale_y_continuous(name = bquote("CO"[2] * " Emissionen pro Kopf [Mt] (Log10)"),
                      breaks = log10(c(0, 10, 100, 1000, 10000) + 1),
                      labels = c("0", "10", "100", "1.000", "10.000")) +
-  scale_y_continuous(name = "Landwirtschaftliche Nutzfläche [%]") +
   theme_bw() +
   theme(axis.text = element_text(size = 14),
-        axis.title.x = element_text(margin = margin(t = 10), size = 16),
-        axis.title.y = element_text(margin = margin(r = 10), size = 16),
-        plot.title = element_text(hjust = 0.5, size = 19))
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        plot.title = element_text(hjust = 0.5, size = 20))
 
 presentation_agriculture_plot1
 ```

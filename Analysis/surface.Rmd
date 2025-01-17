@@ -395,22 +395,22 @@ ggplot(data_surface, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS
 
 # Plot the initial comparison via scatter plot, faceted by the grouped categories
 presentation_agriculture_plot2 <-
-  ggplot(data_surface, aes(x = log10(EN.GHG.CO2.MT.CE.AR5 + 1), y = AG.LND.AGRI.ZS)) +
-  geom_point(alpha = .3, size = 2.5) +
+  ggplot(data_surface, aes(x = AG.LND.AGRI.ZS, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
+  geom_point(alpha = .3, size = 3.5) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
-  ggtitle(bquote("CO"[2] * " Emissionen pro Kopf vs. landwirtschaftliche Nutzfläche " *
+  ggtitle(bquote("Landwirtschaftliche Nutzfläche vs. CO"[2] * " Emissionen pro Kopf " *
                    "- mit Ländergruppen bezüglich deren Landesfläche")) +
-  scale_x_continuous(name = expression(CO[2] ~ "Emissionen pro Kopf [Mt] (Log10)"),
+  scale_x_continuous(name = "Landwirtschaftliche Nutzfläche [%]",
+                     limits = c(0, max(data_surface$AG.LND.AGRI.ZS))) +
+  scale_y_continuous(name = expression(CO[2] ~ "Emissionen pro Kopf [Mt] (Log10)"),
                      breaks = log10(c(0, 10, 100, 1000, 10000) + 1),
                      labels = c("0", "10", "100", "1.000", "10.000"),
                      limits = c(0, log10(max(data_surface$EN.GHG.CO2.MT.CE.AR5) + 1))) +
-  scale_y_continuous(name = "Landwirtschaftliche Nutzfläche [%]",
-                     limits = c(0, max(data_surface$AG.LND.AGRI.ZS))) +
   theme_bw() +
   theme(axis.text = element_text(size = 14),
-        axis.title.x = element_text(margin = margin(t = 10), size = 16),
-        axis.title.y = element_text(margin = margin(r = 10), size = 16),
-        plot.title = element_text(hjust = 0.5, size = 19.5),
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        plot.title = element_text(hjust = 0.5, size = 18.5),
         strip.text = element_text(size = 14)) +
   facet_wrap(~ cat_surface_area, ncol = 3)
 
@@ -489,7 +489,7 @@ presentation_agriculture_plot3 <-
               method = MASS::"rlm", se = FALSE, color = "black", size = 1.5) +
   geom_smooth(aes(group = variable, color = variable),
               method = MASS::"rlm", se = FALSE, size = 1, show.legend = FALSE) +
-  ggtitle(bquote("CO"[2] * " Emissionen pro Kopf vs. landwirtschaftliche Nutzfläche " *
+  ggtitle(bquote("Landwirtschaftliche Nutzfläche vs. CO"[2] * " Emissionen pro Kopf " *
                    "- mit Ländergruppen bezüglich deren Landesfläche")) +
   scale_x_continuous(name = "Jahr",
                      breaks = seq(2000, 2020, by = 5),
@@ -502,14 +502,14 @@ presentation_agriculture_plot3 <-
                                 bquote("CO"[2] * " Emissionen pro Kopf"))) +
   theme_bw() +
   theme(axis.text = element_text(hjust = 0.5, size = 12),
-        axis.title.x = element_text(margin = margin(t = 10), size = 14),
-        axis.title.y = element_text(margin = margin(r = 10), size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 16),
+        axis.title.y = element_text(margin = margin(r = 10), size = 16),
         legend.margin = margin(t = 0),
         legend.position = "bottom",
         legend.text = element_text(size = 14),
         legend.title = element_text(size = 14),
         plot.title = element_text(hjust = 0.5, size = 16.5),
-        strip.text = element_text(size = 12)) +
+        strip.text = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
   facet_wrap(~ cat_surface_area, ncol = 3)
 
