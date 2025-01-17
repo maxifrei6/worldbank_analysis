@@ -48,7 +48,7 @@ source_rmd(here("Analysis", "surface.Rmd"))
 source_rmd(here("Analysis", "hiv.Rmd"))
 source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
 source_rmd(here("Analysis", "education.Rmd"))
-
+source_rmd(here("Analysis", "electricity.Rmd"))
 # Globally center all plots while displaying knitted version in HTML
 knitr::opts_chunk$set(fig.align = "center")
 
@@ -108,10 +108,31 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
 
 Wie korreliert der Zugang zu Elektrizität mit dem bereinigten Nettonationaleinkommen pro Kopf in verschiedenen Ländern?
 
+```{r, fig.height=7, fig.width=12}
+ep1
+```
 ## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
-Hängt dies auch von der Größe des Landes oder der Einwohnerzahl ab?
+Hängt dies auch von der Größe des Landes oder der Bevölkerungsdichte ab?
 
+```{r, fig.height=7, fig.width=12}
+ep2
+```
+
+## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
+
+Hängt dies auch von der Größe des Landes oder der Einkommen ab?
+
+```{r, fig.height=7, fig.width=12}
+ep3
+```
+
+## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
+
+
+```{r, fig.height=7, fig.width=12}
+ep5
+```
 ## 2.2 HIV {.custom-smaller}
 
 Wie verhält sich die HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren zum gesamten Alkoholkonsum pro Kopf?
@@ -142,8 +163,7 @@ plot_edu_hiv_boxplot
 
 ## 2.3 Bildung {.custom-smaller}
 
-Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung?
->>>>>>> d5e8a4e3ff0953ca855cbabcb385e4fdd930827d
+Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung? \>\>\>\>\>\>\> d5e8a4e3ff0953ca855cbabcb385e4fdd930827d
 
 ```{r edu_slide_1}
 p1
