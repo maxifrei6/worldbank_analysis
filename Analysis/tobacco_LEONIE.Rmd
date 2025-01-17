@@ -5,11 +5,11 @@ date: "`r Sys.Date()`"
 output:
   html_document: default
 ---
+
 ## Introduction
-This analysis explores the relationship of prevalence of current tobacco use (% of adults) prevalence to GDP per capita. Therefore we analyse the following leading question: <br>
-1. How does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
-<br>
-<br>
+
+This analysis explores the relationship of prevalence of current tobacco use (% of adults) prevalence to GDP per capita. Therefore we analyse the following leading question: <br> 1. How does GDP per capita relate to the prevalence of current tobacco use (% of adults)? <br> <br>
+
 ```{r tobL_setup, message = FALSE, echo = FALSE, warning = FALSE}
 # Load necessary libraries
 library(here)
@@ -37,11 +37,9 @@ data_tob_all <- data_processed %>%
 #             Prevalence of current tobacco use (% of adults)
 #             SH.PRV.SMOK
 ```
-<br>
-### 1. Tobacco Prevalence and GDP
-<br>
-Check how many NA's in tobacco variable each Year (excluding years existing only of NA's)
-<br>
+
+<br> \### 1. Tobacco Prevalence and GDP <br> Check how many NA's in tobacco variable each Year (excluding years existing only of NA's) <br>
+
 ```{r tobL_1, message = FALSE, echo = FALSE, warning = FALSE, fig.align = "left"}
 data_table <- data_tob_all %>%
   group_by(Year) %>%
@@ -49,9 +47,9 @@ data_table <- data_tob_all %>%
   filter(num_na < 25)
 print(data_table)
 ```
-<br>
-Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba). We again adjust our dataframe.
-<br>
+
+<br> Knowing there are only 25 countries to investigate, we only have data of the Years 2000, 2005, 2010, 1015, 1018, 2019 and 2020 on percentage of tabacco usage in the adult population of all 24 countries (excluding Aruba). We again adjust our dataframe. <br>
+
 ```{r tobL_2, echo = FALSE, message = FALSE, fig.align = "left"}
 data_tob_all <- data_tob_all %>%
   filter(`Country Name` != "Aruba")
@@ -60,9 +58,8 @@ data_tob <- data_tob_all %>%
   filter(Year %in% data_table$Year)
 ```
 
-<br>
-To take a look at the grouping of our data by tobacco usage, we will display a plot of the most recent data in Year 2020.
-<br>
+<br> To take a look at the grouping of our data by tobacco usage, we will display a plot of the most recent data in Year 2020. <br>
+
 ```{r tobL_3, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
@@ -82,9 +79,9 @@ data_tob %>%
   )) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-For an overview we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore we group by the relative tobacco usage.
-<br>
+
+<br> For an overview we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore we group by the relative tobacco usage. <br>
+
 ```{r tobL_4, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
@@ -101,9 +98,9 @@ data_tob %>%
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Now we view only one dot per category of relative tobacco usage.
-<br>
+
+<br> Now we view only one dot per category of relative tobacco usage. <br>
+
 ```{r tobL_5, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
@@ -125,9 +122,9 @@ data_tob %>%
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Now take a look of the coherence of the variables without our extreme value of the group "Very Low".
-<br>
+
+<br> Now take a look of the coherence of the variables without our extreme value of the group "Very Low". <br>
+
 ```{r tobL_6, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   filter(Year == 2020) %>%
@@ -150,9 +147,9 @@ data_tob %>%
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-To get a better overview we take a look at all years. First only on years we have data of their tobacco consumption on.
-<br>
+
+<br> To get a better overview we take a look at all years. First only on years we have data of their tobacco consumption on. <br>
+
 ```{r tobL_7, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(Year, cat_tob_usage) %>%
@@ -178,9 +175,9 @@ data_tob %>%
   scale_colour_brewer(palette = "Set2")
 # geom_line(aes(group = cat_tob_usage)) +  ## problematisch, da stetiges Wachstum innerhalb eines Jahres durch diskrete Daten nicht gegeben
 ```
-<br>
-Now over all years we have data on their countries BIP.
-<br>
+
+<br> Now over all years we have data on their countries BIP. <br>
+
 ```{r tobL_8, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_all %>%
   group_by(Year, cat_tob_usage) %>%
@@ -206,9 +203,9 @@ data_tob_all %>%
   scale_colour_brewer(palette = "Set2")
 # geom_line(aes(group = cat_tob_usage)) +  ## problematisch, da stetiges Wachstum innerhalb eines Jahres durch diskrete Daten nicht gegeben
 ```
-<br>
-But maybe better facett over year to show better the coherence of BIP and tobacco consumption.
-<br>
+
+<br> But maybe better facett over year to show better the coherence of BIP and tobacco consumption. <br>
+
 ```{r tobL_9, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage, Year) %>%
@@ -230,11 +227,9 @@ data_tob %>%
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Hier sehen wir, dass die Gruppierung nicht für jedes Jahr angebracht ist. Später wollen wir die Daten für jedes Jahr neu gruppieren.
-<br>
-Nun aber nochmal ohne unser lineares Modell, da durch den Wert für unser sehr niedrigen Tabbakkonsum dieses nicht geeignet ist.
-<br>
+
+<br> Hier sehen wir, dass die Gruppierung nicht für jedes Jahr angebracht ist. Später wollen wir die Daten für jedes Jahr neu gruppieren. <br> Nun aber nochmal ohne unser lineares Modell, da durch den Wert für unser sehr niedrigen Tabbakkonsum dieses nicht geeignet ist. <br>
+
 ```{r tobL_10, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage, Year) %>%
@@ -256,9 +251,9 @@ data_tob %>%
   geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.2) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Wenn wir nun für jede Gruppe alle Länder anzeigen lassen, sieht der Plot so aus:
-<br>
+
+<br> Wenn wir nun für jede Gruppe alle Länder anzeigen lassen, sieht der Plot so aus: <br>
+
 ```{r tobL_11, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
@@ -274,13 +269,9 @@ data_tob %>%
   geom_smooth(aes(group = 1), method = "loess", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Hier fällt erneut auf, dass der relative Tabakkonsum nicht immer gut eingeordnet ist, da Gruppen mit (eingeordnet) weniger Tabakkonsum tatsächlich teilweise mehr Tabak konsumieren.
-Hier sollte man sich überlegen, ob es nicht besser ist die Gruppierung für jedes Jahr neu zu bestimmen.
-Dieses Ergebnis wollen wir dann in einem Barplot festhalten. 
-<br>
-Hier nun also erst mit der allgemeineren Gruppierung:
-<br>
+
+<br> Hier fällt erneut auf, dass der relative Tabakkonsum nicht immer gut eingeordnet ist, da Gruppen mit (eingeordnet) weniger Tabakkonsum tatsächlich teilweise mehr Tabak konsumieren. Hier sollte man sich überlegen, ob es nicht besser ist die Gruppierung für jedes Jahr neu zu bestimmen. Dieses Ergebnis wollen wir dann in einem Barplot festhalten. <br> Hier nun also erst mit der allgemeineren Gruppierung: <br>
+
 ```{r tobL_12, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage) %>%
@@ -296,9 +287,9 @@ data_tob %>%
        title = "Tabakkonsum vs. BIP",
        subtitle = "Allgemeine Gruppierung")
 ```
-<br>
-Und nun mit neuer Gruppierung der Daten:
-<br>
+
+<br> Und nun mit neuer Gruppierung der Daten: <br>
+
 ```{r tobL_13, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 # Grouping by tobacco values each year and saving this full dataset in data_tob_per_year using function 2.2 group_data_year
 data_tob_per_year <- data_tob %>%
@@ -328,9 +319,9 @@ data_tob_per_year_format <- data_tob %>%
       )$cat_tob_usage_per_year
   )
 ```
-<br>
-Hierzu nun erst der nach Jahr gefacettete Dotplot:
-<br>
+
+<br> Hierzu nun erst der nach Jahr gefacettete Dotplot: <br>
+
 ```{r tobL_14, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   group_by(cat_tob_usage_per_year, Year) %>%
@@ -353,9 +344,9 @@ data_tob_per_year %>%
   geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Und nun mit nicht-linearer smooth line:
-<br>
+
+<br> Und nun mit nicht-linearer smooth line: <br>
+
 ```{r tobL_15, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   group_by(cat_tob_usage_per_year, Year) %>%
@@ -378,11 +369,9 @@ data_tob_per_year %>%
   geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.2) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Auffällig ist, dass anders als bei den allgemein gruppierten Daten (über den Durchschnitt des Tabakkonsums eines Landes) hier nun die Länder mit relativ gesehen sehr niedrigem Tabakkonsum ein viel höheres BIP haben, als aus der vorherigen Gruppierung hervorgeht. Demnach ist es durchaus sinnvoll, die Daten jährlich neu zu gruppieren, wenn die Zugehörigkeit zu einer bestimmten Gruppe eines Landes sich über die Jahre ändern kann. 
-<br>
-Und nun mit Datenpunkt pro Land:
-<br>
+
+<br> Auffällig ist, dass anders als bei den allgemein gruppierten Daten (über den Durchschnitt des Tabakkonsums eines Landes) hier nun die Länder mit relativ gesehen sehr niedrigem Tabakkonsum ein viel höheres BIP haben, als aus der vorherigen Gruppierung hervorgeht. Demnach ist es durchaus sinnvoll, die Daten jährlich neu zu gruppieren, wenn die Zugehörigkeit zu einer bestimmten Gruppe eines Landes sich über die Jahre ändern kann. <br> Und nun mit Datenpunkt pro Land: <br>
+
 ```{r tobL_16, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
@@ -399,11 +388,9 @@ data_tob_per_year %>%
   geom_smooth(aes(group = 1), method = "loess", se = FALSE) +
   scale_colour_brewer(palette = "Set2")
 ```
-<br>
-Hier sieht man nun deutlich, wie der Ausreißer einer anderen Gruppe zugeordnet wurde für die Jahre 2000-2010 und somit, warum unsere Daten nun andere Zusammenhänge zeigen.
-<br>
-Und nun im Barplot:
-<br>
+
+<br> Hier sieht man nun deutlich, wie der Ausreißer einer anderen Gruppe zugeordnet wurde für die Jahre 2000-2010 und somit, warum unsere Daten nun andere Zusammenhänge zeigen. <br> Und nun im Barplot: <br>
+
 ```{r tobL_17, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year) %>%
@@ -421,9 +408,9 @@ data_tob_per_year_format %>%
     subtitle = "Pro Jahr gruppierte Daten"
   )
 ```
-<br>
-Nun wollen wir noch die Varianz für jede Gruppe in ihren HIV Werten überprüfen, da Mittelwertsberechnungen schnell verzerrt sein können. Dafür betrachten wir nun botplots für jede Kategorie.
-<br>
+
+<br> Nun wollen wir noch die Varianz für jede Gruppe in ihren HIV Werten überprüfen, da Mittelwertsberechnungen schnell verzerrt sein können. Dafür betrachten wir nun botplots für jede Kategorie. <br>
+
 ```{r tobL_18, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
@@ -437,9 +424,9 @@ data_tob_per_year %>%
     subtitle = "Pro Jahr gruppierte Daten"
   )
 ```
-<br>
-Hier nochmal nach Jahr facetiert:
-<br>
+
+<br> Hier nochmal nach Jahr facetiert: <br>
+
 ```{r tobL_19, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
@@ -454,9 +441,9 @@ data_tob_per_year %>%
     subtitle = "Pro Jahr gruppierte Daten"
   )
 ```
-<br>
-Hier Barplots facettiert nach jahr, wobei nach Tabakdurchschnittskonsum gruppiert wurde:
-<br>
+
+<br> Hier Barplots facettiert nach jahr, wobei nach Tabakdurchschnittskonsum gruppiert wurde: <br>
+
 ```{r tobL_20, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob %>%
   group_by(cat_tob_usage) %>%
@@ -476,12 +463,13 @@ data_tob %>%
     subtitle = "Allgemeine Gruppierung"
   )
 ```
-<br>
-Und nun Barplots facettiert nach Jahr, wobei jedes jahr neu nach Tabakkonsum gruppiert wurde:
-<br>
+
+<br> Und nun Barplots facettiert nach Jahr, wobei jedes jahr neu nach Tabakkonsum gruppiert wurde: <br>
+
 ```{r tobL_21, echo=FALSE, fig.align="left", message=FALSE, warning=FALSE}
 data_tob_per_year_format %>%
-  group_by(cat_tob_usage_per_year) %>%
+  group_by(cat_tob_usage_per_year, Year) %>%
+  summarise(NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE)) %>% 
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
   geom_col() +
   facet_wrap( ~ Year) +
@@ -500,7 +488,8 @@ data_tob_per_year_format %>%
  #  ))
 
 plot_BIP_tob_barplot_year <- data_tob_per_year_format %>%
-  group_by(cat_tob_usage_per_year) %>%
+  group_by(cat_tob_usage_per_year, Year) %>%
+  summarise(NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE)) %>% 
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
   geom_col() +
   facet_wrap( ~ Year, ncol = 4) +
@@ -511,25 +500,5 @@ plot_BIP_tob_barplot_year <- data_tob_per_year_format %>%
     title = "Tabakkonsum vs. BIP mit jährlich gruppierten Daten"
   )
 ```
-<br>
-So how does GDP per capita relate to the prevalence of current tobacco use (% of adults)?
-<br>
-<br>
-Was bedeutet BIP pro Kopf genau?
-Bruttoinlandsprodukt (BIP): Der Gesamtwert aller Waren und Dienstleistungen, die innerhalb eines Landes in einem bestimmten Zeitraum (z. B. ein Jahr) produziert werden.
-Pro Kopf: Das BIP wird durch die Gesamtbevölkerung des Landes geteilt, um eine durchschnittliche Wirtschaftskraft pro Einwohner zu ermitteln.
-Das BIP soll einen Blick in den Lebensstandard einer Bevölkerung geben können, da es möglichst kaufkraftbereinigt ist.
-<br>
-Zu beachten ist, dass eindeutige Aussagen nicht getroffen werden können, da hier ein Land je nach durchschnittlichem Tabakkonsum einer Kategorie zugeordnet wird, wobei das BIP pro Kopf wiederum ein Durchschnittswert ist. Die Aussage beispielsweise, dass wenn ein Mensch viel Tabak konsumiert, er im Durchschnitt auch ein recht hohes Einkommen/Umsatz hat, ist nicht zu treffen, einerseits da die Daten eine derartige Interpretation nicht zulassen und BIP nicht das Einkommen charakterisiert. So kann nämlich gerade in Ländern mit hohem BIP die arme Bevölkerung besonders viel Tabak konsumieren, wenn die relativ sehr extreme Armut (bei einem eher hohen Lebensstandard im Land) als Ursache von diesem gesehen werden will. Dadurch werden Werte verzerrt.  Wie sich diese Werte dann bilden, ist aber ebenfalls nicht bekannt, da die Einkommensverteilung im BIP nicht berücksichtigt wird. (Anmerkung: fiktives Beispiel). Diese Verhältnisse können wir aus den Daten also mit Sicherheit nicht herauslesen.
-<br>
-Jedoch können wir folgende Aussagen, anhand der letzten Grafik treffen:
-<br>
-Sichtbar ist, dass je größer der durchschnittliche Tabakkonsum im Land desto tendentiell geringer ist das BIP pro Kopf. 
-<br>
-Einzelne Ausnahmen, fallen jedoch auf:
-<br>
-Für die Jahre 2000, 2005 und 2010 ist festzustellen, dass Länder mit großem durchschnittlichen Tabakkonsum das höchste BIP pro Kopf der im Datensatz aufgeführten Länder aufgewiesen hatten.
-<br>
-Dies ändert sich in den Jahren 2015, 2018, 2019 und 2020. Hier ist auffällig, dass Länder mit relativ gesehen sehr geringem Tabakkonsum das gerinste BIP pro Kopf aller aufgeführten Länder aufwiesen.
-<br>
-Für alle anderen Kategorien an relativem Tabakkonsum, gilt die anfängliche Erkenntnisse, dass mit relativ gesehen größeren Tabakkonsum der BIP pro Kopf relativ gesehen geringer ist.
+
+<br> So how does GDP per capita relate to the prevalence of current tobacco use (% of adults)? <br> <br> Was bedeutet BIP pro Kopf genau? Bruttoinlandsprodukt (BIP): Der Gesamtwert aller Waren und Dienstleistungen, die innerhalb eines Landes in einem bestimmten Zeitraum (z. B. ein Jahr) produziert werden. Pro Kopf: Das BIP wird durch die Gesamtbevölkerung des Landes geteilt, um eine durchschnittliche Wirtschaftskraft pro Einwohner zu ermitteln. Das BIP soll einen Blick in den Lebensstandard einer Bevölkerung geben können, da es möglichst kaufkraftbereinigt ist. <br> Zu beachten ist, dass eindeutige Aussagen nicht getroffen werden können, da hier ein Land je nach durchschnittlichem Tabakkonsum einer Kategorie zugeordnet wird, wobei das BIP pro Kopf wiederum ein Durchschnittswert ist. Die Aussage beispielsweise, dass wenn ein Mensch viel Tabak konsumiert, er im Durchschnitt auch ein recht hohes Einkommen/Umsatz hat, ist nicht zu treffen, einerseits da die Daten eine derartige Interpretation nicht zulassen und BIP nicht das Einkommen charakterisiert. So kann nämlich gerade in Ländern mit hohem BIP die arme Bevölkerung besonders viel Tabak konsumieren, wenn die relativ sehr extreme Armut (bei einem eher hohen Lebensstandard im Land) als Ursache von diesem gesehen werden will. Dadurch werden Werte verzerrt. Wie sich diese Werte dann bilden, ist aber ebenfalls nicht bekannt, da die Einkommensverteilung im BIP nicht berücksichtigt wird. (Anmerkung: fiktives Beispiel). Diese Verhältnisse können wir aus den Daten also mit Sicherheit nicht herauslesen. <br> Jedoch können wir folgende Aussagen, anhand der letzten Grafik treffen: <br> Sichtbar ist, dass je größer der durchschnittliche Tabakkonsum im Land desto tendentiell geringer ist das BIP pro Kopf. <br> Einzelne Ausnahmen, fallen jedoch auf: <br> Für die Jahre 2000, 2005 und 2010 ist festzustellen, dass Länder mit großem durchschnittlichen Tabakkonsum das höchste BIP pro Kopf der im Datensatz aufgeführten Länder aufgewiesen hatten. <br> Dies ändert sich in den Jahren 2015, 2018, 2019 und 2020. Hier ist auffällig, dass Länder mit relativ gesehen sehr geringem Tabakkonsum das gerinste BIP pro Kopf aller aufgeführten Länder aufwiesen. <br> Für alle anderen Kategorien an relativem Tabakkonsum, gilt die anfängliche Erkenntnisse, dass mit relativ gesehen größeren Tabakkonsum der BIP pro Kopf relativ gesehen geringer ist.
