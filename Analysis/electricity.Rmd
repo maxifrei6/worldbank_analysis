@@ -17,14 +17,14 @@ lapply(pkgs, library, character.only = TRUE)
 
 ```
 
-```{r ep1}
+```{r }
 data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
 data_electricity <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
 
 ```
 
-```{r ep2}
+```{r ep1}
 world <- ne_countries(scale = "medium", returnclass = "sf")
 data_continent <- data_electricity %>%
   left_join(world %>% select(admin, continent), by = c("Country Name" = "admin")) %>%
@@ -42,7 +42,7 @@ ep1 <- ggplot(data_continent, aes(x = Year, y = EG.ELC.ACCS.ZS, color = continen
 ep1
 ```
 
-```{r ep3}
+```{r ep2}
 data_density <- data_electricity %>%
   filter(!is.na(EN.POP.DNST)) %>%
   mutate(pop_density_cat_num = ntile(EN.POP.DNST, 3),
@@ -60,7 +60,7 @@ ep2 <- ggplot(data_density, aes(x = Year, y = EG.ELC.ACCS.ZS, color = pop_densit
 ep2
 ```
 
-```{r ep4}
+```{r ep3}
 data_incomes <- data_electricity %>%
   filter(!is.na(NY.ADJ.NNTY.PC.CD)) %>%
   mutate(income_group_num = ntile(NY.ADJ.NNTY.PC.CD, 5),
@@ -80,7 +80,7 @@ ep3 <- ggplot(data_incomes, aes(x = NY.ADJ.NNTY.PC.CD, y = EG.ELC.ACCS.ZS)) +
 ep3
 ```
 
-```{r ep5}
+```{r ep4}
 data_surface <- data_electricity %>%
   filter(!is.na(AG.SRF.TOTL.K2)) %>%
   mutate(surface_area_cat_num = ntile(AG.SRF.TOTL.K2, 3),
@@ -95,7 +95,7 @@ ep4 <- ggplot(data_surface, aes(x = surface_area_cat, y = EG.ELC.ACCS.ZS)) +
 ep4
 ```
 
-```{r ep6}
+```{r ep5}
 world_map <- ne_countries(scale = "medium", returnclass = "sf")
 world_data <- world_map %>%
   left_join(data_electricity, by = c("iso_a3" = "Country Code"))
@@ -108,7 +108,7 @@ ep5 <- ggplot(world_data) +
 ep5
 ```
 
-```{r ep7}
+```{r ep6}
 lm_model <- lm(EG.ELC.ACCS.ZS ~ NY.ADJ.NNTY.PC.CD  + AG.SRF.TOTL.K2, data = data_electricity)
 kable(tidy(lm_model), caption = "Linear Regression Results")
 
