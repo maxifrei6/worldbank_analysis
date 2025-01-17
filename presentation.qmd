@@ -48,7 +48,7 @@ source_rmd(here("Analysis", "surface.Rmd"))
 source_rmd(here("Analysis", "hiv.Rmd"))
 source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
 source_rmd(here("Analysis", "education.Rmd"))
-
+source_rmd(here("Analysis", "electricity.Rmd"))
 # Globally center all plots while displaying knitted version in HTML
 knitr::opts_chunk$set(fig.align = "center")
 
