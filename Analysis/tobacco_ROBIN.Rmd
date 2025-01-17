@@ -234,117 +234,6 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
         legend.position = "bottom",
         plot.title = element_text(hjust = 0.5)) +
   facet_wrap(~ Year, ncol = 4)
-
-##########################################################################################
-# TODO: ALTERNATIVE: 3-1-3 SCHEME
-# Scatter plot of interested variables with faceted years
-# plot_tobacco1_upper_row <-
-#   data_tobacco %>%
-#   filter(Year %in% c(2000, 2005, 2010)) %>%
-#   ggplot(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
-#   geom_point(alpha = 0.5) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Robust-Linear"),
-#               method = MASS::rlm, linewidth = 1,se = FALSE) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Linear"),
-#               method = "lm", linewidth = 1, se = FALSE) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Lokal-Polynomiell"),
-#               method = "loess", linewidth = 1, se = FALSE) +
-#   ggtitle("Zusammenhang zwischen Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
-#   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
-#                      breaks = c(0, 10, 20, 30, 40, 50, 60),
-#                      minor_breaks = waiver(),
-#                      limits = c(0, 60)) +
-#   scale_y_continuous(name = "BIP pro Kopf [$]",
-#                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
-#                      minor_breaks = waiver(),
-#                      limits = c(0, 125000)) +
-#   scale_color_manual(name = "",
-#                      values = c("Linear" = brewer.pal(3, "Set2")[[1]],
-#                                 "Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-#                                 "Lokal-Polynomiell" = brewer.pal(3, "Set2")[[3]])) +
-#   theme_bw() +
-#   theme(axis.text.x = element_blank(),
-#         axis.ticks.x = element_blank(),
-#         axis.title.x = element_blank(),
-#         legend.position = "none",
-#         plot.title = element_text(hjust = 0.5)) +
-#   facet_wrap(~ Year)
-# 
-# # Plot the middle row of the faceted scatter plot
-# plot_tobacco1_middle_row <-
-#   data_tobacco %>%
-#   filter(Year == 2015) %>%
-#   ggplot(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
-#   geom_point(alpha = 0.5) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Robust-Linear"),
-#               method = MASS::rlm, linewidth = 1,se = FALSE) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Linear"),
-#               method = "lm", linewidth = 1, se = FALSE) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Lokal-Polynomiell"),
-#               method = "loess", linewidth = 1, se = FALSE) +
-#   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
-#                      breaks = c(0, 10, 20, 30, 40, 50, 60),
-#                      minor_breaks = waiver(),
-#                      limits = c(0, 60)) +
-#   scale_y_continuous(name = "BIP pro Kopf [$]",
-#                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
-#                      minor_breaks = waiver(),
-#                      limits = c(0, 125000)) +
-#   scale_color_manual(name = "",
-#                      values = c("Linear" = brewer.pal(3, "Set2")[[1]],
-#                                 "Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-#                                 "Lokal-Polynomiell" = brewer.pal(3, "Set2")[[3]])) +
-#   theme_bw() +
-#   theme(axis.text.x = element_blank(),
-#         axis.ticks.x = element_blank(),
-#         axis.title.x = element_blank(),
-#         legend.position = "none") +
-#   facet_wrap(~ Year)
-# 
-# # Plot the bottom row of the faceted scatter plot
-# plot_tobacco1_bottom_row <-
-#   data_tobacco %>%
-#   filter(Year %in% c(2018, 2019, 2020)) %>%
-#   ggplot(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
-#   geom_point(alpha = 0.5) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Robust-Linear"),
-#               method = MASS::rlm, linewidth = 1,se = FALSE) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Linear"),
-#               method = "lm", linewidth = 1, se = FALSE) +
-#   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
-#                   color = "Lokal-Polynomiell"),
-#               method = "loess", linewidth = 1, se = FALSE) +
-#   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
-#                      breaks = c(0, 10, 20, 30, 40, 50, 60),
-#                      minor_breaks = waiver(),
-#                      limits = c(0, 60)) +
-#   scale_y_continuous(name = "BIP pro Kopf [$]",
-#                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
-#                      minor_breaks = waiver(),
-#                      limits = c(0, 125000)) +
-#   scale_color_manual(name = "",
-#                      values = c("Linear" = brewer.pal(3, "Set2")[[1]],
-#                                 "Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-#                                 "Lokal-Polynomiell" = brewer.pal(3, "Set2")[[3]])) +
-#   theme_bw() +
-#   theme(axis.text.x = element_text(hjust = 0.5),
-#         legend.position = "bottom",
-#         plot.title = element_text(hjust = 0.5)) +
-#   facet_wrap(~ Year)
-# 
-# # Assemble the plot
-#   (plot_tobacco1_upper_row /
-#     (plot_spacer() + plot_tobacco1_middle_row + plot_spacer() +
-#       plot_layout(widths = c(1, 1, 1))) /
-#     plot_tobacco1_bottom_row)
 ```
 
 It seems that the Qatari data point in each of the years is still highly influential on the linear relationship. However, the relationship develops to more synchronized behaviour between the robust and non-robust relationship, with the non-robust changing from slightly negative to slightly positive.
@@ -388,7 +277,7 @@ plot_tobacco1_data_upper <-
   geom_smooth(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015)),
               aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
               method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +
-  ggtitle("Zusammenhang zwischen Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
+  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
                      breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(),
@@ -399,10 +288,13 @@ plot_tobacco1_data_upper <-
                      limits = c(0, 125000)) +
   theme_bw() +
   theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 12),
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 14),
         plot.margin = margin(0, 0, 0, 0),
-        plot.title = element_text(hjust = 0.5)) +
+        plot.title = element_text(hjust = 0.5, size = 18),
+        strip.text = element_text(size = 12)) +
   facet_wrap(~ Year, ncol = 4)
 
 # Plot the bottom row of the data points for the assembled tobacco plotting
@@ -422,10 +314,13 @@ plot_tobacco1_data_bottom <-
                      limits = c(0, 125000)) +
   theme_bw() +
   theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 12),
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 14),
         legend.position = "bottom", 
-        plot.margin = margin(0, 0, 0, 0)) +
+        plot.margin = margin(0, 0, 0, 0),
+        strip.text = element_text(size = 12)) +
   facet_wrap(~ Year)
 
 # Add overlayed normal distribution curves to the assembled plot in the data displays
@@ -435,11 +330,11 @@ plot_tobacco1_density_upper <-
   geom_line(data = data_tobacco_normdensity %>%
               filter(Year %in% c(2000, 2005, 2010, 2015)),
             aes(x = norm_x_val, y = norm_y_val, group = Year),
-            color = brewer.pal(4, "Set2")[[2]], linewidth = 1, inherit.aes = FALSE) +
+            color = brewer.pal(4, "Set2")[[3]], linewidth = 1, inherit.aes = FALSE) +
   geom_density(data = data_tobacco %>%
                  filter(Year %in% c(2000, 2005, 2010, 2015)),
                aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
-               color = brewer.pal(4, "Set2")[[1]], linewidth = 1, bw = 3) +
+               color = brewer.pal(4, "Set2")[[2]], linewidth = 1, bw = 3) +
   geom_vline(data = data_tobacco_normdensity %>%
                filter(Year %in% c(2000, 2005, 2010, 2015)),
              aes(xintercept = SH.PRV.SMOK_mean, group = Year),
@@ -453,8 +348,9 @@ plot_tobacco1_density_upper <-
                      minor_breaks = waiver(),
                      limits = c(0, 0.06)) +
   theme_bw() +
-  theme(axis.title.x = element_blank(),
-        axis.title.y = element_text(margin = margin(r = 10)),
+  theme(axis.text = element_text(size = 12),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(margin = margin(r = 10), size = 14),
         plot.margin = margin(0, 0, 0, 0),
         strip.text = element_blank()) +
   facet_wrap(~ Year, ncol = 4)
@@ -467,7 +363,7 @@ plot_tobacco1_density_bottom <-
             linewidth = 1, inherit.aes = FALSE) +
   geom_density(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
                aes(x = SH.PRV.SMOK, y = after_stat(density), group = Year),
-               color = brewer.pal(3, "Set2")[[1]], linewidth = 1, bw = 3,
+               color = brewer.pal(3, "Set2")[[2]], linewidth = 1, bw = 3,
                show.legend = FALSE) +
   # Add an invisible line by framing dummy line to show 'Kerndichteschaetzer' with line
   # shape instead of hollow square in legend
@@ -492,39 +388,32 @@ plot_tobacco1_density_bottom <-
                      limits = c(0, 0.06)) +
   scale_color_manual(
     name = "",
-    values = c("Kerndichteschätzer (Bandbreite = 3)" = brewer.pal(3, "Set2")[[1]],
-               "Normalverteilung" = brewer.pal(3, "Set2")[[2]],
+    values = c("Kerndichteschätzer (Bandbreite = 3)" = brewer.pal(3, "Set2")[[2]],
+               "Normalverteilung" = brewer.pal(3, "Set2")[[3]],
                "Robust-Linearer Zusammenhang" = "black")) +
   theme_bw() +
-  theme(axis.title.x = element_text(margin = margin(t = 10), hjust = 0.75),
-        axis.title.y = element_text(margin = margin(r = 10)),
-        legend.position = c(0.667, -1.25),
+  theme(axis.text = element_text(size = 12),
+        axis.title.x = element_text(hjust = 0.85, margin = margin(t = 10), size = 14),
+        axis.title.y = element_text(margin = margin(r = 10), size = 14),
+        legend.position = c(0.667, -1.75),
         legend.direction = "horizontal",
+        legend.text = element_text(size = 14),
         plot.margin = margin(0, 0, 0, 0),
         strip.text = element_blank()) +
   facet_wrap(~ Year)
 
 
 # Assemble the plot
-plot_tobacco_data_density <- (plot_tobacco1_data_upper /
+presentation_tobacco_plot2 <-
+  (plot_tobacco1_data_upper /
     plot_tobacco1_density_upper /
     plot_spacer() /
     (plot_tobacco1_data_bottom + plot_spacer() + plot_layout(widths = c(3, 1))) /
     (plot_tobacco1_density_bottom + plot_spacer() + plot_layout(widths = c(3, 1))) +
     plot_layout(heights = c(1.9, 0.4, 0.1, 1.9, 0.4, 0.3), widths = c(1, 1, 1, 1))) &
   theme(plot.margin = margin(0, 0, 0, 0))
-plot_tobacco_data_density
 
-# TODO: REMOVE THE ASSEMBLING CODE OR IMPLEMENT IN FINAL VERSION
-# Assemble the plot with small margins between the data and density plots in both rows.
-# (plot_tobacco1_data_upper /
-#     plot_spacer() /
-#     plot_tobacco1_density_upper /
-#     (plot_tobacco1_data_bottom + plot_spacer() +
-#        plot_layout(widths = c(3.0125, 0.9875))) /
-#     (plot_tobacco1_density_bottom + plot_spacer() +
-#        plot_layout(widths = c(3.0125, 0.9875))) +
-#     plot_layout(heights = c(1.895, 0.01, 0.5, 1.895, 0.5, 0.4), widths = c(1, 1, 1, 1)))
+presentation_tobacco_plot2
 ```
 
 We recognize the basically neutral relation in the year 2000 changing over time. Each year the trend gains slight positive increase, meaning over time, it changes towards the relationship of the more the country's GDP per capita, the higher its prevalence of tobacco use among adults. Further, it gets obvious that the general distribution of the data points moves to the left on the x-axis, so generally smaller occurrences of tobacco prevalence as time goes by. The same phenomenon can be observed when looking at the dashed vertical line in the density visualization below the scatter plots, as the mean decreases from each observed year to the next. Having said that, we recognize slightly contrary movement on y-axis, meaning higher GDP per capita for some of the countries, especially the points in the middle of the facets increase in GDP per capita. 

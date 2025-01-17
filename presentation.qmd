@@ -45,6 +45,9 @@ source(here("Scripts", "functions.R"))
 source_rmd(here("Analysis", "tobacco_ROBIN.Rmd"))
 source_rmd(here("Analysis", "agriculture.Rmd"))
 source_rmd(here("Analysis", "surface.Rmd"))
+source_rmd(here("Analysis", "hiv.Rmd"))
+source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
+source_rmd(here("Analysis", "education.Rmd"))
 
 # Globally center all plots while displaying knitted version in HTML
 knitr::opts_chunk$set(fig.align = "center")
@@ -52,26 +55,23 @@ knitr::opts_chunk$set(fig.align = "center")
 # Load the dataset
 data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
-
-# data for education
 data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
-
 ```
 
 ## Agenda {.custom-smaller}
 
 ::: incremental
-1.  Überblick und Terminologie
+1.  Überblick und Gruppierungen
 
 2.  Datenanalyse
 
     2.1 Elektrizität und nationales Einkommen\
-    2.2 Bildung\
-    2.3 HIV\
+    2.2 HIV\
+    2.3 Bildung\
     2.4 Tabakkonsum\
     2.5 Landwirtschaft
 
-3.  Zusammenfassung und Diskussion
+3.  Ausblick
 :::
 
 ## Überblick {.custom-smaller}
@@ -85,183 +85,156 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
 
 -   18 verschiedene Indikatoren
 
--   Jährliche Messungen über 22 Jahre (Zeitraum: 2000 - 2021)
+-   Jährliche Messungen von 2000 bis 2021
 :::
 
-## Terminologie {.custom-smaller}
+## Gruppierungen {.custom-smaller}
 
-::: incremental
--   **fachbegriff**: kurze Beschreibung
+-   durchschnittliche Ausprägung über die Jahre
 
--   **weiterer fachbegriff**: kurze Beschreibung
-:::
+-   verteilt auf Quantile
 
-## 2.1 Elektrizität und nationales Einkommen (1/2) {.custom-smaller}
+| **Quantil**             | Q1          | Q2      | Q3     | Q4   | Q5        |
+|-------------------------|-------------|---------|--------|------|-----------|
+| Prävalenz Alkoholkonsum | Sehr gering | Gering  | Mittel | Groß | Sehr groß |
+| Anteil Grundbildung     | Sehr gering | Gering  | Mittel | Groß | Sehr groß |
+| Bevölkerungsdichte      | \-          | Niedrig | Mittel | Hoch | \-        |
+| Einwohnerzahl           | \-          | Gering  | Mittel | Hoch | \-        |
+| Einkommensniveau        | \-          | Gering  | Mittel | Hoch | \-        |
+| Prävalenz Tabakkonsum   | Sehr gering | Gering  | Mittel | Groß | Sehr groß |
+| Landesfläche            | Sehr klein  | Klein   | Mittel | Groß | Sehr groß |
+
+## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
 Wie korreliert der Zugang zu Elektrizität mit dem bereinigten Nettonationaleinkommen pro Kopf in verschiedenen Ländern?
 
-## 2.1 Elektrizität und nationales Einkommen (2/2) {.custom-smaller}
+## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
 Hängt dies auch von der Größe des Landes oder der Einwohnerzahl ab?
 
-## 2.2 Bildung (1/3) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
-Haben Länder mit **höherer Staatsverschuldung (in % des BIP)** einen **geringeren Anteil an Erwerbspersonen mit Grundbildung**?
-
-```{r}
-# Faceted scatter plot: Debt vs Education by Income Level
-ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
-  geom_point(alpha = 0.7, size = 3) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
-  facet_wrap(~ cat_income_level) +
-  labs(
-    title = "Verschuldung des Zentralstaats im Vergleich zur Erwerbsbevölkerung mit Grundbildung nach Einkommensniveau",
-    x = "Zentralstaatliche Verschuldung (% des BIP)",
-    y = "Erwerbstätige mit Grundbildung (%)",
-    color = "Einkommensniveau"
-  ) +
-  theme_minimal() +
-  theme(strip.text = element_text(face = "bold"))
-```
-
-## 2.2 Bildung (2/3) {.custom-smaller}
-
-```{r longitudinal_plot, fig.height=8, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
-# Filter countries with more than 4 non-NA entries for SL.TLF.BASC.ZS
-data_filtered <- data_education %>%
-  filter(cat_income_level == "Medium") %>%
-  group_by(`Country Name`) %>%
-  filter(sum(!is.na(SL.TLF.BASC.ZS)) > 4) %>%  # Keep countries with more than 4 non-NA entries
-  ungroup()
-
-# Convert Year column to numeric
-data_filtered <- data_filtered %>%
-  mutate(Year = as.numeric(as.character(Year)))
-
-# Faceted line chart with subtle trend lines and simplified x-axis
-ggplot(data_filtered, 
-       aes(x = Year, y = SL.TLF.BASC.ZS, color = cat_population_size)) +
-  geom_line(aes(group = `Country Name`), alpha = 0.8, size = 0.7) +  # Line chart
-  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", size = 0.8, color = "grey50", alpha = 0.6) +  # Subtle trend line
-  facet_wrap(~ `Country Name`, scales = "free_y") +  # Facet by country
-  scale_x_continuous(breaks = seq(2000, 2020, 5)) +  # Simplify x-axis breaks
-  labs(
-    title = "Bildungstrends im Zeitverlauf nach Land (Länder mit mittlerem Einkommen und >4 Nicht-NA-Einträgen)",
-    x = "Jahr",
-    y = "Erwerbstätige mit Grundbildung (%)",
-    color = "Größe der Bevölkerung"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),  # Bigger and centered title
-    strip.text = element_text(size = 8, face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
-    legend.position = "bottom"
-  )
-
-```
-
-## 2.2 Bildung (3/3) {.custom-smaller}
-
-Sind Länder mit einem höheren Prozentsatz an Erwerbstätigen mit Grundbildung in der Lage, eine **niedrigere** Schüler-Lehrer-Relation beizubehalten, und welche Auswirkungen könnte dies auf die Bildungsqualität haben?
-
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-# Scatter plot: pupil-teacher ratios vs labor force with basic education
-ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
-  geom_point(alpha = 0.7, size = 3) +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
-  facet_wrap(~ cat_income_level) +
-  labs(
-    title = "Schüler-Lehrer-Verhältnis vs. Erwerbspersonen mit Grundbildung",
-    x = "Schüler-Lehrer-Relation",
-    y = "Erwerbspersonen mit Grundbildung (%)",
-    color = "Einkommensniveau"
-  ) +
-  theme_minimal()
-
-```
-
-## 2.3 HIV (1/4) {.custom-smaller}
-
-Wie verhält sich die **HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren** zum **gesamten Alkoholkonsum pro Kopf**?
-
-```{r, include=FALSE}
-source_rmd(here("Analysis", "hiv.Rmd"))
-```
+Wie verhält sich die HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren zum gesamten Alkoholkonsum pro Kopf?
 
 ```{r, fig.height=7, fig.width=12}
 plot_alc_hiv_grouped_dotplot
 ```
 
-## 2.3 HIV (2/4) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
 plot_alc_hiv_boxplot
 ```
 
-## 2.3 HIV (3/4) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
-Haben Länder mit einem **höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung** eine **niedrigere HIV-Prävalenzrate in der Bevölkerung zwischen 15 und 49**?
+Haben Länder mit einem höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung eine niedrigere HIV-Prävalenz in der Bevölkerung zwischen 15 und 49?
 
 ```{r, fig.height=7, fig.width=12}
 plot_edu_hiv_grouped_dotplot
 ```
 
-## 2.3 HIV (4/4) {.custom-smaller}
+## 2.2 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
 plot_edu_hiv_boxplot
 ```
 
-## 2.4 Tabakkonsum (1/2) {.custom-smaller}
+## 2.3 Bildung {.custom-smaller}
 
-In welchem Zusammenhang steht das **Bruttoinlandsprodukt pro Kopf** mit der **Prävalenz des aktuellen Tabakkonsums unter Erwachsenen**?
+Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung?
+>>>>>>> d5e8a4e3ff0953ca855cbabcb385e4fdd930827d
 
-```{r, include=FALSE}
-source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
+```{r edu_slide_1}
+p1
 ```
+
+## 2.3 Bildung {.custom-smaller}
+
+```{r edu_slide_2}
+p2
+```
+
+## 2.3 Bildung {.custom-smaller}
+
+```{r edu_slide_3}
+p3
+```
+
+## 2.3 Bildung {.custom-smaller}
+
+Führen mehr Erwerbstätige mit Grundbildung zu einer niedrigeren Schüler-Lehrer-Relation?
+
+```{r edu_slide_4}
+p4
+```
+
+## 2.3 Bildung {.custom-smaller}
+
+```{r edu_slide_5}
+p5
+```
+
+## 2.3 Bildung {.custom-smaller}
+
+Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqualität?
+
+```{r edu_slide_6}
+p6
+```
+
+## 2.4 Tabakkonsum {.custom-smaller}
+
+In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen innerhalb eines Landes?
 
 ```{r tobacco_plot1_, fig.height=7, fig.width= 15, echo = FALSE, warning=FALSE, message=FALSE}
 plot_BIP_tob_barplot_year
 ```
 
-## 2.4 Tabakkonsum (2/2) {.custom-smaller}
-
-```{r, include=FALSE}
-# tobacco_plot2_faceted_scatter_and_density
-
-```
+## 2.4 Tabakkonsum {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-plot_tobacco_data_density
+presentation_tobacco_plot2
 ```
 
-## 2.5 Landwirtschaft (1/4) {.custom-smaller}
+## 2.5 Landwirtschaft {.custom-smaller}
 
-Gibt es einen Zusammenhang zwischen dem **Anteil der landwirtschaftlichen Nutzfläche** und den **CO2 Emissionen pro Kopf** eines Landes?
+Gibt es einen Zusammenhang zwischen dem Anteil der landwirtschaftlichen Nutzfläche und den CO2 Emissionen pro Kopf eines Landes?
 
 ```{r fig.height=7, fig.width=12}
 presentation_agriculture_plot1
 ```
 
-## 2.5 Landwirtschaft (2/4) {.custom-smaller}
+## 2.5 Landwirtschaft {.custom-smaller}
 
-Welcher Bedeutung fällt hierbei die **Landesfläche eines Landes** zu?
+Welcher Bedeutung fällt hierbei die Landesfläche eines Landes zu?
 
 ```{r fig.height=8, fig.width=14}
 presentation_agriculture_plot2
 ```
 
-## 2.5 Landwirtschaft (3/4) {.custom-smaller}
+## 2.5 Landwirtschaft {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
 presentation_agriculture_plot3
 ```
 
-## 2.5 Landwirtschaft (4/4) {.custom-smaller}
+## Ausblick {.custom-smaller}
 
-```{r fig.height=7, fig.width=12}
-presentation_agriculture_plot4
+Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern könnten:
+
+-   zur Quantifizierung von Bildungsqualität
+
+-   zu urbaner, forstwirtschaftlicher Fläche sowie Wasserfläche \[% oder km<sup>2</sup>\]
+
+## Anhang {.custom-smaller}
+
+```{r}
+p8
 ```
 
-## Zusammenfassung und Diskussion {.custom-smaller}
+## Anhang {.custom-smaller}
+
+```{r}
+p9
+```

@@ -6,6 +6,15 @@ body {
   text-align: justify;
 }
 
+.reveal .table {
+    width: 100%;
+    table-layout: fixed;
+}
+.reveal th,.reveal td {
+    white-space: nowrap;
+    text-align: center;
+}
+
 .reveal .footer {
   font-size: 0.3em !important;
   text-align: justify !important;
