@@ -48,7 +48,7 @@ source_rmd(here("Analysis", "surface.Rmd"))
 source_rmd(here("Analysis", "hiv.Rmd"))
 source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
 source_rmd(here("Analysis", "education.Rmd"))
-source_rmd(here("Analysis", "electricity.Rmd"))
+# source_rmd(here("Analysis", "electricity.Rmd"))
 # Globally center all plots while displaying knitted version in HTML
 knitr::opts_chunk$set(fig.align = "center")
 
@@ -109,14 +109,15 @@ data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "C
 Wie korreliert der Zugang zu Elektrizität mit dem bereinigten Nettonationaleinkommen pro Kopf in verschiedenen Ländern?
 
 ```{r, fig.height=7, fig.width=12}
-ep1
+# ep1
 ```
+
 ## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
 Hängt dies auch von der Größe des Landes oder der Bevölkerungsdichte ab?
 
 ```{r, fig.height=7, fig.width=12}
-ep2
+# ep2
 ```
 
 ## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
@@ -124,15 +125,15 @@ ep2
 Hängt dies auch von der Größe des Landes oder der Einkommen ab?
 
 ```{r, fig.height=7, fig.width=12}
-ep3
+# ep3
 ```
 
 ## 2.1 Elektrizität und nationales Einkommen {.custom-smaller}
 
-
 ```{r, fig.height=7, fig.width=12}
-ep5
+# ep5
 ```
+
 ## 2.2 HIV {.custom-smaller}
 
 Wie verhält sich die HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren zum gesamten Alkoholkonsum pro Kopf?
@@ -149,7 +150,7 @@ plot_alc_hiv_boxplot
 
 ## 2.2 HIV {.custom-smaller}
 
-Haben Länder mit einem höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung eine niedrigere HIV-Prävalenz in der Bevölkerung zwischen 15 und 49?
+Haben Länder mit einem höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung eine niedrigere HIV-Prävalenz unter den 15- bis 49-Jährigen?
 
 ```{r, fig.height=7, fig.width=12}
 plot_edu_hiv_grouped_dotplot
@@ -163,21 +164,21 @@ plot_edu_hiv_boxplot
 
 ## 2.3 Bildung {.custom-smaller}
 
-Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung? \>\>\>\>\>\>\> d5e8a4e3ff0953ca855cbabcb385e4fdd930827d
+Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung?
 
-```{r edu_slide_1}
+```{r edu_slide_1, fig.height=7, fig.width=12}
 p1
 ```
 
 ## 2.3 Bildung {.custom-smaller}
 
-```{r edu_slide_2}
+```{r edu_slide_2, fig.height=7, fig.width=12}
 p2
 ```
 
 ## 2.3 Bildung {.custom-smaller}
 
-```{r edu_slide_3}
+```{r edu_slide_3, fig.height=7, fig.width=12}
 p3
 ```
 
@@ -185,13 +186,13 @@ p3
 
 Führen mehr Erwerbstätige mit Grundbildung zu einer niedrigeren Schüler-Lehrer-Relation?
 
-```{r edu_slide_4}
+```{r edu_slide_4, fig.height=7, fig.width=12}
 p4
 ```
 
 ## 2.3 Bildung {.custom-smaller}
 
-```{r edu_slide_5}
+```{r edu_slide_5, fig.height=7, fig.width=12}
 p5
 ```
 
@@ -199,7 +200,7 @@ p5
 
 Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqualität?
 
-```{r edu_slide_6}
+```{r edu_slide_6, fig.height=7, fig.width=12}
 p6
 ```
 
