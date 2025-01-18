@@ -359,7 +359,7 @@ plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
   labs(
     x = "Alkoholkonsum pro Kopf [l]",
     y = "HIV Prävalenz [%]",
-    title = "Gruppierung der Daten mit jährlich gruppierten Daten"
+    title = "Alkoholkonsum vs. HIV"
   ) +
   theme_bw(base_size = 21)
 ```
