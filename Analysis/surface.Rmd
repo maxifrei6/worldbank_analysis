@@ -498,7 +498,7 @@ presentation_agriculture_plot3 <-
   scale_color_manual(name = "(Min; Max)-normalisierte Variablen:",
                      values = c(agr_normd = brewer.pal(3, "Set2")[[2]],
                                 co2_normd = brewer.pal(3, "Set2")[[3]]),
-                     labels = c("Landwirtschaftliche Nutzfläche",
+                     labels = c("Anteil an landwirtschaftlicher Nutzfläche",
                                 bquote("CO"[2] * " Emissionen pro Kopf"))) +
   theme_bw() +
   theme(axis.text = element_text(hjust = 0.5, size = 12),
