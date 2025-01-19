@@ -381,6 +381,37 @@ plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
     legend.position = "bottom",
     legend.text = element_text(size = 14)
   )
+
+anhang_alc_hiv_3 <- data_alc_per_year %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
+  geom_point(size = 3.5, alpha = 0.5) +
+  geom_smooth(
+    aes(group = 1, colour = "Linear"),
+    method = "lm",
+    se = FALSE,
+    size = 1.4
+  ) +
+  geom_smooth(
+    aes(group = 1, colour = "robust-Linear"),
+    method = MASS::rlm,
+    se = FALSE,
+    size = 1.4
+  ) +
+  scale_color_manual(name = "",
+                     values = c("Linear" = brewer.pal(3, "Set2")[[2]],
+                                "robust-Linear" = brewer.pal(3, "Set2")[[3]])) +
+  labs(x = "Alkoholkonsum pro Kopf [l]", 
+       y = "HIV Prävalenz [%]", 
+       title = "Alkoholkonsum vs. HIV") +
+  theme_bw() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title.x = element_text(margin = margin(t = 10), size = 18),
+    axis.title.y = element_text(margin = margin(r = 10), size = 18),
+    plot.title = element_text(hjust = 0.5, size = 20),
+    legend.position = "bottom",
+    legend.text = element_text(size = 14)
+  )
 ```
 <br>
 Pro Jahr geplottete Daten zeigen die korrekte Einordnung der Quantile:
