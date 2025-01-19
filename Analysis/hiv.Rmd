@@ -349,23 +349,38 @@ data_alc_per_year %>%
 
 data_alc_per_year_without_outlier <- data_alc_per_year %>% 
   filter(`Country Name` != "Tansania")
+
 plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
   geom_point(size = 3.5, alpha = 0.5) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE, size = 1.2, colour = brewer.pal(3, "Set2")[[2]]) +
-  geom_smooth(data = data_alc_per_year_without_outlier,
-              method = "lm", se= FALSE, size = 1.2,
-              colour = brewer.pal(3, "Set2")[[3]]) +
-  labs(
-    x = "Alkoholkonsum pro Kopf [l]",
-    y = "HIV Prävalenz [%]",
-    title = "Alkoholkonsum vs. HIV"
+  geom_smooth(
+    aes(group = 1, colour = "Linear"),
+    method = "lm",
+    se = FALSE,
+    size = 1.4
   ) +
-  theme_bw()+
-  theme(axis.text = element_text(size = 14),
-        axis.title.x = element_text(margin = margin(t = 10), size = 18),
-        axis.title.y = element_text(margin = margin(r = 10), size = 18),
-        plot.title = element_text(hjust = 0.5, size = 20))
+  geom_smooth(
+    data = data_alc_per_year_without_outlier,
+    aes(colour = "Linear ohne Ausreißer"),
+    method = "lm",
+    se = FALSE,
+    size = 1.4
+  ) +
+  scale_color_manual(name = "",
+                     values = c("Linear" = brewer.pal(3, "Set2")[[2]],
+                                "Linear ohne Ausreißer" = brewer.pal(3, "Set2")[[3]])) +
+  labs(x = "Alkoholkonsum pro Kopf [l]", 
+       y = "HIV Prävalenz [%]", 
+       title = "Alkoholkonsum vs. HIV") +
+  theme_bw() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title.x = element_text(margin = margin(t = 10), size = 18),
+    axis.title.y = element_text(margin = margin(r = 10), size = 18),
+    plot.title = element_text(hjust = 0.5, size = 20),
+    legend.position = "bottom",
+    legend.text = element_text(size = 14)
+  )
 ```
 <br>
 Pro Jahr geplottete Daten zeigen die korrekte Einordnung der Quantile:
@@ -384,6 +399,26 @@ data_alc_per_year %>%
   ) +
   theme_bw() +
   scale_colour_brewer(palette = "Set2")
+
+anhang_alc_hiv_1 <- data_alc_per_year %>%
+  ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
+  geom_point(aes(fill = cat_alc_per_year), size = 3, alpha = 0.7, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Alkoholkonsum", option = "plasma", direction = -1) +
+  facet_wrap( ~ Year) +
+  labs(
+    x = "Alkoholkonsum pro Kopf [l]",
+    y = "HIV Prävalenz in %",
+    title = "Jährliche Gruppierung der Daten"
+  ) +
+  theme_bw()+
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        plot.title = element_text(hjust = 0.5, size = 20),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 18),
+        legend.position = "bottom",
+        strip.text = element_text(size = 14))
 ```
 <br>
 Nun pro Kategorie nur einen Punkt plotten.
@@ -451,11 +486,13 @@ data_alc_cat_n <- data_alc_per_year %>%
   group_by(cat_alc_per_year) %>%
   summarise(n = n())
 
+xlabels <- paste0(sort(unique(data_alc_per_year$cat_alc_per_year)), "\nn = ", data_alc_cat_n$n)
+
 plot_alc_hiv_boxplot <- data_alc_per_year %>%
   ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   theme_bw() + 
-  scale_x_discrete(labels = paste0(data_alc_per_year$cat_alc_per_year, "\nn = ", data_alc_cat_n$n)) +
+  scale_x_discrete(labels = xlabels) +
   labs(
     x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz [%]",
@@ -950,25 +987,30 @@ data_edu %>%
 ```
 
 ```{r hiv_42, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-hiv_plot_4 <- data_edu %>%
+anhang_edu_hiv_2 <- data_edu %>%
   group_by(cat_edu_per_year) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
     SL.TLF.BASC.ZS = mean(SL.TLF.BASC.ZS, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  ggplot(aes(SL.TLF.BASC.ZS,  SH.DYN.AIDS.ZS, colour = cat_edu_per_year)) +
-  geom_point(size = 5, alpha = 0.7) +
-  theme_bw(base_size = 19) +
+  ggplot(aes(SL.TLF.BASC.ZS,  SH.DYN.AIDS.ZS)) +
+  geom_point(aes(fill = cat_edu_per_year), size = 8, alpha = 0.7, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Alkoholkonsum", option = "plasma", direction = -1) +
   labs(
-    colour = "relativer Anteil an Arbeitenden
-    mit grundlegender Bildung",
-    y = "HIV Prävalenz in %",
-    title = "Grundbildung vs. HIV Prävalenz im Schnitt über die Jahre",
-    subtitle = "Pro Jahr neu gruppiert",
-    x = "Anteil an Arbeitenden mit grundlegender Bildung"
+    colour = "relativer Anteil an Arbeitenden\nmit grundlegender Bildung",
+    y = "HIV Prävalenz [%]",
+    title = "Grundbildung vs. HIV Prävalenz mit jährlich gruppierten Daten",
+    x = "Erwerbstätige mit grundlegender Bildung [%]"
   ) +
-  scale_colour_brewer(palette = "Set2")
+  theme_bw()+
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        plot.title = element_text(hjust = 0.5, size = 20),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        legend.position = "bottom")
 ```
 <br>
 Hier nun nochmal mit mehr Datenpunkten, dabei wird für jede Gruppierung pro Jahr ein Punkt für diese Mittelwerte geplottet:
@@ -1062,14 +1104,16 @@ data_edu_cat_n <- data_edu %>%
   group_by(cat_edu_per_year) %>%
   summarise(n = n())
 
+x_labels <- paste0(sort(unique(data_edu$cat_edu_per_year)), "\nn = ", data_edu_cat_n$n)
+
 plot_edu_hiv_boxplot <- data_edu %>% 
   ggplot(aes(cat_edu_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   scale_y_log10() +
   theme_bw() + 
-  scale_x_discrete(labels = paste0(data_edu$cat_edu_per_year, "\nn = ", data_edu_cat_n$n)) +
+  scale_x_discrete(labels = x_labels) +
   labs(
-    x = "Erwerbstätige mit grundlegender Bildung [%]",
+    x = "relativer Anteil an Erwerbstätigen mit grundlegender Bildung",
     y = "HIV Prävalenz [%] (Log10)",
     title = "Grundbildung vs. HIV Prävalenz - mit jährlich gruppierten Daten"
   ) +
@@ -1082,5 +1126,3 @@ plot_edu_hiv_boxplot <- data_edu %>%
 Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
 Aus den letzten 4 Grafen, lässt sich sehr deutlich herauslesen, dass sich bei einem größeren Anteil an Arbeitenden mit grundlegender Bildung eines Landes auch eine größere HIV Prävalenz beobachten lässt. Somit lässt sich diese Frage in Bezug auf die Daten verneinen.
-<br>
-2.3) boxplot with grouped countries by education and HIV prevalence values
