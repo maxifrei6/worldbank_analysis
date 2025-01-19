@@ -451,11 +451,13 @@ data_alc_cat_n <- data_alc_per_year %>%
   group_by(cat_alc_per_year) %>%
   summarise(n = n())
 
+xlabels <- paste0(sort(unique(data_alc_per_year$cat_alc_per_year)), "\nn = ", data_alc_cat_n$n)
+
 plot_alc_hiv_boxplot <- data_alc_per_year %>%
   ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   theme_bw() + 
-  scale_x_discrete(labels = paste0(data_alc_per_year$cat_alc_per_year, "\nn = ", data_alc_cat_n$n)) +
+  scale_x_discrete(labels = xlabels) +
   labs(
     x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz [%]",
@@ -1062,12 +1064,14 @@ data_edu_cat_n <- data_edu %>%
   group_by(cat_edu_per_year) %>%
   summarise(n = n())
 
+x_labels <- paste0(sort(unique(data_edu$cat_edu_per_year)), "\nn = ", data_edu_cat_n$n)
+
 plot_edu_hiv_boxplot <- data_edu %>% 
   ggplot(aes(cat_edu_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   scale_y_log10() +
   theme_bw() + 
-  scale_x_discrete(labels = paste0(data_edu$cat_edu_per_year, "\nn = ", data_edu_cat_n$n)) +
+  scale_x_discrete(labels = x_labels) +
   labs(
     x = "Erwerbstätige mit grundlegender Bildung [%]",
     y = "HIV Prävalenz [%] (Log10)",
@@ -1082,5 +1086,3 @@ plot_edu_hiv_boxplot <- data_edu %>%
 Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
 Aus den letzten 4 Grafen, lässt sich sehr deutlich herauslesen, dass sich bei einem größeren Anteil an Arbeitenden mit grundlegender Bildung eines Landes auch eine größere HIV Prävalenz beobachten lässt. Somit lässt sich diese Frage in Bezug auf die Daten verneinen.
-<br>
-2.3) boxplot with grouped countries by education and HIV prevalence values
