@@ -136,14 +136,15 @@ We recognize that the data available is actually only the years 2000, 2005, 2010
 
 ```{r scatter, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
 # Scatter plot of interested variables
-ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
-  geom_point(alpha = 0.5) +
+presentation_tobacco_backup1 <-
+  ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
+  geom_point(alpha = 0.5, size = 3.5) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
               method = MASS::rlm,
-              linewidth = 1, se = FALSE) +
+              linewidth = 1.5, se = FALSE) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
-              method = "lm", linewidth = 1, se = FALSE) +
-  ggtitle("Zusammenhang zwischen Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
+              method = "lm", linewidth = 1.5, se = FALSE) +
+  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
                      breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(),
@@ -152,12 +153,18 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
-  scale_color_brewer(name = "", palette = "Set2") +
+  scale_color_manual(name = "",
+                     values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
+                                "Linear" = brewer.pal(3, "Set2")[[3]])) +
   theme_bw() +
-  theme(axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)),
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 16),
+        axis.title.y = element_text(margin = margin(r = 10), size = 16),
         legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5))
+        legend.text = element_text(size = 14),
+        plot.title = element_text(hjust = 0.5, size = 20))
+
+presentation_tobacco_backup1
 ```
 
 We observe a slight trend within the relationship while the direction of this relationship seems to be heavily influenced by the high GDP per capita and low tobacco prevalence outliers in the upper left hand area of the plot according to the different regression models used.
@@ -172,14 +179,15 @@ data_tobacco %>% filter(NY.GDP.PCAP.PP.KD > 80000)
 # Indeed, all the data points originate out of Qatar
 
 # Scatter plot of interested variables; except outlier Qatar
-ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
+presentation_tobacco_backup2 <-
+  ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
        aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.5, size = 3.5) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
-              method = MASS::rlm, linewidth = 1, se = FALSE) +
+              method = MASS::rlm, linewidth = 1.5, se = FALSE) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
-              method = "lm", linewidth = 1, se = FALSE) +
-  ggtitle("Zusammenhang zwischen Prävalenz des aktuellen Tabakkonsums und BIP pro Kopf") +
+              method = "lm", linewidth = 1.5, se = FALSE) +
+  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf - ohne Ausreißer") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
                      breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(),
@@ -188,12 +196,18 @@ ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
                      breaks = c(0, 25000, 50000, 75000, 100000, 125000),
                      minor_breaks = waiver(),
                      limits = c(0, 125000)) +
-  scale_color_brewer(name = "", palette = "Set2") +
+  scale_color_manual(name = "",
+                     values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
+                                "Linear" = brewer.pal(3, "Set2")[[3]])) +
   theme_bw() +
-  theme(axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)),
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 16),
+        axis.title.y = element_text(margin = margin(r = 10), size = 16),
         legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5))
+        legend.text = element_text(size = 14),
+        plot.title = element_text(hjust = 0.5, size = 20))
+
+presentation_tobacco_backup2
 ```
 
 The removal of the Qatari data points leads us to slightly positive relationships for both, the linear as well as the robust-linear regression, visualized by the basically parallel straights divided only by marginal vertical differences.
@@ -444,7 +458,8 @@ colnames(data_tobacco_kld) <- gsub(pattern = "BW = ",
 data_tobacco_kld <- data_tobacco_kld %>% rename("Jahr" = Year)
 
 # Return table of Kullback-Leibler divergences for each year and eacg of the bandwidths
-kable(data_tobacco_kld)
+presentation_tobacco_backup3 <- kable(data_tobacco_kld)
+presentation_tobacco_backup3
 ```
 
 As we can see, there are clear differences between 2000 and 2020, regardless of granularity determined by the chosen bandwidth. Compared to the start of the time span, the empirical  distribution clearly attunes closer to the normal distribution at the end. However, the closest for each of the bandwidths is always 2010, although being very close for the small bandwidths (2, 3). For the bandwidth of two it is also the only one which decreases from 2010 onwards till the end. The wider bandwidths on the other hand, which smooth out the individual data points more with the risk of over-smoothing, decrease only for the first three facets and then increase again, all be it with marginal differences from 2018 to 2020. <br><br>
