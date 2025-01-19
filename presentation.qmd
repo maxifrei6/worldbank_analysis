@@ -42,12 +42,12 @@ library(grid)
 source(here("Scripts", "functions.R"))
 
 # Source each markdown analyses
+source_rmd(here("Analysis", "education.Rmd"))
+source_rmd(here("Analysis", "hiv.Rmd"))
+source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
 source_rmd(here("Analysis", "tobacco_ROBIN.Rmd"))
 source_rmd(here("Analysis", "agriculture.Rmd"))
 source_rmd(here("Analysis", "surface.Rmd"))
-source_rmd(here("Analysis", "hiv.Rmd"))
-source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
-source_rmd(here("Analysis", "education.Rmd"))
 
 # Globally center all plots while displaying knitted version in HTML
 knitr::opts_chunk$set(fig.align = "center")
@@ -65,7 +65,7 @@ knitr::opts_chunk$set(fig.align = "center")
     2.3 Tabakkonsum\
     2.4 Landwirtschaft
 
-3.  Ausblick
+3.  Zusammenfassung und Ausblick
 :::
 
 ## Überblick {.custom-smaller}
@@ -184,7 +184,7 @@ presentation_tobacco_plot2
 
 ## 2.4 Landwirtschaft {.custom-smaller}
 
-Gibt es einen Zusammenhang zwischen dem Anteil der landwirtschaftlichen Nutzfläche und den CO2 Emissionen pro Kopf eines Landes?
+Gibt es einen Zusammenhang zwischen dem Anteil der landwirtschaftlichen Nutzfläche und den CO<sub>2</sub> Emissionen pro Kopf eines Landes?
 
 ```{r fig.height=7, fig.width=12}
 presentation_agriculture_plot1
@@ -204,13 +204,22 @@ presentation_agriculture_plot2
 presentation_agriculture_plot3
 ```
 
-## Ausblick {.custom-smaller}
+## Zusammenfassung und Ausblick {.custom-smaller}
+
+-   HIV vs. Alkoholprävalenz und Grundbildung: jeweils eher positiver Zusammenhang
+
+-   Grundbildung vs. Staatsverschuldung und Schüler-Lehrer-Relation: jeweils eher positiver Zusammenhang 
+
+- Tabakkonsumprävalenz vs. BIP: eher positiver Zusammenhang
+
+- Landwirtschaftliche Nutzfläche vs. CO<sub>2</sub> Emissionen: eher positiver Zusammenhang
+
 
 Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern könnten:
 
--   zur Quantifizierung von Bildungsqualität
-
 -   zu urbaner, forstwirtschaftlicher Fläche sowie Wasserfläche \[% oder km<sup>2</sup>\]
+
+-   zur Quantifizierung von Bildungsqualität
 
 ## Anhang {.custom-smaller}
 
@@ -222,4 +231,47 @@ p8
 
 ```{r}
 p9
+```
+
+## Anhang {.custom-smaller}
+
+```{r fig.height=8, fig.width=14}
+presentation_tobacco_backup1
+```
+
+## Anhang {.custom-smaller}
+
+```{r fig.height=8, fig.width=14}
+presentation_tobacco_backup2
+```
+
+## Anhang {.custom-smaller}
+
+```{r fig.height=10, fig.width=16}
+presentation_tobacco_backup3
+```
+
+
+## Anhang {.custom-smaller}
+
+```{r fig.height=8, fig.width=14}
+presentation_agriculture_backup1
+```
+
+## Anhang {.custom-smaller}
+
+```{r fig.height=8, fig.width=14}
+presentation_agriculture_backup2
+```
+
+## Anhang {.custom-smaller}
+
+```{r fig.height=8, fig.width=14}
+presentation_agriculture_backup3
+```
+
+## Anhang {.custom-smaller}
+
+```{r fig.height=9, fig.width=15}
+presentation_agriculture_backup4
 ```
