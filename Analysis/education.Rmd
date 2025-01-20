@@ -118,7 +118,7 @@ available_data_pairs <- data_education %>%
 p8 <- ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pairs), y = available_pairs)) +
   geom_bar(stat = "identity") +
   labs(
-    title = "Verfügbare Datenpaare pro Land",
+    title = "Verfügbare Datenpaare (Staatliche Verschuldung & grundlegende Bildung)",
     x = "Land",
     y = "Anzahl Datenpaare"
   ) +
@@ -411,7 +411,7 @@ data_education_2 <- data_education %>%
 # Plot with ordered facets
 p9 <- ggplot(data_education_2, 
              aes(x = Year, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
-  geom_line(aes(group = `Country Name`), alpha = 0.8, size = 0.7) +  # Line chart
+  geom_line(aes(color = cat_income_level, group = `Country Name`), alpha = 0.8, size = 0.7) +  # Line chart
   facet_wrap(~ `Country Name`) +  # Facet by country
   scale_x_continuous(breaks = seq(2000, 2020, 5)) +  # Simplify x-axis breaks
   labs(
@@ -420,6 +420,8 @@ p9 <- ggplot(data_education_2,
     y = "Erwerbstätige mit grundlegender Bildung [%]",
     color = "Einkommensniveau"
   ) +
+  scale_fill_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
+  scale_color_manual(name = "Einkommensniveau", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF"), labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")) +
   theme_bw() +
   theme(
     plot.title = element_text(size = 18, face = "bold", hjust = 0.5),  # Bigger and centered title
@@ -429,27 +431,6 @@ p9 <- ggplot(data_education_2,
   )
 
 p9
-
-p1 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
-  geom_point(size = 3.5, alpha = 0.6) +
-  geom_smooth(aes(color = cat_income_level), method = MASS::rlm, se = FALSE, color = "black") +
-  labs(
-    title = "Zentralstaatliche Verschuldung vs. Grundbildung",
-    x = "Zentralstaatliche Verschuldung [% des BIP]",
-    y = "Erwerbstätige mit grundlegender Bildung [%]"
-  ) +
-  scale_fill_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
-  scale_color_manual(name = "Einkommensniveau", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF"), labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")) +
-  theme_bw() +
-  theme(axis.text = element_text(size = 14),
-        axis.title.x = element_text(margin = margin(t = 10), size = 18),
-        axis.title.y = element_text(margin = margin(r = 10), size = 18),
-        legend.text = element_text(size = 14),
-        legend.title = element_text(hjust = 0.5, size = 14),
-        plot.title = element_text(hjust = 0.5, size = 20)) +
-  guides(color = guide_legend(override.aes = list(alpha = 1)))
-
-
 
 # Filter countries with for SL.TLF.BASC.ZS
 data_filtered <- data_education %>%
@@ -472,7 +453,6 @@ country_variability <- data_filtered %>%
 
 # View the results
 print(country_variability)
-
 ```
 <br>
 

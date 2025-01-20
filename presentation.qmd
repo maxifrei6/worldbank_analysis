@@ -10,7 +10,6 @@ format:
     embed-resources: true
     self-contained: true
     slide-number: c
-    logo: "Results/Style/LMU_Logo.svg"
     footer: >
       <div style="display: flex; justify-content: space-between; width: 80%;
         margin-left: 10%; margin-right: 10%;">
@@ -208,12 +207,11 @@ presentation_agriculture_plot3
 
 -   HIV vs. Alkoholprävalenz und Grundbildung: jeweils eher positiver Zusammenhang
 
--   Grundbildung vs. Staatsverschuldung und Schüler-Lehrer-Relation: jeweils eher positiver Zusammenhang 
+-   Grundbildung vs. Staatsverschuldung und Schüler-Lehrer-Relation: jeweils eher positiver Zusammenhang
 
-- Tabakkonsumprävalenz vs. BIP: eher positiver Zusammenhang
+-   Tabakkonsumprävalenz vs. BIP: eher positiver Zusammenhang
 
-- Landwirtschaftliche Nutzfläche vs. CO<sub>2</sub> Emissionen: eher positiver Zusammenhang
-
+-   Landwirtschaftliche Nutzfläche vs. CO<sub>2</sub> Emissionen: eher positiver Zusammenhang
 
 Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern könnten:
 
@@ -250,7 +248,6 @@ presentation_tobacco_backup2
 ```{r fig.height=10, fig.width=16}
 presentation_tobacco_backup3
 ```
-
 
 ## Anhang {.custom-smaller}
 
