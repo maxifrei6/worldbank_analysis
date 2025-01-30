@@ -1,69 +1,86 @@
 ---
 title: "Worldbank Education Analysis"
 author: "Maximilian Frei"
-date: "`r Sys.Date()`"
+date: "2025-01-20"
 output:
   html_document: default
   pdf_document: default
 ---
 
 ## Introduction
-This analysis explores relationships between indicators such as central government debt, labor force education levels, and pupil-teacher ratios using World Bank data. It is divided into two main parts:  
+This analysis explores relationships between indicators such as central government debt, labor force education levels, and pupil-teacher ratios using World Bank data. We are particular interested in these two research questions:
 
-1. Relationship between central government debt and labor force education.  
-2. Relationship between labor force education and pupil-teacher ratios, focusing on implications for education quality.
+1. Do countries with **higher central government debt** as a percentage of GDP have a **lower percentage of labor force with basic education**? 
+2. Are countries with **higher percentage of labor force with basic education** able to maintain **lower pupil-teacher ratios**, and what impact might this have on **education quality**?
 <br>
-<br>
-
-First we will take a look at the data which is available to us. insert a few data exploration steps, grouping, head,
-
-```{r edu_setup, message=FALSE, echo = FALSE}
+```{r edu_setup, message=FALSE, echo=FALSE, include=FALSE}
 # Load necessary libraries
 library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(forcats)
 
 # Load the dataset
 data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 data_grouped <- readRDS(here("Data", "Processed", "data_grouped.RDS"))
 data_education <- left_join(data_merged, data_grouped, by = c("Country Name", "Country Code"))
+
+# Filter only relevant columns
+data_education <- data_education %>%
+  select(
+    `Country Name`, `Country Code`, Year, 
+    GC.DOD.TOTL.GD.ZS, SL.TLF.BASC.ZS, SE.TER.ENRL.TC.ZS, 
+    NY.GDP.PCAP.PP.KD, cat_income_level, cat_population_size, cat_population_density
+  )
+
+knitr::opts_chunk$set(fig.align = "center")
 ```
 
-### 1 Central Government Debt and Labor Force Education
-We analyze whether countries with higher central government debt as a percentage of GDP have lower percentages of labor force with basic education. Let's first create a scatter plot including a robust trend line to visualize the relationship.
-<br>
-<br>
-```{r scatter-debt-education, message=FALSE, echo = FALSE, warning=FALSE}
-# Scatter plot: Central government debt vs labor force with basic education
-p7 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
-  labs(
-    title = "Central Government Debt vs Labor Force with Basic Education",
-    x = "Central Government Debt (% of GDP)",
-    y = "Labor Force with Basic Education (%)"
-  ) +
-  theme_bw()
 
-ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
-  labs(
-    title = "Central Government Debt vs Labor Force with Basic Education",
-    x = "Central Government Debt (% of GDP)",
-    y = "Labor Force with Basic Education (%)"
-  ) +
-  theme_bw()
 
-```
+```{r edu_exploration, message=FALSE, echo=FALSE, include=FALSE}
+# View the first few rows
+head(data_education)
 
-<br>
+# Summary statistics of numerical columns
+summary(data_education)
 
-In our attempt to plot this relationship we've encountered a high proportion of missing data pairs.
+# Check for missing values
+colSums(is.na(data_education))
 
-```{r edu_2, echo = FALSE}
+# Check the structure of the dataset
+str(data_education)
+
+# Count the number of unique countries
 data_education %>%
+  distinct(`Country Name`) %>%
+  count()
+```
+
+The dataset we've been provided is longitudinal: 
+
+- 25 countries
+- 18 indicators
+- yearly observations from 2000 to 2021
+
+Countries are classified into **quantiles** based on their **average values** for specific indicators. For this analysis, we group countries by **income level, population size, and population density**. 
+
+<br>
+
+| **Quantile**                      | Q1       | Q2   | Q3     | Q4   | Q5        |
+|-----------------------------------|----------|------|--------|------|-----------|
+| Prevalence of alcohol consumption | Very Low | Low  | Medium | High | Very High |
+| Share of basic education          | Very Low | Low  | Medium | High | Very High |
+| Population density                | \-       | Low  | Medium | High | \-        |
+| Population size                   | \-       | Low  | Medium | High | \-        |
+| Income level                      | \-       | Low  | Medium | High | \-        |
+| Prevalence of tobacco consumption | Very Low | Low  | Medium | High | Very High |
+| Surface area                      | Very Low | Low  | Medium | High | Very High |
+
+```{r edu_missing_data, echo=FALSE, warning=FALSE}
+# Summarize missing data by income level
+missing_data_summary <- data_education %>%
   group_by(cat_income_level) %>%
   summarise(
     total_rows = n(),
@@ -71,11 +88,10 @@ data_education %>%
     missing_debt_share = round((missing_debt / total_rows) * 100, 2),
     missing_education = sum(is.na(SL.TLF.BASC.ZS)),
     missing_education_share = round((missing_education / total_rows) * 100, 2)
-  ) %>%
-  as.data.frame() # Ensure full output display
+  )
 
-# Summarize data for NA and Not NA
-missing_data_summary <- data_education %>%
+# Summarize missing and non-missing data
+missing_data_long <- data_education %>%
   group_by(cat_income_level) %>%
   summarise(
     debt_missing = sum(is.na(GC.DOD.TOTL.GD.ZS)),
@@ -90,9 +106,9 @@ missing_data_summary <- data_education %>%
     values_to = "count"
   )
 
-# Create a bar chart
-ggplot(missing_data_summary, aes(x = cat_income_level, y = count, fill = status)) +
-  geom_bar(stat = "identity", position = "fill") + # Stacked bar showing proportions
+# English Plot: Missing Data by Income Level
+ggplot(missing_data_long, aes(x = cat_income_level, y = count, fill = status)) +
+  geom_bar(stat = "identity", position = "fill") +
   facet_wrap(~variable, labeller = as_labeller(c(
     "debt" = "Debt Data (GC.DOD.TOTL.GD.ZS)",
     "education" = "Education Data (SL.TLF.BASC.ZS)"
@@ -103,18 +119,29 @@ ggplot(missing_data_summary, aes(x = cat_income_level, y = count, fill = status)
     y = "Proportion",
     fill = "Data Status"
   ) +
-  scale_fill_manual(values = c("missing" = "red", "not_missing" = "green"), labels = c("Missing", "Not Missing")) +
+  scale_fill_manual(values = c("red", "grey"), labels = c("Missing", "Not Missing")) +
   theme_bw()
 
 # Summarize available data pairs for each country
 available_data_pairs <- data_education %>%
   group_by(`Country Name`) %>%
   summarise(
-    available_pairs = sum(!is.na(GC.DOD.TOTL.GD.ZS) & !is.na(SL.TLF.BASC.ZS)) # Count rows where both variables are not NA
+    available_pairs = sum(!is.na(GC.DOD.TOTL.GD.ZS) & !is.na(SL.TLF.BASC.ZS))
   ) %>%
-  arrange(desc(available_pairs)) # Arrange by descending order of available pairs
+  arrange(desc(available_pairs))
 
-# Create a bar chart to visualize the data pairs
+# English Plot: Available Data Pairs per Country
+ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pairs), y = available_pairs)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Available Data Pairs (Government Debt & Basic Education)",
+    x = "Country",
+    y = "Number of Data Pairs"
+  ) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# German plot for presentation: Available Data Pairs per Country
 p8 <- ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pairs), y = available_pairs)) +
   geom_bar(stat = "identity") +
   labs(
@@ -123,21 +150,148 @@ p8 <- ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pa
     y = "Anzahl Datenpaare"
   ) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for better readability
-
-p8
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 <br>
+```{r longitudinal_plot, fig.height=8, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
 
-By diving deeper into the data that is available to us we can see that only 10 countries with varying representation are availble to us. To make the our analysis less prone to outliers we will use more robust models and techniques like "" correlation coefficients and continue using a robust linear model to generate trend lines.
+# Reorder the Country Name based on the income level
+data_education_2 <- data_education %>%
+  arrange(cat_income_level, `Country Name`) %>%
+  mutate(`Country Name` = factor(`Country Name`, unique(`Country Name`)))
+
+ggplot(data_education_2, 
+             aes(x = Year, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
+  geom_line(aes(color = cat_income_level, group = `Country Name`)) +  # Line chart
+  facet_wrap(~ `Country Name`) +  # Facet by country
+  scale_x_continuous(breaks = seq(2000, 2020, 5)) +  # Simplify x-axis breaks
+  labs(
+    title = "Share of Basic Education Over the Years",
+    x = "Year",
+    y = "Labor Force with Basic Education [%]",
+    color = "Income Level"
+  ) +
+  scale_fill_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
+  scale_color_manual(name = "Income Level", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
+  theme_bw()
+
+# Plot with ordered facets
+p9 <- ggplot(data_education_2, 
+             aes(x = Year, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
+  geom_line(aes(color = cat_income_level, group = `Country Name`), alpha = 0.8, size = 0.7) +  # Line chart
+  facet_wrap(~ `Country Name`) +  # Facet by country
+  scale_x_continuous(breaks = seq(2000, 2020, 5)) +  # Simplify x-axis breaks
+  labs(
+    title = "Bildungsentwicklung über die Jahre",
+    x = "Jahr",
+    y = "Erwerbstätige mit grundlegender Bildung [%]",
+    color = "Einkommensniveau"
+  ) +
+  scale_fill_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
+  scale_color_manual(name = "Einkommensniveau", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF"), labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),  # Bigger and centered title
+    strip.text = element_text(size = 8, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+    legend.position = "bottom"
+  )
+
+# Filter countries with for SL.TLF.BASC.ZS
+data_filtered <- data_education %>%
+  group_by(`Country Name`) %>%
+  ungroup()
+
+# Convert Year column to numeric
+data_filtered <- data_filtered %>%
+  mutate(Year = as.numeric(as.character(Year)))
+
+# Calculate range of basic education percentage for each country
+country_variability <- data_filtered %>%
+  filter(!is.na(SL.TLF.BASC.ZS)) %>%  # Remove missing values
+  group_by(`Country Name`) %>%
+  summarise(
+    min_education = min(SL.TLF.BASC.ZS, na.rm = TRUE),
+    max_education = max(SL.TLF.BASC.ZS, na.rm = TRUE),
+    range_education = max_education - min_education
+  )
+```
+<br>
+
+#### Data quality concerns
+A deeper look at the dataset reveals significant limitations:
+
+- Only **10 countries** have complete data, leading to **uneven representation**.
+- The **percentage of labor force with basic education** fluctuates drastically across consecutive years in several countries, **raising concerns about data reliability**. 
+
+To mitigate these issues, we employ robust statistical techniques, including:
+
+- **Robust Linear Models (RLMs)** for trend estimation, which are less sensitive to **outliers**.
+- **Spearman correlation coefficients** to quantify relationships, as they are **resistant to non-normality** and **unevenly spaced values**. 
+
+<br>
+
+#### Robust Linear Models and Spearman Correlation
+
+Traditional **Ordinary Least Squares (OLS)** regression assumes that residuals are normally distributed and that **outliers do not influence the results** significantly. Given the inconsistencies in our dataset, this assumption is likely invalid.
+
+To address this, we use **Robust Linear Models (RLMs)**, specifically M-estimators, as implemented in MASS::rlm(). These models apply **Iteratively Reweighted Least Squares (IRLS)**, assigning smaller weights to outliers. Instead of minimizing squared residuals, RLMs use **alternative loss functions** that reduce the impact of extreme values.
+
+In our analysis, we use the default psi function, **psi.huber**, which is based on **Huber’s loss function**:
 
 
+$$
+L_{\delta}(r) =
+\begin{cases} 
+\frac{1}{2} r^2  & \text{for } |r| \leq \delta, \\
+\delta (|r| - \frac{1}{2} \delta)  & \text{for } |r| > \delta.
+\end{cases}
+$$
 
-Insert correlation coefficients for years and overall trend...explain why whe choose this particular coefficient to work against the data quality concerns
+where:
+
+- \( r \) is the **residual**.
+- \( \delta \) is the **threshold parameter** (default in R: **1.345**).
+- This method ensures **small residuals** behave like **OLS**, while **large residuals** have **reduced influence**.
+
+<br>
+
+The **Spearman correlation coefficient** measures the **monotonic relationship** between two variables. Unlike **Pearson correlation**, which captures only **linear relationships**, Spearman correlation assesses whether as one variable increases, the other tends to increase or decrease in a consistent order.
+
+$$
+\rho = 1 - \frac{6 \sum d_i^2}{n(n^2 - 1)}
+$$
+where:
+
+- \( d_i \) is the difference between the ranks of the corresponding values of the two variables.
+- \( n \) is the number of observations.
+
+Since **Spearman correlation** operates on **ranked data**, it is **less sensitive to outliers and non-normal distributions**, making it particularly useful given the data quality concerns in our analysis.
+
+<br>
+
+### 1 Central Government Debt and Labor Force Education
+We now examine whether countries with **higher central government debt (as % of GDP)** have **lower percentages of labor force with basic education**.
+
+To visualize the general relationship, we plot a scatter plot with a robust linear model trend line.
+
+```{r scatter-debt-education, message=FALSE, echo=FALSE, warning=FALSE}
+# Scatter plot: Central government debt vs labor force with basic education
+ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Central Government Debt (% of GDP)",
+    y = "Labor Force with Basic Education (%)"
+  ) +
+  theme_bw()
+
+```
 
 
-```{r scatter-debt-education-years, echo = FALSE, warning=FALSE, message=FALSE}
+```{r scatter-debt-education-years, echo=FALSE, warning=FALSE, message=FALSE}
 # Scatter plot: Central government debt vs labor force with basic education
 ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6) +
@@ -154,13 +308,13 @@ ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
 <br>
 
 ### Interpretation 
-At first glance, there is a positive correlation between debt and education quality across time, though the high proportion of missing data requires further investigation. 
+At first glance, there appears to be a **positive relationship** between central government debt and labor force education over time. However, due to the high proportion of missing data, further investigation is required. 
 
-Analyzing this relationship by income levels is a logical next step, as income significantly impacts a country's ability to invest in education and manage debt. This approach can reveal how economic disparities influence the correlation and highlight potential structural inequities.
+Analyzing this relationship by income levels is a logical next step, as income significantly impacts a country's ability to invest in education and manage debt. This approach can reveal how economic disparities influence the correlation and highlight potential structural inequalities.
 
 <br>
 
-```{r scatter-debt-education-income-lvls, echo = FALSE, , warning=FALSE, message=FALSE}
+```{r scatter-debt-education-income-lvls, echo=FALSE, , warning=FALSE, message=FALSE}
 # Scatter plot: Central government debt vs labor force with basic education
 ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(alpha = 0.6) +
@@ -175,6 +329,7 @@ ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = ca
   scale_color_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
   theme_bw()
 
+# German plot for presentation: Central government debt vs labor force with basic education
 p1 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(aes(color = cat_income_level), method = MASS::rlm, se = FALSE, color = "black") +
@@ -193,19 +348,14 @@ p1 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, colo
         legend.title = element_text(hjust = 0.5, size = 14),
         plot.title = element_text(hjust = 0.5, size = 20)) +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
-
-p1
-
 ```
 
 <br>
 
-We can observe a certain clustering of our data points that seem to show opposite effects. To make the relationships for each subgroup more apparent we will create seperate facetted plots for each income level.
+We observe a distinct clustering of data points among **medium-income countries**, which appear to exhibit **opposite trends**. To better visualize these relationships, we will create **faceted plots** for each income level, allowing for a clearer comparison between subgroups.
 
 <br>
-```{r scatter-debt-education-facet, echo = FALSE, message=FALSE, warning=FALSE}
-# Create a named vector to translate the income level facets
-# Faceted scatter plot: Debt vs Education by Income Level
+```{r scatter-debt-education-facet, echo=FALSE, message=FALSE, warning=FALSE}
 # Calculate correlations for each income level
 cor_matrix_1 <- data_education %>%
   group_by(cat_income_level) %>%
@@ -217,13 +367,40 @@ cor_matrix_1 <- data_education %>%
 data_with_cor <- data_education %>%
   left_join(cor_matrix_1, by = "cat_income_level")
 
+# Faceted scatter plot of Debt vs Education by Income Level
+ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  facet_wrap(~ cat_income_level) +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Central Government Debt (% of GDP)",
+    y = "Labor Force with Basic Education (%)"
+  ) +
+  theme_bw() +
+  geom_text(
+    data = cor_matrix_1,
+    aes(
+      x = Inf, 
+      y = Inf, 
+      label = paste0("italic(r)[s] == ", correlation)
+    ),
+    inherit.aes = FALSE,
+    hjust = 1.1,  # Adjust horizontal alignment
+    vjust = 1.5,  # Adjust vertical alignment
+    size = 4.5,
+    color = "black",
+    parse = TRUE  # Enable parsing for expressions
+  ) 
+
+
 income_labels <- c(
   "Low" = "Geringes Einkommen",
   "Medium" = "Mittleres Einkommen",
   "High" = "Hohes Einkommen"
 )
 
-# Update the ggplot with the labeller for translated facet titles
+# German plot for presentation: Faceted scatter plot of Debt vs Education by Income Level
 p2 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black", size = 1.5) +
@@ -256,26 +433,17 @@ p2 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
         plot.title = element_text(hjust = 0.5, size = 20),
         strip.text = element_text(size = 14))
 
-# Print the plot
-p2
-
-
 ```
 <br>
 
 
-As we miss most of the data points for low income countries we will focus on medium and high income countries and compare their opposite relationships
+Due to the **significant lack of data** for **low-income countries**, we are unable to draw any meaningful conclusions for this group.  
 
-We first look at which other attributes define these countries in both income groups
+Interestingly, **medium- and high-income countries** exhibit **completely opposite trends** in the relationship between **debt and labor force education**. To explore potential influencing factors and gain deeper insights into **shared characteristics**, we further segment countries **by population size**.  
 
-insert correlation matrix
+In the **correlation matrix** below, **grey tiles indicate** cases where **fewer than 10 data pairs** are available, highlighting areas with limited data reliability.
 
-```{r contingency tables, echo = FALSE, message=FALSE, warning=FALSE}
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(forcats)
-
+```{r correlation matrix, echo=FALSE, message=FALSE, warning=FALSE}
 correlation_data <- data_education %>%
   group_by(cat_income_level, cat_population_size) %>%
   summarise(
@@ -297,13 +465,33 @@ tidy_correlation <- correlation_data %>%
   mutate(
     cat_income_level = factor(cat_income_level, levels = rev(c("High", "Medium", "Low"))), # Reverse Income order
     cat_population_size = factor(cat_population_size, levels = rev(c("High", "Medium", "Low"))) # Reverse Population order
-  ) %>%
+  )
+
+# Create heatmap with dynamically calculated correlation coefficients
+ggplot(tidy_correlation, aes(x = cat_income_level, y = cat_population_size, fill = correlation)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = ifelse(is.na(correlation), "", round(correlation, 2))), color = "black") + # Add text labels
+  scale_fill_gradient2(
+    low = "blue", mid = "white", high = "red", midpoint = 0,
+    limit = c(-1, 1), na.value = "grey80", name = "Spearman\nKorrelation" # Use grey for missing values
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(vjust = 1, hjust = 1)
+  ) +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Income Level",
+    y = "Population Size"
+  )
+
+tidy_correlation <- tidy_correlation %>%
   mutate(
     cat_income_level = fct_recode(cat_income_level, "Hoch" = "High", "Mittel" = "Medium", "Gering" = "Low"),
     cat_population_size = fct_recode(cat_population_size, "Hoch" = "High", "Mittel" = "Medium", "Gering" = "Low")
   )
 
-# Create heatmap with dynamically calculated correlation coefficients
+# German plot for presentation: Create heatmap with dynamically calculated correlation coefficients
 p3 <- ggplot(tidy_correlation, aes(x = cat_income_level, y = cat_population_size, fill = correlation)) +
   geom_tile(color = "white") +
   geom_text(aes(label = ifelse(is.na(correlation), "", round(correlation, 2))), color = "black", size = 6) + # Add text labels
@@ -331,145 +519,26 @@ p3 <- ggplot(tidy_correlation, aes(x = cat_income_level, y = cat_population_size
         panel.grid = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 20))
 
-p3
-
 ```
 
+#### Further Questions and Interpretations:  
 
-
-maybe extend to encompass also density of countries or better do the same just for density
-
-#### Further questions and interpretations:
-
-- High income countries can be further divided into high income & high pop where latter seems to result in 
-- Overall trend: higher debt % positively correlates with higher % of basic education  
-- medium income countries seem to suggest an opposite trend  
-- High share of missing data, predominantely for low income countries
-
-
-### Exploration of medium income countries
-To explore why medium-income countries show an opposite (negative) trend in the relationship between central government debt and labor force education, we should consider a deeper analysis into factors that might drive this behavior.
+- In **medium-income countries**, the negative correlation between **debt and labor force education** strengthens as **population size increases**.  
+- This pattern is **not observed** in **high-income countries**, where a strong relationship is only evident in **large-population nations**.  
+- The **overall positive correlation** may be influenced by the **disproportionate representation** of **high-income, high-population countries** in the dataset, potentially skewing the results.
 
 <br>
 
-**High Population & Medium Income Countries:**  
+### Conclusion  
 
-- Exhibit a strong negative correlation (-0.929) between debt and labor force education.  
-- Interpretation: Larger countries may face challenges in allocating resources effectively to education despite increasing debt levels.
-  
-**Medium Population & Medium Income Countries:**  
+1. **Do countries with higher central government debt as a percentage of GDP have a lower percentage of labor force with basic education?**  
 
-- Show a moderate negative correlation (-0.704).  
-- Interpretation: These countries may have mixed capacities to use debt effectively, possibly due to regional or governance differences.
-
-**Low Population & Medium Income Countries:**  
-
-- barely represented in medium income countries  
-<br>
-
-```{r group-by-population-density, echo = FALSE, warning=FALSE, message=FALSE}
-print("Calculating correlation coefficients and data pair counts for each population density")
-data_education %>%
-  filter(cat_income_level == "Medium") %>%
-  group_by(cat_population_density) %>%
-  summarise(
-    correlation = if (sum(!is.na(GC.DOD.TOTL.GD.ZS) & !is.na(SL.TLF.BASC.ZS)) >= 2) {
-      cor(GC.DOD.TOTL.GD.ZS, SL.TLF.BASC.ZS, use = "complete.obs")
-    } else {
-      NA
-    },
-    data_pairs = sum(complete.cases(GC.DOD.TOTL.GD.ZS, SL.TLF.BASC.ZS))  # Count of valid data pairs
-  )
-
-```
-<br>
-
-**High Population Density & Medium Income:**  
-
-- no medium income countries with high population density
-
-**Medium Population Density & Medium Income:**  
-
-- Trends are unclear, with little visible clustering of data points.  
-- This group might represent countries with varying economic and governance conditions.  
-
-**Low Population Density & Medium Income:**  
-
-- Exhibit a strong negative trend, with labor force education decreasing as debt increases.  
-- Interpretation: In sparsely populated areas, education infrastructure may be costly to maintain or expand, leading to less effective debt utilization.  
+While our initial hypothesis suggested a **negative relationship**, the data instead reveals an **overall positive correlation** between **debt and labor force education**. However, this relationship is **not uniform** and varies significantly based on **income level and population size**. These findings highlight the need for a **more nuanced approach**, as structural and economic factors likely play a crucial role in shaping this connection.
 
 
-# sort this plot by income levels  not just with their color
-<br>
-```{r longitudinal_plot, fig.height=8, fig.width=12, echo=FALSE, warning=FALSE, message=FALSE}
+### **2. Labor Force Education and Pupil-Teacher Ratios**  
 
-# Reorder the Country Name based on the income level
-data_education_2 <- data_education %>%
-  arrange(cat_income_level, `Country Name`) %>%
-  mutate(`Country Name` = factor(`Country Name`, unique(`Country Name`)))
-
-# Plot with ordered facets
-p9 <- ggplot(data_education_2, 
-             aes(x = Year, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
-  geom_line(aes(color = cat_income_level, group = `Country Name`), alpha = 0.8, size = 0.7) +  # Line chart
-  facet_wrap(~ `Country Name`) +  # Facet by country
-  scale_x_continuous(breaks = seq(2000, 2020, 5)) +  # Simplify x-axis breaks
-  labs(
-    title = "Bildungsentwicklung über die Jahre",
-    x = "Jahr",
-    y = "Erwerbstätige mit grundlegender Bildung [%]",
-    color = "Einkommensniveau"
-  ) +
-  scale_fill_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
-  scale_color_manual(name = "Einkommensniveau", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF"), labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),  # Bigger and centered title
-    strip.text = element_text(size = 8, face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
-    legend.position = "bottom"
-  )
-
-p9
-
-# Filter countries with for SL.TLF.BASC.ZS
-data_filtered <- data_education %>%
-  group_by(`Country Name`) %>%
-  ungroup()
-
-# Convert Year column to numeric
-data_filtered <- data_filtered %>%
-  mutate(Year = as.numeric(as.character(Year)))
-
-# Calculate range of basic education percentage for each country
-country_variability <- data_filtered %>%
-  filter(!is.na(SL.TLF.BASC.ZS)) %>%  # Remove missing values
-  group_by(`Country Name`) %>%
-  summarise(
-    min_education = min(SL.TLF.BASC.ZS, na.rm = TRUE),
-    max_education = max(SL.TLF.BASC.ZS, na.rm = TRUE),
-    range_education = max_education - min_education
-  )
-
-# View the results
-print(country_variability)
-```
-<br>
-
-#### Interpretations  
-- insufficient data for most countries
-- overall % with basic education drastically changing in consecutive years
-- high fluctuation and variability in measurements questioning data quality
-
-
-
-
-### 2 Labor Force Education and Pupil-Teacher ratios
-
-In our previous analysis we highlighted sparsely populated countries that struggle with overall education quality. One driving factor in this might be pupil-teacher ratios.
-
-<br>
-For this we first look at the general relationship between basic education and pupil-teacher ratios:
+To begin, we examine the **overall relationship** between **basic education levels** and **pupil-teacher ratios** to identify any broad trends before diving into more detailed subgroup analyses.
 
 ```{r edu_555, message=FALSE, warning=FALSE, echo=FALSE}
 # Scatter plot: pupil-teacher ratios vs labor force with basic education
@@ -482,7 +551,28 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
     y = "Labor Force with Basic Education (%)"
   ) +
   theme_bw()
+```
 
+We observe a **weaker but still positive relationship** between **basic education levels and pupil-teacher ratios**.  
+
+The **pupil-teacher ratio** serves as an **indicator of available educational resources**, with **higher ratios suggesting limited resources**, as fewer teachers are available per student.  
+
+To further investigate this relationship, we analyze it **by population density**, as sparsely populated or remote regions may face **greater challenges in allocating educational resources** compared to **densely populated areas**, where resource distribution may be more efficient.
+
+```{r edu_5555, message=FALSE, warning=FALSE, echo=FALSE}
+# Scatter plot: pupil-teacher ratios vs labor force with basic education
+ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+  geom_point(aes(color = cat_population_density), alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  labs(
+    title = "Pupil-Teacher Ratio vs Labor Force with Basic Education",
+    x = "Pupil-Teacher Ratio",
+    y = "Labor Force with Basic Education (%)"
+  ) +
+  scale_color_manual(name = "Population density", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
+  theme_bw()
+
+# German plot for presentation: Scatter plot: pupil-teacher ratios vs labor force with basic education
 p4 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(aes(color = cat_population_density), size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
@@ -500,14 +590,15 @@ p4 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
         legend.title = element_text(hjust = 0.5, size = 14),
         plot.title = element_text(hjust = 0.5, size = 20)) +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
-
-p4
 ```
 
-- densely populated countries tend to have better education quality
-- sparsely populated countries tend to have lower pupil-teacher ratios
-- variability in education quality decreases as pupil-teacher ratios increase
-- small positive relationship between both variables
+#### First Impressions:  
+
+- **Densely populated countries** tend to have **higher education quality**.  
+- **Sparsely populated countries** generally have **lower pupil-teacher ratios**.  
+- **Variability in education quality** decreases as **pupil-teacher ratios increase**.  
+
+To better highlight differences between **subgroups** and compute **individual Spearman correlation coefficients**, we will **facet the plot** by **population density**.
 
 <br>
 ```{r edu_999, message=FALSE, warning=FALSE, echo=FALSE}
@@ -522,13 +613,39 @@ cor_matrix_2 <- data_education %>%
 data_with_cor <- data_education %>%
   left_join(cor_matrix_2, by = "cat_population_density")
 
+# Facetted scatter plot: pupil-teacher ratios vs labor force with basic education
+ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  facet_wrap(~ cat_population_density) +
+  labs(
+    title = "Pupil-Teacher Ratio vs Labor Force with Basic Education",
+    x = "Pupil-Teacher Ratio",
+    y = "Labor Force with Basic Education (%)"
+  ) +
+  theme_bw() +
+  geom_text(
+    data = cor_matrix_2,
+    aes(
+      x = Inf, 
+      y = Inf, 
+      label = paste0("italic(r)[s] == ", correlation)
+    ),
+    inherit.aes = FALSE,
+    hjust = 1.1,  # Adjust horizontal alignment
+    vjust = 1.5,  # Adjust vertical alignment
+    size = 4.5,
+    color = "black",
+    parse = TRUE  # Enable parsing for expressions
+  )
+
 facet_labels <- c(
   "Low" = "Niedrige Bevölkerungsdichte",
   "Medium" = "Mittlere Bevölkerungsdichte",
   "High" = "Hohe Bevölkerungsdichte"
 )
 
-# Update the facet_wrap function with the labeller argument
+# German plot for presentation: Facetted scatter plot: pupil-teacher ratios vs labor force with basic education
 p5 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6, size = 3.5) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
@@ -558,28 +675,26 @@ p5 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
         axis.title.y = element_text(margin = margin(r = 10), size = 18),
         plot.title = element_text(hjust = 0.5, size = 20),
         strip.text = element_text(size = 14))
-
-# Print the plot
-p5
-
-
 ```
 <br>
 
-- densely populated countries tend to achieve better education with less pupils per teacher indicating higher monetary power
+Contrary to intuition, a **lower pupil-teacher ratio** does not necessarily correspond to a **higher percentage of the labor force with basic education**, particularly in **sparsely populated countries**. This suggests that **other influencing factors** may play a more significant role. However, in **high-density populations**, the expected relationship becomes more apparent.  
 
-<br>
+<br>  
 
-In order to assess education quality I will consider its effects on GDP per capita as it can be considered as a good approximation of economic output. closest estimate we have in the data set
+Assessing **education quality** is inherently complex, as its definition depends on the perspective taken and the weight assigned to various contributing factors.  
+
+For our analysis, we adopt an **economic perspective**, using **GDP per capita (USD)** as a **proxy for economic output**, which serves as a reasonable indicator of a country’s overall educational effectiveness and workforce potential.
 
 
 ```{r edu_102, warning=FALSE, message=FALSE, echo=FALSE}
+# Scatter plot: Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
 ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
   geom_point(shape = 21, alpha = 0.4) +
   geom_smooth(aes(color = cat_population_density), method = MASS::rlm,  se = FALSE, show.legend = FALSE) +
   scale_y_log10() +  # Apply log10 transformation to the x-axis
   labs(
-    title = "Pupil-Teacher Ratio vs GDP per Capita (Log Scale)",
+    title = "Pupil-Teacher Ratio vs GDP per Capita",
     x = "Pupil-Teacher Ratio",
     y = "GDP per Capita (Log Scale, USD)",
   ) +
@@ -587,6 +702,7 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = 
   scale_color_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
   theme_bw()
 
+# German plot for presentation: Scatter plot of Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
 p6 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
   geom_point(size = 3.5, shape = 21, alpha = 0.4) +
   geom_smooth(aes(color = cat_population_density), method = MASS::rlm,  se = FALSE, show.legend = FALSE) +
@@ -607,21 +723,43 @@ p6 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, f
         plot.title = element_text(hjust = 0.5, size = 20)) +
   guides(fill = guide_legend(override.aes = list(alpha = 1)))
 
-p6
+# German plot for updated presentation: Scatter plot of Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
+p61 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
+  geom_point(size = 3.5, shape = 21, alpha = 0.4) +
+  geom_smooth(aes(color = cat_population_density), method = MASS::rlm, se = FALSE, show.legend = FALSE) +
+  scale_y_log10(
+    breaks = c(10, 100, 1000, 10000, 100000),
+    labels = c("10", "100", "1.000", "10.000", "100.000")
+  ) +
+  labs(
+    title = "Schüler-Lehrer-Relation vs BIP pro Kopf",
+    x = "Schüler-Lehrer-Relation",
+    y = "BIP pro Kopf [$] (Log10)"
+  ) +
+  scale_fill_manual(name = "Bevölkerungsdichte", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF"), 
+                    labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")) +
+  scale_color_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
+  theme_bw() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title.x = element_text(margin = margin(t = 10), size = 18),
+    axis.title.y = element_text(margin = margin(r = 10), size = 18),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(hjust = 0.5, size = 14),
+    plot.title = element_text(hjust = 0.5, size = 20)
+  ) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1)))
+
 ```
 <br>
+
+### Conclusion 
+
+
+2. Are countries with **higher percentage of labor force with basic education** able to maintain **lower pupil-teacher ratios**, and what impact might this have on **education quality**?  
 <br>
-**High-Income Countries:**  
 
-- The relationship between GDP per capita and labor force with basic education (%) is strongly positive, as evidenced by the steep slope for high-income countries.  
-- High-income countries are concentrated at the higher end of the GDP scale.  
+While one might expect that a lower pupil-teacher ratio would correlate with a higher percentage of the labor force having basic education, this pattern does not hold in sparsely populated countries. Instead, other factors appear to influence this relationship, suggesting that pupil-teacher ratios alone may not be a reliable indicator of educational resources in these regions. However, in countries with **high population density**, the expected relationship becomes more apparent.  
 
-**Medium-Income Countries:**  
-
-- Medium-income countries appear to have a much flatter relationship, with some variability in education outcomes across a wide range of GDP values.  
-
-**Low-Income Countries:**  
-
-- Low-income countries show a slightly negative or flat trend between GDP per capita and education levels.  
-- These countries are clustered toward the lower GDP range, with varying education outcomes.  
-
+- The anticipated effect emerges primarily in **densely populated countries**, where a lower pupil-teacher ratio aligns with a more educated workforce.  
+- In **sparsely populated countries**, pupil-teacher ratios do not necessarily reflect the level of educational investment or available resources, indicating that other structural or economic factors may play a more significant role.

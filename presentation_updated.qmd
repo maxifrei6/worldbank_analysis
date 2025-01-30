@@ -164,7 +164,7 @@ p5
 Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqualität?
 
 ```{r edu_slide_6, fig.height=7, fig.width=12}
-p6
+p61
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
