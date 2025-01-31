@@ -228,18 +228,24 @@ A deeper look at the dataset reveals significant limitations:
 To mitigate these issues, we employ robust statistical techniques, including:
 
 - **Robust Linear Models (RLMs)** for trend estimation, which are less sensitive to **outliers**.
+- **Confidence Intervals** to provide insight into the **uncertainty of our estimates**.
 - **Spearman correlation coefficients** to quantify relationships, as they are **resistant to non-normality** and **unevenly spaced values**. 
 
 <br>
 
-#### Robust Linear Models and Spearman Correlation
+#### Robust Linear Models
 
-Traditional **Ordinary Least Squares (OLS)** regression assumes that residuals are normally distributed and that **outliers do not influence the results** significantly. Given the inconsistencies in our dataset, this assumption is likely invalid.
+Traditional **Ordinary Least Squares (OLS)** estimates regression coefficients by minimizing the sum of squared residuals:
 
-To address this, we use **Robust Linear Models (RLMs)**, specifically M-estimators, as implemented in MASS::rlm(). These models apply **Iteratively Reweighted Least Squares (IRLS)**, assigning smaller weights to outliers. Instead of minimizing squared residuals, RLMs use **alternative loss functions** that reduce the impact of extreme values.
+$$
+\min_{\beta} \sum_{i=1}^{n} (y_i - X_i \beta)^2
+$$
+
+This approach provides **BLUE (Best Linear Unbiased Estimators)** under the **Gauss-Markov theorem**, but relies on the assumption that residuals are **normally distributed**. Given the inconsistencies in our dataset, this assumption is likely invalid. While OLS estimates remain **unbiased** but may become less efficient, potentially affecting the reliability of **confidence intervals and hypothesis tests**.
+
+To address this, we use **Robust Linear Models (RLMs)**, specifically M-estimators, as implemented in `MASS::rlm()`. These models apply **Iteratively Reweighted Least Squares (IRLS)**, assigning smaller weights to outliers. Instead of minimizing squared residuals, RLMs use **alternative loss functions** that reduce the impact of extreme values.
 
 In our analysis, we use the default psi function, **psi.huber**, which is based on **Huber’s loss function**:
-
 
 $$
 L_{\delta}(r) =
@@ -251,11 +257,38 @@ $$
 
 where:
 
-- \( r \) is the **residual**.
-- \( \delta \) is the **threshold parameter** (default in R: **1.345**).
-- This method ensures **small residuals** behave like **OLS**, while **large residuals** have **reduced influence**.
+- \( r \) is the **residual** \(y_i - X_i \beta\)
+- \( \delta \) is the **threshold parameter** (default in R: **1.345**)  
+
+This method ensures **small residuals** behave like **OLS**, while **large residuals** have **reduced influence**, making RLMs more resistant to **outliers and non-normal residual distributions**.
 
 <br>
+
+#### Confidence Intervals
+
+By default, `geom_smooth(method = MASS::rlm)` displays confidence intervals. However, unlike **ordinary least squares (OLS)**, `MASS::rlm()` does **not automatically provide standard errors**, as robust regression does not make the same assumptions about variability in the data.  
+
+The confidence intervals shown in `geom_smooth()` are based on an **approximation** rather than **true robust standard errors**. Specifically, `ggplot2` estimates confidence intervals using the **standard formula for least squares regression**:
+
+$$
+CI = \hat{y} \pm t_{\alpha/2, df} \cdot SE(\hat{y})
+$$
+
+
+where:
+
+- \( \hat{y} \) is the **predicted value** from the robust regression model
+- \( SE(\hat{y}) \) is the **standard error of the fitted values**, approximated using **local smoothing techniques**
+- \( t_{\alpha/2, df} \) is the **critical t-value** for a 95% confidence level
+
+Since robust regression methods like `rlm()` do not inherently calculate standard errors, the confidence intervals shown by `geom_smooth()` are **only an approximation**. A more rigorous approach would involve computing **robust standard errors manually** using the **Huber-White sandwich estimator** or **bootstrapping techniques**.
+
+For simplicity, we retain the default confidence bands provided by `geom_smooth()`, while acknowledging that they do not fully account for the robustness adjustments of `rlm()`.
+
+
+<br>
+
+#### Spearman Correlation
 
 The **Spearman correlation coefficient** measures the **monotonic relationship** between two variables. Unlike **Pearson correlation**, which captures only **linear relationships**, Spearman correlation assesses whether as one variable increases, the other tends to increase or decrease in a consistent order.
 
@@ -264,8 +297,8 @@ $$
 $$
 where:
 
-- \( d_i \) is the difference between the ranks of the corresponding values of the two variables.
-- \( n \) is the number of observations.
+- \( d_i \) is the difference between the ranks of the corresponding values of the two variables 
+- \( n \) is the number of observations 
 
 Since **Spearman correlation** operates on **ranked data**, it is **less sensitive to outliers and non-normal distributions**, making it particularly useful given the data quality concerns in our analysis.
 
@@ -280,7 +313,7 @@ To visualize the general relationship, we plot a scatter plot with a robust line
 # Scatter plot: Central government debt vs labor force with basic education
 ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
     title = "Central Government Debt vs Labor Force with Basic Education",
     x = "Central Government Debt (% of GDP)",
@@ -295,7 +328,7 @@ ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
 # Scatter plot: Central government debt vs labor force with basic education
 ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  geom_smooth(method = MASS::rlm, se = FALSE, color = "black", alpha = 0.2) +
   facet_wrap(~ Year) +
   labs(
     title = "Central Government Debt vs Labor Force with Basic Education",
@@ -318,7 +351,7 @@ Analyzing this relationship by income levels is a logical next step, as income s
 # Scatter plot: Central government debt vs labor force with basic education
 ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(alpha = 0.6) +
-  geom_smooth(aes(color = cat_income_level), method = MASS::rlm, se = FALSE, color = "black") +
+  geom_smooth(aes(color = cat_income_level), method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
     title = "Central Government Debt vs Labor Force with Basic Education",
     x = "Central Government Debt (% of GDP)",
@@ -333,6 +366,26 @@ ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = ca
 p1 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(aes(color = cat_income_level), method = MASS::rlm, se = FALSE, color = "black") +
+  labs(
+    title = "Zentralstaatliche Verschuldung vs. Grundbildung",
+    x = "Zentralstaatliche Verschuldung [% des BIP]",
+    y = "Erwerbstätige mit grundlegender Bildung [%]"
+  ) +
+  scale_fill_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
+  scale_color_manual(name = "Einkommensniveau", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF"), labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(hjust = 0.5, size = 14),
+        plot.title = element_text(hjust = 0.5, size = 20)) +
+  guides(color = guide_legend(override.aes = list(alpha = 1)))
+
+# German plot for presentation: Central government debt vs labor force with basic education
+p12 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
+  geom_point(size = 3.5, alpha = 0.6) +
+  geom_smooth(aes(color = cat_income_level), method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
     title = "Zentralstaatliche Verschuldung vs. Grundbildung",
     x = "Zentralstaatliche Verschuldung [% des BIP]",
@@ -370,7 +423,7 @@ data_with_cor <- data_education %>%
 # Faceted scatter plot of Debt vs Education by Income Level
 ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   facet_wrap(~ cat_income_level) +
   labs(
     title = "Central Government Debt vs Labor Force with Basic Education",
@@ -404,6 +457,39 @@ income_labels <- c(
 p2 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black", size = 1.5) +
+  facet_wrap(~ cat_income_level, labeller = labeller(cat_income_level = income_labels)) +
+  labs(
+    title = "Zentralstaatliche Verschuldung vs. Grundbildung",
+    x = "Zentralstaatliche Verschuldung [% des BIP]",
+    y = "Erwerbstätige mit grundlegender Bildung [%]"
+  ) +
+  theme_bw() +
+  geom_text(
+    data = cor_matrix_1,
+    aes(
+      x = Inf, 
+      y = Inf, 
+      label = paste0("italic(r)[s] == ", correlation)
+    ),
+    inherit.aes = FALSE,
+    hjust = 1.1,  # Adjust horizontal alignment
+    vjust = 1.5,  # Adjust vertical alignment
+    size = 6,
+    color = "black",
+    parse = TRUE  # Enable parsing for expressions
+  ) +
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(hjust = 0.5, size = 14),
+        plot.title = element_text(hjust = 0.5, size = 20),
+        strip.text = element_text(size = 14))
+
+# German plot for presentation: Faceted scatter plot of Debt vs Education by Income Level
+p22 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
+  geom_point(size = 3.5, alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, color = "black", size = 1.5, alpha = 0.2) +
   facet_wrap(~ cat_income_level, labeller = labeller(cat_income_level = income_labels)) +
   labs(
     title = "Zentralstaatliche Verschuldung vs. Grundbildung",
@@ -544,7 +630,7 @@ To begin, we examine the **overall relationship** between **basic education leve
 # Scatter plot: pupil-teacher ratios vs labor force with basic education
 ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
     title = "Pupil-Teacher Ratio vs Labor Force with Basic Education",
     x = "Pupil-Teacher Ratio",
@@ -563,7 +649,7 @@ To further investigate this relationship, we analyze it **by population density*
 # Scatter plot: pupil-teacher ratios vs labor force with basic education
 ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(aes(color = cat_population_density), alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
     title = "Pupil-Teacher Ratio vs Labor Force with Basic Education",
     x = "Pupil-Teacher Ratio",
@@ -576,6 +662,25 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
 p4 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(aes(color = cat_population_density), size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  labs(
+    title = "Schüler-Lehrer-Relation vs. Grundbildung",
+    x = "Schüler-Lehrer-Relation",
+    y = "Erwerbstätige mit grundlegender Bildung [%]"
+  ) +
+  scale_color_manual(name = "Bevölkerungsdichte", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF"), labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(hjust = 0.5, size = 14),
+        plot.title = element_text(hjust = 0.5, size = 20)) +
+  guides(color = guide_legend(override.aes = list(alpha = 1)))
+
+# German plot for presentation: Scatter plot: pupil-teacher ratios vs labor force with basic education
+p42 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+  geom_point(aes(color = cat_population_density), size = 3.5, alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
     title = "Schüler-Lehrer-Relation vs. Grundbildung",
     x = "Schüler-Lehrer-Relation",
@@ -616,7 +721,7 @@ data_with_cor <- data_education %>%
 # Facetted scatter plot: pupil-teacher ratios vs labor force with basic education
 ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   facet_wrap(~ cat_population_density) +
   labs(
     title = "Pupil-Teacher Ratio vs Labor Force with Basic Education",
@@ -675,6 +780,36 @@ p5 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
         axis.title.y = element_text(margin = margin(r = 10), size = 18),
         plot.title = element_text(hjust = 0.5, size = 20),
         strip.text = element_text(size = 14))
+
+p52 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+  geom_point(alpha = 0.6, size = 3.5) +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
+  facet_wrap(~ cat_population_density, labeller = labeller(cat_population_density = facet_labels)) +
+  labs(
+    title = "Schüler-Lehrer-Relation vs. Grundbildung",
+    x = "Schüler-Lehrer-Relation",
+    y = "Erwerbstätige mit grundlegender Bildung [%]"
+  ) +
+  theme_bw() +
+  geom_text(
+    data = cor_matrix_2,
+    aes(
+      x = Inf, 
+      y = Inf, 
+      label = paste0("italic(r)[s] == ", correlation)
+    ),
+    inherit.aes = FALSE,
+    hjust = 1.1,  # Adjust horizontal alignment
+    vjust = 1.5,  # Adjust vertical alignment
+    size = 6,
+    color = "black",
+    parse = TRUE  # Enable parsing for expressions
+  ) +
+  theme(axis.text = element_text(size = 14),
+        axis.title.x = element_text(margin = margin(t = 10), size = 18),
+        axis.title.y = element_text(margin = margin(r = 10), size = 18),
+        plot.title = element_text(hjust = 0.5, size = 20),
+        strip.text = element_text(size = 14))
 ```
 <br>
 
@@ -691,7 +826,7 @@ For our analysis, we adopt an **economic perspective**, using **GDP per capita (
 # Scatter plot: Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
 ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
   geom_point(shape = 21, alpha = 0.4) +
-  geom_smooth(aes(color = cat_population_density), method = MASS::rlm,  se = FALSE, show.legend = FALSE) +
+  geom_smooth(aes(color = cat_population_density), method = MASS::rlm, show.legend = FALSE, alpha = 0.1) +
   scale_y_log10() +  # Apply log10 transformation to the x-axis
   labs(
     title = "Pupil-Teacher Ratio vs GDP per Capita",
@@ -724,9 +859,9 @@ p6 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, f
   guides(fill = guide_legend(override.aes = list(alpha = 1)))
 
 # German plot for updated presentation: Scatter plot of Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
-p61 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
+p62 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
   geom_point(size = 3.5, shape = 21, alpha = 0.4) +
-  geom_smooth(aes(color = cat_population_density), method = MASS::rlm, se = FALSE, show.legend = FALSE) +
+  geom_smooth(aes(color = cat_population_density), method = MASS::rlm, show.legend = FALSE, alpha = 0.2) +
   scale_y_log10(
     breaks = c(10, 100, 1000, 10000, 100000),
     labels = c("10", "100", "1.000", "10.000", "100.000")
