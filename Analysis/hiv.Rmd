@@ -7,11 +7,11 @@ output:
 ---
 
 ## Introduction
-This analysis explores relationships of HIV prevalence in the population aged 15-49 to the total alcohol consumption per capita as well as its coherence to percentage of labor force with basic education. Therefore we have two main parts:
+This analysis explores relationships of HIV prevalence in the population aged 15-49 to the total alcohol consumption per capita as well as its coherence to the percentage of labor force with basic education. Therefore, we have two main parts:
 <br>
 1. How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
 <br>
-2. Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
+2. Do countries with a higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
 <br>
 ```{r hiv_setup, message = FALSE, echo = FALSE, warning = FALSE}
@@ -52,7 +52,7 @@ data_hiv <- data_processed %>%
 #                 SL.TLF.BASC.ZS
 ```
 <br>
-Check how many NA's are in HIV, alcohol and education variable each Year (excluding years existing only of NA's)
+Check how many NA's are in HIV, alcohol and education variables each Year (excluding years existing only of NA's).
 <br>
 ```{r hiv_1, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_table <- data_hiv %>%
@@ -66,7 +66,7 @@ data_table <- data_hiv %>%
 print(data_table)
 ```
 <br> 
-Auffällig ist, dass es überhaupt keine Daten für Aruba zu geben scheint, daher wird dieses Land im folgenden aus dem Datensatz entfernt, den wir für diese Fragestellung brauchen. Außerdem gibt es keine Daten für den Alkoholkonsum im Jahr 2021.
+It is noticeable that there does not seem to be any data for Aruba at all, so this country will be removed from the data set that we need for this question. Additionally, there is no data for alcohol consumption in 2021.
 <br>
 ```{r hiv_2, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv <- data_hiv %>%
@@ -78,7 +78,7 @@ data_alc <- data_hiv %>%
 <br>
 ### 1. HIV Prevalence and alcohol consumption
 <br>
-Als erstes wollen wir uns die existenten Daten über die relevanten Variablen anschauen.
+First we want to look at the existing data about the relevant variables.
 <br>
 ```{r hiv_3, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc %>% 
@@ -92,7 +92,7 @@ data_alc %>%
   theme_bw()
 ```
 <br>
-Nun schauen wir uns die Gruppierung dieser Daten im Allgemeinen an.
+let's look at the grouping of this data in general.
 <br>
 ```{r hiv_4, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc %>%
@@ -109,7 +109,9 @@ data_alc %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-To take a look at the grouping of our data by alcohol consumption, we will display a plot of the most recent data in Year 2020.
+We can see some overlapping of the different groups, which could arise from plotting the data of all years. We will take a closer look in the following.
+<br>
+First, we plot the grouping of our data by alcohol consumption of the most recent data in Year 2020 to get familiar with our data set.
 <br>
 ```{r hiv_5, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc %>%
@@ -131,9 +133,9 @@ data_alc %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Wie hier erkennbar ist, ist die Gruppierung nicht korrekt gerade für die Gruppen "Gering" und "Mittel". Die Alkoholvariable scheint über die Jahre wohl so zu variieren, dass eine jährliche Gruppierung sinvoll ist. Dem werden wir uns im späteren Verlauf dieses Skriptes annehmen.
+As can be seen here, the grouping is not correct, especially for the low and medium category. The alcohol variable seems to vary over the years in such a way that an annual grouping makes sense. We will address this later in this script.
 <br>
-Now we take a look at the Comparison of alcohol consumption and HIV prevalence in 2020. Therefore we group by the relative alcohol consumption.
+Now we take a look at the Comparison of alcohol consumption and HIV prevalence in 2020. To take the grouping into account we group by the relative alcohol consumption.
 <br>
 ```{r hiv_6, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc %>%
@@ -172,7 +174,7 @@ data_alc %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Now we view only one dot per category of relative alcohol consumption.
+Now we view only one dot per category of relative alcohol consumption by calculating the mean.
 <br>
 ```{r hiv_8, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc %>%
@@ -196,7 +198,7 @@ data_alc %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Just for testing again without the extreme value of Tanzania
+Just for testing again without the extreme value of Tanzania.
 <br>
 ```{r hiv_9, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc %>%
@@ -221,7 +223,7 @@ data_alc %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-To get a better overview we take a look at all years.
+To get a better overview, we take a look at all years. This shows the development of the HIV Prevalence for each category and the overall relations of the groups to each other.
 <br>
 ```{r hiv_10, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
@@ -248,7 +250,7 @@ data_hiv %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Now we take a look over the average of all years, where we categorize by relative alcohol consumption and compare to HIV Prevalence.
+Now we take a look over the average of all years, where we categorize by relative alcohol consumption and compare to the mean of HIV Prevalence.
 <br> 
 ```{r hiv_11, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
@@ -286,7 +288,7 @@ data_hiv %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Wir wollen uns das Verhältnis pro Jahr anschauen und facetten deswegen nun über Jahr mit der allgemeinen Gruppierung.
+We want to look at the ratio per year and are therefore now faceting over the year with the general grouping.
 <br>
 ```{r hiv_13, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
@@ -313,7 +315,7 @@ data_hiv %>%
   theme(strip.text = element_text(size = 7, margin = margin(0.2, 0.2, 0.2, 0.2)))
 ```
 <br>
-Erkennbar sind hier nur ganz leichte Schwankungen der Verteilung. Nun wollen wir nochmal auf die Idee mit dem jährlichen gruppieren zurückkommen. 
+Only very slight fluctuations in the distribution are recognizable here. Now let's come back to the idea of annual grouping. 
 <br>
 ```{r hiv_14, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 # Grouping by alcohol consumption values each year and saving this full dataset in data_hiv using function 2.2 group_data_year
@@ -331,7 +333,7 @@ data_alc_per_year <- data_alc %>%
   )
 ```
 <br>
-Hier nun erstmal die Gruppierung geplottet:
+Here is a plot of the new grouping:
 <br>
 ```{r hiv_15, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -414,7 +416,7 @@ anhang_alc_hiv_3 <- data_alc_per_year %>%
   )
 ```
 <br>
-Pro Jahr geplottete Daten zeigen die korrekte Einordnung der Quantile:
+As we can see here, the plotted data per year show the correct classification of the quantiles:
 <br>
 ```{r hiv_16, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -452,7 +454,7 @@ anhang_alc_hiv_1 <- data_alc_per_year %>%
         strip.text = element_text(size = 14))
 ```
 <br>
-Nun pro Kategorie nur einen Punkt plotten.
+Now we only plot one point per category.
 <br>
 ```{r hiv_17, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -474,7 +476,8 @@ data_alc_per_year %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Zusammengelegt in einen plot würden die Daten folgendes ergeben:
+Combined into one plot, the data would result in the following:
+We use a smooth line of the method "loess" with a span of 1.05, for emphasizing the relation.
 <br>
 ```{r hiv_18, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -494,17 +497,24 @@ data_alc_per_year %>%
     subtitle = "Pro Jahr gruppierte Daten",
     colour = "relativer Alkoholkonsum"
   ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
+  geom_smooth(aes(group = 1), method = "loess", size = 0.8, span = 1.05) +
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Um hier aber nochmal die Streuung der Werte beizubehalten, dieselben Daten nochmal in einem Boxplot dargestellt:
+However, in order to include the scattering of the values, the same data is shown in a box plot:
 <br>
 ```{r hiv_19, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_alc_cat_n <- data_alc_per_year %>%
+  group_by(cat_alc_per_year) %>%
+  summarise(n = n())
+
+xlabels <- paste0(sort(unique(data_alc_per_year$cat_alc_per_year)), "\nn = ", data_alc_cat_n$n)
+
 data_alc_per_year %>%
   ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   theme_bw() +
+  scale_x_discrete(labels = xlabels) +
   labs(
     x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz in %",
@@ -512,12 +522,6 @@ data_alc_per_year %>%
     subtitle = "Pro Jahr gruppierte Daten",
     colour = "relativer Alkoholkonsum"
   )
-
-data_alc_cat_n <- data_alc_per_year %>%
-  group_by(cat_alc_per_year) %>%
-  summarise(n = n())
-
-xlabels <- paste0(sort(unique(data_alc_per_year$cat_alc_per_year)), "\nn = ", data_alc_cat_n$n)
 
 plot_alc_hiv_boxplot <- data_alc_per_year %>%
   ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
@@ -536,7 +540,7 @@ plot_alc_hiv_boxplot <- data_alc_per_year %>%
         plot.title = element_text(hjust = 0.5, size = 20))
 ```
 <br>
-Wenn wir uns nun nochmal den Durchschnittsbarplot anschauen, nur dass die Daten jährlich neu gruppiert wurden, sieht dies nun so aus:
+If we now look at the average bar plot again, but with annually regrouped data, it looks like this:
 <br>
 ```{r hiv_20, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -554,7 +558,7 @@ data_alc_per_year %>%
   )
 ```
 <br>
-Hier nun nochmal der plot, der durch die allgemeine Gruppierung hervorgerufen wurde, zum Vergleich:
+Here is the plot again, which was caused by the general grouping. For comparison:
 <br>
 ```{r hiv_21, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_hiv %>%
@@ -572,7 +576,7 @@ data_hiv %>%
   )
 ```
 <br>
-Um hier auch nochmal die Gruppierung genauer zu betrachten, plotten wir die Daten inklusive Alkoholkonsumvariable:
+In order to take a closer look at the grouping, we plot the data including the alcohol consumption variable:
 <br>
 ```{r hiv_22, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -596,9 +600,9 @@ data_alc_per_year %>%
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Hier sehen wir nun die tatsächlich verbesserte Gruppierung sehr deutlich.
+Here we can now see the actual improved grouping very clearly.
 <br>
-Wenn wir uns nun die Plots nach Jahr facettiert anschauen wollen mit der neuen Gruppierung, sieht das so aus:
+If we now want to look at the plots faceted by year with the new grouping, it looks like this:
 <br>
 ```{r hiv_23, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -625,7 +629,9 @@ data_alc_per_year %>%
   theme(strip.text = element_text(size = 6, margin = margin(0.2, 0.2, 0.2, 0.2)))
 ```
 <br>
-Andererseits wollen wir die Daten auch nicht zu vereinfacht darstellen. Schließlich soll man noch erkennen, wie sich der Graph zusammensetzt. Hier nun also erstmal ein plot mit derselben Aussage über die Durchschnitte aller Jahre mit jährlich neu gruppierten Daten. Jedoch werden hier pro Jahr ein Punkt dargestellt und ein Polynom (LOESS Methode, span = 1.05) darüber gelegt.
+Here is another plot from earlier that we would like to analyze further.
+<br>
+We also don’t want to present the data in an oversimplified manner. You should see how the graph is composed. The following graphs are quite good for this. So here's a plot with the same statement about the averages for all years with data regrouped every year. One point per year is displayed here and a polynomial (LOESS method, span = 1.05) is placed over it.
 <br>
 ```{r hiv_24, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -645,13 +651,13 @@ data_alc_per_year %>%
     subtitle = "Pro Jahr gruppierte Daten",
     colour = "relativer Alkoholkonsum"
   ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE, size = 0.8, span = 1.05) +
+  geom_smooth(aes(group = 1), method = "loess", size = 0.8, span = 1.05) +
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Schwierig ist hier, dass die Mittelwertsberechnun die Daten verziehen kann.
+What is difficult here is that the mean value calculation can distort the data.
 <br>
-Hier wird nun pro Land im Schnitt über alle Jahre ein Punkt dargestellt und ein Polynom darüber gelegt.
+Here, an average point is shown per country over all years and a polynomial (method = "loess", span = 1.05) is placed over it.
 <br>
 ```{r hiv_25, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -671,14 +677,14 @@ data_alc_per_year %>%
     subtitle = "Pro Jahr gruppierte Daten",
     colour = "relativer Alkoholkonsum"
   ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.4) +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.05) +
   scale_colour_brewer(palette = "Set2")
 ```
 <br>
-Problematisch ist hier, dass Länder die über die Jahre mehreren Kategorien angehören mehrere Datenpunkte als einen beanspruchen. 
-Dadurch bekommen diese Datenpunkte mehr Gewicht.
+The problem here is that countries that have belonged to several categories over the years claim several data points. 
+This gives these countries more weight.
 <br>
-Vergleichsweise hier nochmal mit allen Datenpunkten geplottet:
+For comparison here a plot with all data points. Again with a smooth line (method = "loess", span = 1.05).
 <br>
 ```{r hiv_26, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_alc_per_year %>%
@@ -698,9 +704,9 @@ data_alc_per_year %>%
 ```
 We see that Tansania shows a very high HIV Prevalence. We also see that there are no clear lines of our quantiles. This comes from grouping the data every year new. The quantile borders vary over time.
 <br>
-1. How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
+**How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?**
 <br>
-Ganz allgemein ist erkennbar, dass mit Länder mit großem Alkoholkonsum im Schnitt über alle Jahre eine höhere HIV Prävalenz aufwiesen. Angemerkt sollte sein, dass dies nur im Schnitt erkennbar ist. Bei einer Analyse über Mediane ist diese Aussage nicht mehr zu treffen. Hier kommt eher hervor, dass Länder mit relativ gesehen größerem Alkoholkonsum eine höhere Varianz in ihrer HIV Prävalenz aufweisen.
+In general, it can be seen that countries with high alcohol consumption had a higher HIV prevalence on average over all years. It should be noted that this can only be seen on average. This statement can no longer be made when analyzing medians. In the median, as can be seen in the boxplot, countries with relatively low alcohol consumption have the highest HIV rate. It is also noticeable that countries with higher relative alcohol consumption have a much greater spread of HIV values, as the corresponding boxplot shows a much larger interquartile range (size of the box). They are therefore more likely to have more extreme HIV rates, but they are not more likely to actually show higher values.
 <br>
 <br>
 ### 2. HIV prevalence and basic education
