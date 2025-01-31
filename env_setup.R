@@ -1,66 +1,102 @@
 ### Sourcing this file can help set up the environment needed for this project. ###
 
-## Warning: The `interval` package requires supporting packages that do not belong
-## to CRAN. It may cause problems due to different R versions.
-## In the project, we use R 4.4.1.
-
-# Install and load the `devtools` package
+# Install and load the 'devtools' package
 if (!require("devtools")) install.packages("devtools")
 library(devtools)
 
-# List of GitHub packages
-github_packages <- list(
-  "cran/Icens" = "Icens"           # Icens package from GitHub
-)
+# Vector of GitHub packages
+github_packages <- c("ricardo-bion/ggradar")
 
 # Install or update GitHub packages
-for (repo in names(github_packages)) {
-  pkg <- github_packages[[repo]]
-  
+for (packages in github_packages) {
+  # Extract package name from the repository string
+  pkg <- sub(".*/", "", packages)
+
   # Check if the package is installed
   if (!require(pkg, character.only = TRUE)) {
     message(paste("Installing GitHub package:", pkg))
-    devtools::install_github(repo, upgrade = "always")
+    devtools::install_github(packages, upgrade = "always")
     library(pkg, character.only = TRUE)
   }
 }
 
-
 # List of CRAN packages
-packages <- c("readxl",  # for reading .xlsx files
-              "tidyr",  # for pivoting data frames
-              "dplyr",  # for cleansing purposes
-              "gridExtra",  # for presentation (???)
-              "stringr",
-              "checkmate",  # for input validation checks
-              "lubridate",
-              "ggplot2",  # for plotting
-              "purrr",
-              "knitr",  # for globally setting up .html knitting
-              "rnaturalearth",  # for worldmap design
-              "rnaturalearthdata",  # for worldmap design
-              "sf",  # for worldmap design
-              "grid",  # for axis labeling of assembled plots
-              "pROC",
-              "rpart",
-              "survival",
-              "ggsurvfit",
-              "survminer",
-              "moments",
-              "zoo",
-              "kableExtra",
-              "readr",
-              "patchwork",  # for more options in assembling plots
-              "epitools",
-              "ggmosaic",
-              "e1071",
-              "RColorBrewer",  # for colorblind-friendly visualizations
-              "icenReg",
-              "interval",
-              "scales",  # for re-scaling data to percentage scale within data barriers
-              "ggthemes",
-              "ggradar",  # for radar charts - TODO: GITHUB CONNECTION TO RICARDO BION FOR DOWNLOAD
-              "here") ## add more packages if needed
+packages <- c(
+  # Install packages for rendering Quarto/R Markdowns
+  "base64enc",
+  "bslib",
+  "cli",
+  "digest",
+  "evaluate",
+  "fastmap",
+  "fontawesome",
+  "glue",
+  "highr",
+  "htmltools",
+  "jquerylib",
+  "jsonlite",
+  "knitr",
+  "lifecycle",
+  "magrittr",
+  "mime",
+  "rlang",
+  "rmarkdown",
+  "stringi",
+  "stringr",
+  "tinytex",
+  "vctrs",
+  "xfun",
+  "yaml",
+  # Install package for input validation checks
+  "checkmate",
+  # Install package for cleansing purposes and pipelines
+  "dplyr",
+  # Install package for recoding factors
+  "forcats",
+  # Install package for plotting
+  "ggplot2",
+  # Install package for relative path usage
+  "here",
+  # Install package for more options in assembling plots
+  "patchwork",
+  # Install package for colorblind-friendly visualizations
+  "RColorBrewer",
+  # Install package for reading .xlsx files
+  "readxl",
+  # Install package for re-scaling data to percentage scale within data barriers
+  "scales",
+  # Install package for pivoting data frames
+  "tidyr"
+  )
+
+##########################################################################################
+# OLD PACKAGE LIST - IS THERE ANYTHING LEFT IN HERE, THAT IS SUPPOSED TO BE IN LIST ABOVE?
+              # "gridExtra",  # for presentation (???)
+              # "lubridate",
+              # "purrr",
+              # "rnaturalearth",  # for worldmap design
+              # "rnaturalearthdata",  # for worldmap design
+              # "sf",  # for worldmap design
+              # "grid",  # for axis labeling of assembled plots
+              # "pROC",
+              # "rpart",
+              # "survival",
+              # "ggsurvfit",
+              # "survminer",
+              # "moments",
+              # "zoo",
+              # "kableExtra",
+              # "readr",
+              # "epitools",
+              # "ggmosaic",
+              # "e1071",
+              # "icenReg",
+              # "interval",
+              # "ggthemes",
+##########################################################################################
+
+# Set CRAN mirror
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 # Install CRAN packages if missing
 for (pkg in packages) {
@@ -76,7 +112,8 @@ library(here)
 message("Project root directory set by `here()`: ", here())
 
 folder_path <- here("Data", "Processed")  # Relative path to the data folder
-rds_files <- list.files(path = folder_path, pattern = ".RDS$", full.names = TRUE, ignore.case = TRUE)
+rds_files <-
+  list.files(path = folder_path, pattern = ".RDS$", full.names = TRUE, ignore.case = TRUE)
 
 for (file in rds_files) {
   var_name <- gsub(".RDS", "", file, ignore.case = TRUE)
@@ -85,11 +122,12 @@ for (file in rds_files) {
   assign(var_name, data)
 }
 
-# Source project functions using `here()`
+# Source project functions using 'here()'
 source(here("Scripts", "functions.R"))
 
 # Clean up unnecessary variables
-rm(folder_path, rds_files, file, var_name, data, pkg, packages, github_packages, repo)
+rm(folder_path, rds_files, file, var_name, data, pkg, packages, github_packages)
 
 # Inform the user to restart R if needed
-message("If you experience any issues with loaded packages, please restart R and re-run this script.")
+message("If you experience any issues with loaded packages,
+        please restart R and re-run this script.")
