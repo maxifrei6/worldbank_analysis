@@ -11,7 +11,7 @@ output:
 ## Introduction
 This analysis explores relationships between indicators across countries. To get first impressions of all the indicators under observation, we refer to the 'indicators.R' file in the 'Scripts' directory.
 <br><br>
-For this analysis specifically, we constrain ourselves to indicators such as countries' percentage of agricultural land, CO<sub>2</sub> emissions per capita in megatonnes, the size of surface area in square kilometers, and total population using World Bank data. The exploration is divided into two research questions, namely:
+For this analysis specifically, we constrain ourselves to indicators such as countries' percentage of agricultural land, CO<sub>2</sub> emissions per capita in megatonnes, and the size of surface area in square kilometers using World Bank data. The exploration is divided into two research questions, namely:
 <br><br>
 1. Is there a relationship between the **percentage of agricultural land** and **CO<sub>2</sub> emissions per capita** across countries?
 <br><br>
@@ -41,19 +41,14 @@ knitr::opts_chunk$set(fig.align = "center")
 #
 #             Carbon dioxide (CO2) emissions (total) excluding LULUCF (Mt CO2e)
 #             EN.GHG.CO2.MT.CE.AR5
-#
-#             Population, total
-#             SP.POP.TOTL
 dictionary <- data.frame(
   Variable = c("AG.LND.AGRI.ZS",
                "AG.SRF.TOTL.K2",
-               "EN.GHG.CO2.MT.CE.AR5",
-               "SP.POP.TOTL"),
+               "EN.GHG.CO2.MT.CE.AR5"),
   `Indicator Name` = c(
     "Agricultural land (% of land area)",
     "Surface area (sq. km)",
-    "Carbon dioxide (CO2) emissions (total) excluding LULUCF (Mt CO2e)",
-    "Population, total"),
+    "Carbon dioxide (CO2) emissions (total) excluding LULUCF (Mt CO2e)"),
   Definition = c(
     paste0("Agricultural land refers to the share of land area that is arable, under ",
            "permanent crops, and under permanent pastures. Arable land includes land ",
@@ -74,10 +69,7 @@ dictionary <- data.frame(
            "sector) including IPCC 2006 codes 1.A.4 Residential and other sectors, ",
            "1.A.5 Non-Specified. The measure is standardized to carbon dioxide ",
            "equivalent values using the Global Warming Potential (GWP) factors of ",
-           "IPCC's 5th Assessment Report (AR5)."),
-    paste0("Total population is based on the de facto definition of population, which ",
-           "counts all residents regardless of legal status or citizenship. The values ",
-           "shown are midyear estimates.")),
+           "IPCC's 5th Assessment Report (AR5).")),
   check.names = FALSE
 )
 kable(dictionary, caption = "World Bank Indicators", align = c("c", "c", "c"))
@@ -90,19 +82,12 @@ data_agriculture <- data_agriculture %>%
   select(`Country Name`,
          `Country Code`,
          Year,
-         SP.POP.TOTL,
          AG.LND.AGRI.ZS,
          AG.SRF.TOTL.K2,
          EN.GHG.CO2.MT.CE.AR5)
 
 # Check whether any missing values in interested data subset with suppressing to knit
 if(FALSE) all(!is.na(data_agriculture))
-
-# TODO: THIS CAN GO, RIGHT?
-# Save the agriculture data set using 'here' for the file path.
-if (!file.exists(here("Data", "Processed", "data_agriculture.RDS"))) {
-  saveRDS(data_agriculture, file = here("Data", "Processed", "data_agriculture.RDS"))
-}
 
 # Save the ascending order of average agricultural land [%] by country
 country_order_by_agrLand <- data_agriculture %>%
@@ -112,6 +97,7 @@ country_order_by_agrLand <- data_agriculture %>%
   arrange(avg_AG.LND.AGRI.ZS) %>%
   pull(`Country Name`)
 ```
+(*Sources: https://data.worldbank.org/indicator/AG.LND.AGRI.ZS?view=chart, https://data.worldbank.org/indicator/AG.SRF.TOTL.K2?view=chart, https://data.worldbank.org/indicator/EN.GHG.CO2.BU.MT.CE.AR5?view=chart*)
 
 The dataset we have been provided with contains longitudinal observations of 25 countries with 18 indicators each. The yearly data acquisition happened from 2000 to 2021.
 
@@ -309,7 +295,7 @@ Moving on, we want to bring those two variables back together. For this purpose,
 
 #### 1.5. Scatter plot of interested variables
 
-```{r scatter_agrland_co2, echo=FALSE, fig.height=7, fig.width=12, message=FALSE, warning=FALSE}
+```{r scatter_agrland_co2, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 # Note: The following plot is the original version of the presentation plot used during
 # the presentation held on 2025/01/20. For reproducibility purposes, the original plot
 # remains in the code; for the feedback-adjusted version, refer to plotting code below.
