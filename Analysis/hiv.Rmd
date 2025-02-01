@@ -295,7 +295,7 @@ Here is a plot of the new grouping:
 data_alc_per_year_without_outlier <- data_alc_per_year %>% 
   filter(`Country Name` != "Tansania")
 
-plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
+presentation_hiv_plot1 <- data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
   geom_point(size = 3.5, alpha = 0.5) +
   geom_smooth(
@@ -327,7 +327,7 @@ plot_alc_hiv_grouped_dotplot <- data_alc_per_year %>%
     legend.text = element_text(size = 14)
   )
 
-anhang_alc_hiv_3 <- data_alc_per_year %>%
+presentation_hiv_backup1 <- data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
   geom_point(size = 3.5, alpha = 0.5) +
   geom_smooth(
@@ -358,7 +358,7 @@ anhang_alc_hiv_3 <- data_alc_per_year %>%
     legend.text = element_text(size = 14)
   )
 
-plot_alc_hiv_grouped_dotplot
+presentation_hiv_plot1
 ```
 <br>
 As we can see here, the plotted data per year show the correct classification of the quantiles:
@@ -378,7 +378,7 @@ data_alc_per_year %>%
   theme_bw() +
   scale_colour_brewer(palette = "Set2")
 
-anhang_alc_hiv_1 <- data_alc_per_year %>%
+presentation_hiv_backup2 <- data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
   geom_point(aes(fill = cat_alc_per_year), size = 3, alpha = 0.7, shape = 21) +
   scale_fill_viridis_d(name = "relativer Alkoholkonsum", option = "plasma", direction = -1) +
@@ -468,7 +468,7 @@ data_alc_per_year %>%
     colour = "relativer Alkoholkonsum"
   )
 
-plot_alc_hiv_boxplot <- data_alc_per_year %>%
+presentation_hiv_plot2 <- data_alc_per_year %>%
   ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   theme_bw() + 
@@ -969,7 +969,7 @@ data_edu %>%
 ```
 
 ```{r hiv_42, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-anhang_edu_hiv_2 <- data_edu %>%
+presentation_hiv_backup3 <- data_edu %>%
   group_by(cat_edu_per_year) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -1016,7 +1016,7 @@ data_edu %>%
     subtitle = "Pro Jahr gruppierte Daten"
   )
 
-plot_edu_hiv_grouped_dotplot <- data_edu %>%
+presentation_hiv_plot3 <- data_edu %>%
   group_by(cat_edu_per_year, Year) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -1088,7 +1088,7 @@ data_edu_cat_n <- data_edu %>%
 
 x_labels <- paste0(sort(unique(data_edu$cat_edu_per_year)), "\nn = ", data_edu_cat_n$n)
 
-plot_edu_hiv_boxplot <- data_edu %>% 
+presentation_hiv_plot4 <- data_edu %>% 
   ggplot(aes(cat_edu_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   scale_y_log10() +

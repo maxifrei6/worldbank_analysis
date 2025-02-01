@@ -142,7 +142,8 @@ ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pairs), 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 # German plot for presentation: Available Data Pairs per Country
-p8 <- ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pairs), y = available_pairs)) +
+presentation_education_plot7 <-
+  ggplot(available_data_pairs, aes(x = reorder(`Country Name`, -available_pairs), y = available_pairs)) +
   geom_bar(stat = "identity") +
   labs(
     title = "Verfügbare Datenpaare (Staatliche Verschuldung & grundlegende Bildung)",
@@ -177,7 +178,8 @@ ggplot(data_education_2,
   theme_bw()
 
 # Plot with ordered facets
-p9 <- ggplot(data_education_2, 
+presentation_education_plot8 <-
+  ggplot(data_education_2, 
              aes(x = Year, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_line(aes(color = cat_income_level, group = `Country Name`), alpha = 0.8, size = 0.7) +  # Line chart
   facet_wrap(~ `Country Name`) +  # Facet by country
@@ -363,7 +365,8 @@ ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = ca
   theme_bw()
 
 # German plot for presentation: Central government debt vs labor force with basic education
-p1 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
+presentation_education_plot1 <-
+  ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(aes(color = cat_income_level), method = MASS::rlm, se = FALSE, color = "black") +
   labs(
@@ -383,7 +386,8 @@ p1 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, colo
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 
 # German plot for presentation: Central government debt vs labor force with basic education
-p12 <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
+pres_updated_education_plot1 <-
+  ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS, color = cat_income_level)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(aes(color = cat_income_level), method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
@@ -454,7 +458,8 @@ income_labels <- c(
 )
 
 # German plot for presentation: Faceted scatter plot of Debt vs Education by Income Level
-p2 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
+presentation_education_plot2 <-
+  ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black", size = 1.5) +
   facet_wrap(~ cat_income_level, labeller = labeller(cat_income_level = income_labels)) +
@@ -487,7 +492,8 @@ p2 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
         strip.text = element_text(size = 14))
 
 # German plot for presentation: Faceted scatter plot of Debt vs Education by Income Level
-p22 <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
+pres_updated_education_plot2 <-
+  ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, color = "black", size = 1.5, alpha = 0.2) +
   facet_wrap(~ cat_income_level, labeller = labeller(cat_income_level = income_labels)) +
@@ -578,7 +584,8 @@ tidy_correlation <- tidy_correlation %>%
   )
 
 # German plot for presentation: Create heatmap with dynamically calculated correlation coefficients
-p3 <- ggplot(tidy_correlation, aes(x = cat_income_level, y = cat_population_size, fill = correlation)) +
+presentation_education_plot3 <-
+  ggplot(tidy_correlation, aes(x = cat_income_level, y = cat_population_size, fill = correlation)) +
   geom_tile(color = "white") +
   geom_text(aes(label = ifelse(is.na(correlation), "", round(correlation, 2))), color = "black", size = 6) + # Add text labels
   scale_fill_gradient2(
@@ -659,7 +666,7 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   theme_bw()
 
 # German plot for presentation: Scatter plot: pupil-teacher ratios vs labor force with basic education
-p4 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+presentation_education_plot4 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(aes(color = cat_population_density), size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
   labs(
@@ -678,7 +685,7 @@ p4 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 
 # German plot for presentation: Scatter plot: pupil-teacher ratios vs labor force with basic education
-p42 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+pres_updated_education_plot4 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(aes(color = cat_population_density), size = 3.5, alpha = 0.6) +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
@@ -751,7 +758,8 @@ facet_labels <- c(
 )
 
 # German plot for presentation: Facetted scatter plot: pupil-teacher ratios vs labor force with basic education
-p5 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+presentation_education_plot5 <-
+  ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6, size = 3.5) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black") +
   facet_wrap(~ cat_population_density, labeller = labeller(cat_population_density = facet_labels)) +
@@ -781,7 +789,8 @@ p5 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
         plot.title = element_text(hjust = 0.5, size = 20),
         strip.text = element_text(size = 14))
 
-p52 <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
+pres_updated_education_plot5 <-
+  ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   geom_point(alpha = 0.6, size = 3.5) +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   facet_wrap(~ cat_population_density, labeller = labeller(cat_population_density = facet_labels)) +
@@ -838,7 +847,8 @@ ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = 
   theme_bw()
 
 # German plot for presentation: Scatter plot of Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
-p6 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
+presentation_education_plot6 <-
+  ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
   geom_point(size = 3.5, shape = 21, alpha = 0.4) +
   geom_smooth(aes(color = cat_population_density), method = MASS::rlm,  se = FALSE, show.legend = FALSE) +
   scale_y_log10() +  # Apply log10 transformation to the x-axis
@@ -859,7 +869,7 @@ p6 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, f
   guides(fill = guide_legend(override.aes = list(alpha = 1)))
 
 # German plot for updated presentation: Scatter plot of Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
-p62 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
+pres_updated_education_plot6 <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
   geom_point(size = 3.5, shape = 21, alpha = 0.4) +
   geom_smooth(aes(color = cat_population_density), method = MASS::rlm, show.legend = FALSE, alpha = 0.2) +
   scale_y_log10(
