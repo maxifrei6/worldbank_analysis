@@ -1,11 +1,16 @@
 library(here)
 library(scales)
+library(dplyr)
+library(tidyr)
+library(ggradar)
+library(ggplot2)
+library(patchwork)
 
 # Load the processed "data_merged" dataset using `here`
 data_indicators <- readRDS(here("Data", "Processed", "data_merged.RDS"))
 
-# Calculate the mean for every indicator for each country and rescale the mean on a zero to 100 %
-# scale relative between all countries' values
+# Calculate the mean for every indicator for each country and rescale the mean on a zero
+# to 100 % scale relative between all countries' values
 data_indicators <- data_indicators %>%
   group_by(`Country Name`) %>%
   summarize(across(where(is.numeric), \(x) mean(x, na.rm = TRUE))) %>%
@@ -19,8 +24,8 @@ data_indicators <- data_indicators %>%
 data_indicators <- data_indicators %>%
   pivot_wider(names_from = `Country Name`, values_from = Value)
 
-# Divide the indicators into two (topically-consistent) groups of eight indicators each, leaving out
-# the following indicators as they are not used in the data analysis:
+# Divide the indicators into two (topically-consistent) groups of eight indicators each,
+# leaving out the following indicators as they are not used in the data analysis:
 # --- Current health expenditure per capita (current US$)
 #     SH.XPD.CHEX.PC.CD
 # --- Life expectancy at birth, female (years)
@@ -31,21 +36,30 @@ data_indicators <- data_indicators %>%
 #     SN.ITK.MSFI.ZS
 
 indicators_group1 <- c("SP.POP.TOTL",           # Population, total
-                       "EN.POP.DNST",           # Population density (people per sq. km of land area)
+                       "EN.POP.DNST",           # Population density (people per sq. km of
+                                                # land area)
                        "AG.SRF.TOTL.K2",        # Surface area (sq. km)
                        "AG.LND.AGRI.ZS",        # Agricultural land (% of land area)
-                       "NY.ADJ.NNTY.PC.CD",     # Adjusted net national income per capita (current US$)
-                       "GC.DOD.TOTL.GD.ZS",     # Central government debt, total (% of GDP)
-                       "NY.GDP.PCAP.PP.KD")     # GDP per capita, PPP (constant 2021 international $)
-indicators_group2 <- c("EN.GHG.CO2.MT.CE.AR5",  # Carbon dioxide (CO2) emissions (total) excluding LULUCF (Mt CO2e)
+                       "NY.ADJ.NNTY.PC.CD",     # Adjusted net national income per capita
+                                                # (current US$)
+                       "GC.DOD.TOTL.GD.ZS",     # Central government debt, total (% of
+                                                # GDP)
+                       "NY.GDP.PCAP.PP.KD")     # GDP per capita, PPP (constant 2021
+                                                # international $)
+indicators_group2 <- c("EN.GHG.CO2.MT.CE.AR5",  # Carbon dioxide (CO2) emissions (total)
+                                                # excluding LULUCF (Mt CO2e)
                        "EG.ELC.ACCS.ZS",        # Access to electricity (% of population)
-                       "SH.DYN.AIDS.ZS",        # Prevalence of HIV, total (% of population ages 15-49)
+                       "SH.DYN.AIDS.ZS",        # Prevalence of HIV, total (% of
+                                                # population ages 15-49)
                        "SE.TER.ENRL.TC.ZS",     # Pupil-teacher ratio, tertiary
-                       "SH.PRV.SMOK",           # Prevalence of current tobacco use (% of adults)
+                       "SH.PRV.SMOK",           # Prevalence of current tobacco use (% of
+                                                # adults)
                        "SL.TLF.BASC.ZS",        # Labor force with basic education
-                       # (% of total working-age population with basic education)
+                                                # (% of total working-age population with
+                                                # basic education)
                        "SH.ALC.PCAP.LI")        # Total alcohol consumption per capita
-# (liters of pure alcohol, projected estimates, 15+ years of age)
+                                                # (liters of pure alcohol, projected
+                                                # estimates, 15+ years of age)
 
 data_indicators_group1 <- data_indicators %>% filter(Indicator %in% indicators_group1)
 data_indicators_group2 <- data_indicators %>% filter(Indicator %in% indicators_group2)
@@ -60,14 +74,16 @@ plot_indicators_group1 <- ggradar(data_indicators_group1,
                                   group.line.width = 1,
                                   group.point.size = 2)+
   theme_minimal() +
-  scale_color_brewer(name = "Indikatoren\n(auf 0-100 % der beobachteten Länder)",
+  scale_color_brewer(name = "Indikatoren\n(auf 0 bis 100% der beobachteten Länder)",
                      palette = "Set2",
                      labels = c("NY.GDP.PCAP.PP.KD"= "BIP pro Kopf",
                                 "SP.POP.TOTL" = "Einwohnerzahl",
                                 "EN.POP.DNST" = "Einwohnerdichte", 
                                 "AG.SRF.TOTL.K2" = "Landfläche",
-                                "AG.LND.AGRI.ZS" = "Landwirtschaftliche Nutzfläche",
-                                "NY.ADJ.NNTY.PC.CD" = "Nettonationaleinkommen\npro Kopf (bereinigt)",
+                                "AG.LND.AGRI.ZS" =
+                                  "Anteil landwirtschaftlicher\nNutzfläche",
+                                "NY.ADJ.NNTY.PC.CD" =
+                                  "Nettonationaleinkommen\npro Kopf (bereinigt)",
                                 "GC.DOD.TOTL.GD.ZS" = "Schulden des Zentralstaats")) +
   theme(axis.text = element_blank(),
         legend.position = "bottom",
@@ -85,14 +101,14 @@ plot_indicators_group2 <- ggradar(data_indicators_group2,
                                   group.line.width = 1,
                                   group.point.size = 2)+
   theme_minimal() +
-  scale_color_brewer(name = "Indikatoren\n(auf 0-100 % der beobachteten Länder)",
+  scale_color_brewer(name = "Indikatoren\n(auf 0 bis 100% der beobachteten Länder)",
                      palette = "Set2",
-                     labels = c("SH.ALC.PCAP.LI" = "Alkoholkonsum pro Kopf",
-                                "SL.TLF.BASC.ZS" = "Arbeitskräfte mit Grundausbildung",
+                     labels = c("SH.ALC.PCAP.LI" = "Prävalenz des Alkoholkonsum",
+                                "SL.TLF.BASC.ZS" = "Erwerbstätige mit Grundbildung",
                                 "EN.GHG.CO2.MT.CE.AR5" = "CO2 Emissionen pro Kopf",
                                 "SH.PRV.SMOK" = "Prävalenz des Tabakkonsums",
-                                "SH.DYN.AIDS.ZS" = "Prävalenz von HIV unter Erwachsenen",
-                                "SE.TER.ENRL.TC.ZS" = "Schüler-Lehrer-Verhältnis",
+                                "SH.DYN.AIDS.ZS" = "Prävalenz von HIV",
+                                "SE.TER.ENRL.TC.ZS" = "Schüler-Lehrer-Relation",
                                 "EG.ELC.ACCS.ZS" = "Zugang zu Elektrizität")) +
   theme(axis.text = element_blank(),
         legend.position = "bottom",

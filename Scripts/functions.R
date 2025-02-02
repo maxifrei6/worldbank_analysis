@@ -186,7 +186,7 @@ group_data_year <- function(df, grouping_by, year, column_new, quantile_labels) 
   column_new <- paste0("cat_", column_new)
   df <- df %>%
     mutate(
-      # Add values for the new, dynamically-created column according to case_when assignment
+      # Add values for new, dynamically-created column according to case_when assignment
       {{ column_new }} := quantile_labels[findInterval(df[[grouping_by]],
                                                        quantile_data,
                                                        rightmost.closed = TRUE)],

@@ -29,24 +29,15 @@ execute:
 
 ```{r setup, include=FALSE}
 ## TODO: YOU NEED TO RUN env_setup TO INSTALL ALL PACKAGES
-library(here)
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-library(RColorBrewer)
-library(patchwork)
-library(grid)
+source("env_setup.R")
 
-# Source the self-written functions
-source(here("Scripts", "functions.R"))
-
-# Source each markdown analyses
+# Source each markdown analysis
 source_rmd(here("Analysis", "education.Rmd"))
 source_rmd(here("Analysis", "hiv.Rmd"))
 source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
 source_rmd(here("Analysis", "tobacco_ROBIN.Rmd"))
+source_rmd(here("Analysis", "tobacco.Rmd"))
 source_rmd(here("Analysis", "agriculture.Rmd"))
-source_rmd(here("Analysis", "surface.Rmd"))
 
 # Globally center all plots while displaying knitted version in HTML
 knitr::opts_chunk$set(fig.align = "center")
@@ -102,13 +93,13 @@ knitr::opts_chunk$set(fig.align = "center")
 Wie verhält sich die HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren zum gesamten Alkoholkonsum pro Kopf?
 
 ```{r, fig.height=7, fig.width=12}
-plot_alc_hiv_grouped_dotplot
+presentation_hiv_plot1
 ```
 
 ## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-plot_alc_hiv_boxplot
+presentation_hiv_plot2
 ```
 
 ## 2.1 HIV {.custom-smaller}
@@ -116,13 +107,13 @@ plot_alc_hiv_boxplot
 Haben Länder mit einem höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung eine niedrigere HIV-Prävalenz unter den 15- bis 49-Jährigen?
 
 ```{r, fig.height=7, fig.width=12}
-plot_edu_hiv_grouped_dotplot
+presentation_hiv_plot3
 ```
 
 ## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-plot_edu_hiv_boxplot
+presentation_hiv_plot4
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -130,19 +121,19 @@ plot_edu_hiv_boxplot
 Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung?
 
 ```{r edu_slide_1, fig.height=7, fig.width=12}
-p1
+presentation_education_plot1
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r edu_slide_2, fig.height=7, fig.width=12}
-p2
+presentation_education_plot2
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r edu_slide_3, fig.height=7, fig.width=12}
-p3
+presentation_education_plot3
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -150,13 +141,13 @@ p3
 Führen mehr Erwerbstätige mit Grundbildung zu einer niedrigeren Schüler-Lehrer-Relation?
 
 ```{r edu_slide_4, fig.height=7, fig.width=12}
-p4
+presentation_education_plot4
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r edu_slide_5, fig.height=7, fig.width=12}
-p5
+presentation_education_plot5
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -164,7 +155,7 @@ p5
 Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqualität?
 
 ```{r edu_slide_6, fig.height=7, fig.width=12}
-p6
+presentation_education_plot6
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
@@ -172,7 +163,7 @@ p6
 In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen?
 
 ```{r tobacco_plot1_, fig.height=7, fig.width= 15, echo = FALSE, warning=FALSE, message=FALSE}
-plot_BIP_tob_barplot_year
+presentation_tobacco_plot1
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
@@ -222,13 +213,13 @@ Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern
 ## Anhang {.custom-smaller}
 
 ```{r}
-p8
+presentation_education_plot7
 ```
 
 ## Anhang {.custom-smaller}
 
 ```{r}
-p9
+presentation_education_plot8
 ```
 
 ## Anhang {.custom-smaller}
@@ -276,17 +267,17 @@ presentation_agriculture_backup4
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=9, fig.width=15}
-anhang_alc_hiv_3
+presentation_hiv_backup1
 ```
 
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=9, fig.width=15}
-anhang_alc_hiv_1
+presentation_hiv_backup2
 ```
 
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=9, fig.width=15}
-anhang_edu_hiv_2
+presentation_hiv_backup3
 ```

@@ -6,7 +6,6 @@ output:
   html_document:
     self-contained: true
     clean: true
-    css: "../customstyle.scss"
 ---
 
 ## Introduction
@@ -71,7 +70,7 @@ data_tobacco <- data_tobacco %>%
 ```
 
 ## Agenda
-1.) GDP per capita and prevalence of current tobacco use
+1.) GDP per capita and prevalence of current tobacco usage
 <br><br>
 1.1.) Scatter plot of interested variables
 <br><br>
@@ -104,6 +103,7 @@ data_tobacco %>%
   filter(is.na(SH.PRV.SMOK)) %>%
   filter(n == 22)
 ```
+
 As we can see, there is no data available for Aruba during the 22 years of time stretching from 2000 to 2021. Therefore, we drop Aruba from our analysis. Further, we check if there are any years in which the data is missing for several countries at the same time.
 
 ```{r missing_filter, include=FALSE, message=FALSE, warning=FALSE}
