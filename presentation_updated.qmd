@@ -132,7 +132,7 @@ pres_updated_education_plot2
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r edu_slide_3, fig.height=7, fig.width=12}
-presentation_education_plot3
+pres_updated_education_plot3
 ```
 
 ## 2.2 Bildung {.custom-smaller}
