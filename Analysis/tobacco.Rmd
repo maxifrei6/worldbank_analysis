@@ -13,7 +13,7 @@ This analysis explores relationships between indicators across countries such as
 <br><br>
 1. How does **GDP per capita** relate to the **prevalence of current tobacco use (% of adults)**?
 <br><br>
-For this analysis, we consider the following indicators:
+The upon mentioned indicators taken into consideration during this analysis are defined in the following table.
 
 ```{r tobacco_setup, echo = FALSE, message = FALSE}
 # Load libraries
@@ -78,6 +78,63 @@ data_tobacco <-
 ```
 (*Sources: https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?view=chart, https://data.worldbank.org/indicator/SH.PRV.SMOK?view=chart*)
 
+## Terminology and Methodological Approach
+To mitigate issues with data quality and variance in data, we employ robust statistical techniques, including:
+
+- **Robust Linear Models (RLMs)** for trend estimation, which are less sensitive to **outliers**.
+- **Confidence Intervals** to provide insight into the **uncertainty of our estimates**.
+
+#### Robust Linear Models
+
+Traditional **Ordinary Least Squares (OLS)** estimates regression coefficients by minimizing the sum of squared residuals:
+
+$$
+\min_{\beta} \sum_{i=1}^{n} (y_i - X_i \beta)^2
+$$
+
+This approach provides **BLUE (Best Linear Unbiased Estimators)** under the **Gauss-Markov theorem**, but relies on the assumption that residuals are **normally distributed**. Given the inconsistencies in our dataset, this assumption is likely invalid. While OLS estimates remain **unbiased** but may become less efficient, potentially affecting the reliability of **confidence intervals and hypothesis tests**.
+
+To address this, we use **Robust Linear Models (RLMs)**, specifically M-estimators, as implemented in `MASS::rlm()`. These models apply **Iteratively Reweighted Least Squares (IRLS)**, assigning smaller weights to outliers. Instead of minimizing squared residuals, RLMs use **alternative loss functions** that reduce the impact of extreme values.
+
+In our analysis, we use the default psi function, **psi.huber**, which is based on **Huber’s loss function**:
+
+$$
+L_{\delta}(r) =
+\begin{cases} 
+\frac{1}{2} r^2  & \text{for } |r| \leq \delta, \\
+\delta (|r| - \frac{1}{2} \delta)  & \text{for } |r| > \delta.
+\end{cases}
+$$
+
+where:
+
+- \( r \) is the **residual** \(y_i - X_i \beta\)
+- \( \delta \) is the **threshold parameter** (default in R: **1.345**)  
+
+This method ensures **small residuals** behave like **OLS**, while **large residuals** have **reduced influence**, making RLMs more resistant to **outliers and non-normal residual distributions**.
+
+<br>
+
+#### Confidence Intervals
+
+By default, `geom_smooth(method = MASS::rlm)` displays confidence intervals. However, unlike **ordinary least squares (OLS)**, `MASS::rlm()` does **not automatically provide standard errors**, as robust regression does not make the same assumptions about variability in the data.  
+
+The confidence intervals shown in `geom_smooth()` are based on an **approximation** rather than **true robust standard errors**. Specifically, `ggplot2` estimates confidence intervals using the **standard formula for least squares regression**:
+
+$$
+CI = \hat{y} \pm t_{\alpha/2, df} \cdot SE(\hat{y})
+$$
+
+
+where:
+
+- \( \hat{y} \) is the **predicted value** from the robust regression model
+- \( SE(\hat{y}) \) is the **standard error of the fitted values**, approximated using **local smoothing techniques**
+- \( t_{\alpha/2, df} \) is the **critical t-value** for a 95% confidence level
+
+Since robust regression methods like `rlm()` do not inherently calculate standard errors, the confidence intervals shown by `geom_smooth()` are **only an approximation**. A more rigorous approach would involve computing **robust standard errors manually** using the **Huber-White sandwich estimator** or **bootstrapping techniques**.
+
+For simplicity, we retain the default confidence bands provided by `geom_smooth()`, while acknowledging that they do not fully account for the robustness adjustments of `rlm()`.
 
 ## Agenda
 1.) GDP per capita and prevalence of current tobacco usage
@@ -608,7 +665,7 @@ presentation_tobacco_plot1 <-
 # forward, we will only mark the adjusted version with '# Updated presentation plot'.
 
 # TODO: UPDATED VERSION OF THE FIRST TOBACCO PLOT:
-pres_updated_tobacco_plot1 <-
+# pres_updated_tobacco_plot1 <-
   
 ```
 
@@ -618,18 +675,11 @@ In the following, we want to investigate the relationship further by taking a st
 
 #### 1.2. Scatter plot of interested variables
 
-```{r scatter, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
-# Original presentation plot
+```{r scatter_with_outlier, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 # Scatter plot of interested variables
-presentation_tobacco_backup1 <-
+scatter_tob_gdp <-
   ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
   geom_point(alpha = 0.5, size = 3.5) +
-  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
-              method = MASS::rlm,
-              linewidth = 1.5, se = FALSE) +
-  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
-              method = "lm", linewidth = 1.5, se = FALSE) +
-  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
                      breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(),
@@ -649,38 +699,27 @@ presentation_tobacco_backup1 <-
         legend.text = element_text(size = 14),
         plot.title = element_text(hjust = 0.5, size = 20))
 
+# Original presentation plot
+presentation_tobacco_backup1 <-
+  scatter_tob_gdp +
+  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf") +
+  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
+              method = MASS::rlm, linewidth = 1.5, se = FALSE) +
+  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
+              method = "lm", linewidth = 1.5, se = FALSE)
+
 # Updated presentation plot
 pres_updated_tobacco_backup1 <-
-  ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
-  geom_point(alpha = 0.5, size = 3.5) +
+  scatter_tob_gdp +
+  ggtitle("Prävalenz des Tabakkonsums und BIP pro Kopf") +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD,
                   color = "Robust-Linear", fill = "Robust-Linear"),
-              method = MASS::rlm,
-              linewidth = 1.5, se = TRUE, alpha = 0.3) +
+              method = MASS::rlm, linewidth = 1.5, se = TRUE, alpha = 0.3) +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD,
                   color = "Linear", fill = "Linear"),
               method = "lm", linewidth = 1.5, se = TRUE, alpha = 0.3) +
-  ggtitle("Prävalenz des Tabakkonsums und BIP pro Kopf") +
-  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
-                     breaks = c(0, 10, 20, 30, 40, 50, 60),
-                     minor_breaks = waiver(),
-                     limits = c(0, 60)) +
-  scale_y_continuous(name = "BIP pro Kopf [$]",
-                     breaks = c(0, 25000, 50000, 75000, 100000, 125000),
-                     minor_breaks = waiver(),
-                     limits = c(0, 125000)) +
-  scale_color_manual(name = "",
-                     values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-                                "Linear" = brewer.pal(3, "Set2")[[3]])) +
   scale_fill_manual(name = "", values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-                                          "Linear" = brewer.pal(3, "Set2")[[3]])) +
-  theme_bw() +
-  theme(axis.text = element_text(size = 14),
-        axis.title.x = element_text(margin = margin(t = 10), size = 16),
-        axis.title.y = element_text(margin = margin(r = 10), size = 16),
-        legend.position = "bottom",
-        legend.text = element_text(size = 14),
-        plot.title = element_text(hjust = 0.5, size = 20))
+                                          "Linear" = brewer.pal(3, "Set2")[[3]]))
 
 pres_updated_tobacco_backup1
 ```
@@ -691,22 +730,16 @@ As we are looking at the data without any consideration of time, we want to chec
 
 #### 1.3. Scatter plot of interested variables; except outlier Qatar
 
-```{r scatter_withoutOutlier, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
+```{r scatter_without_outlier, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 # Investigate the y-axis outlier - are they all from the same country?
 data_tobacco %>% filter(NY.GDP.PCAP.PP.KD > 80000)
 # Indeed, all the data points originate out of Qatar
 
-# Original presentation plot
 # Scatter plot of interested variables; except outlier Qatar
-presentation_tobacco_backup2 <-
+scatter_tob_gdp_without_Qatar <-
   ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
        aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
   geom_point(alpha = 0.5, size = 3.5) +
-  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
-              method = MASS::rlm, linewidth = 1.5, se = FALSE) +
-  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
-              method = "lm", linewidth = 1.5, se = FALSE) +
-  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf - ohne Ausreißer") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
                      breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(),
@@ -726,12 +759,19 @@ presentation_tobacco_backup2 <-
         legend.text = element_text(size = 14),
         plot.title = element_text(hjust = 0.5, size = 20))
 
+# Original presentation plot
+presentation_tobacco_backup2 <-
+  scatter_tob_gdp_without_Qatar +
+  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Robust-Linear"),
+              method = MASS::rlm, linewidth = 1.5, se = FALSE) +
+  geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, color = "Linear"),
+              method = "lm", linewidth = 1.5, se = FALSE) +
+  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf - ohne Ausreißer")
+
 
 # Updated presentation plot
 pres_updated_tobacco_backup2 <-
-  ggplot(data_tobacco[data_tobacco$`Country Code` != "QAT", ],
-       aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
-  geom_point(alpha = 0.5, size = 3.5) +
+  scatter_tob_gdp_without_Qatar +
   geom_smooth(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD,
                   color = "Robust-Linear", fill = "Robust-Linear"),
               method = MASS::rlm, linewidth = 1.5, se = TRUE, alpha = 0.3) +
@@ -739,26 +779,8 @@ pres_updated_tobacco_backup2 <-
                   color = "Linear", fill = "Linear"),
               method = "lm", linewidth = 1.5, se = TRUE, alpha = 0.3) +
   ggtitle("Prävalenz des Tabakkonsums und BIP pro Kopf - ohne Ausreißer") +
-  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
-                     breaks = c(0, 10, 20, 30, 40, 50, 60),
-                     minor_breaks = waiver(),
-                     limits = c(0, 60)) +
-  scale_y_continuous(name = "BIP pro Kopf [$]",
-                     breaks = c(0, 25000, 50000, 75000, 100000, 125000),
-                     minor_breaks = waiver(),
-                     limits = c(0, 125000)) +
-  scale_color_manual(name = "",
-                     values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-                                "Linear" = brewer.pal(3, "Set2")[[3]])) +
   scale_fill_manual(name = "", values = c("Robust-Linear" = brewer.pal(3, "Set2")[[2]],
-                                          "Linear" = brewer.pal(3, "Set2")[[3]])) +
-  theme_bw() +
-  theme(axis.text = element_text(size = 14),
-        axis.title.x = element_text(margin = margin(t = 10), size = 16),
-        axis.title.y = element_text(margin = margin(r = 10), size = 16),
-        legend.position = "bottom",
-        legend.text = element_text(size = 14),
-        plot.title = element_text(hjust = 0.5, size = 20))
+                                          "Linear" = brewer.pal(3, "Set2")[[3]]))
 
 pres_updated_tobacco_backup2
 ```
@@ -836,17 +858,13 @@ data_tobacco_normdensity <- data_tobacco_param %>%
 data_tobacco_normdensity <- data_tobacco_normdensity %>%
   filter(norm_x_val <= 60)
 
-# Original presentation plot
+
 # Scatter plot of interested variables faceted years with density curves
 # Plot the upper row of the data points for the assembled tobacco plotting
-plot_tobacco1_data_upper <-
+scatter_faceted_tob_gdp_data_upper <- 
   ggplot(data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015))) +
   geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
              alpha = 0.5, size = 2.5) +
-  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015)),
-              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
-              method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +
-  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
                      breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(),
@@ -866,14 +884,27 @@ plot_tobacco1_data_upper <-
         strip.text = element_text(size = 12)) +
   facet_wrap(~ Year, ncol = 4)
 
+# Original presentation plot - upper row of scatter plots
+plot_tobacco1_data_upper <-
+  scatter_faceted_tob_gdp_data_upper +
+  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015)),
+              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+              method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +
+  ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf")
+
+# Updated presentation plot - upper row of scatter plots
+updated_plot_tobacco1_data_upper <-
+  scatter_faceted_tob_gdp_data_upper +
+  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015)),
+              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+              method = MASS::rlm, linewidth = 1, se = TRUE, color = "black", alpha = .3) +
+  ggtitle("Prävalenz des Tabakkonsums und BIP pro Kopf")
+
 # Plot the bottom row of the data points for the assembled tobacco plotting
-plot_tobacco1_data_bottom <-
+scatter_faceted_tob_gdp_data_bottom <-
   ggplot(data_tobacco %>% filter(Year %in% c(2018, 2019, 2020))) +
   geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
              alpha = 0.5, size = 2.5) +
-  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
-              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
-              method = MASS::rlm, linewidth = 1, se = FALSE, color = "black") +
   scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
                      breaks = c(0, 10, 20, 30, 40, 50, 60),
                      minor_breaks = waiver(),
@@ -892,6 +923,20 @@ plot_tobacco1_data_bottom <-
         plot.margin = margin(0, 0, 0, 0),
         strip.text = element_text(size = 12)) +
   facet_wrap(~ Year)
+
+# Original presentation plot - bottom row of scatter plots
+plot_tobacco1_data_bottom <-
+  scatter_faceted_tob_gdp_data_bottom +
+  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
+              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+              method = MASS::rlm, linewidth = 1, se = FALSE, color = "black")
+
+# Updated presentation plot - bottom row of scatter plots
+updated_plot_tobacco1_data_bottom <-
+  scatter_faceted_tob_gdp_data_bottom +
+  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
+              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
+              method = MASS::rlm, linewidth = 1, se = TRUE, color = "black", alpha = .3)
 
 # Add overlayed normal distribution curves to the assembled plot in the data displays
 # Plot the upper row of the density curves for the assembled tobacco plotting
@@ -972,8 +1017,7 @@ plot_tobacco1_density_bottom <-
         strip.text = element_blank()) +
   facet_wrap(~ Year)
 
-
-# Assemble the plot
+# Original presentation plot - assemble the plot
 presentation_tobacco_plot2 <-
   (plot_tobacco1_data_upper /
     plot_tobacco1_density_upper /
@@ -983,61 +1027,7 @@ presentation_tobacco_plot2 <-
     plot_layout(heights = c(1.9, 0.4, 0.1, 1.9, 0.4, 0.3), widths = c(1, 1, 1, 1))) &
   theme(plot.margin = margin(0, 0, 0, 0))
 
-
-# Updated presentation plot
-updated_plot_tobacco1_data_upper <-
-  ggplot(data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015))) +
-  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
-             alpha = 0.5, size = 2.5) +
-  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2000, 2005, 2010, 2015)),
-              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
-              method = MASS::rlm, linewidth = 1, se = TRUE, color = "black", alpha = .3) +
-  ggtitle("Prävalenz des Tabakkonsums und BIP pro Kopf") +
-  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
-                     breaks = c(0, 10, 20, 30, 40, 50, 60),
-                     minor_breaks = waiver(),
-                     limits = c(0, 60)) +
-  scale_y_continuous(name = "BIP pro Kopf [$]",
-                     breaks = c(0, 25000, 50000, 75000, 100000, 125000),
-                     minor_breaks = waiver(),
-                     limits = c(0, 125000)) +
-  theme_bw() +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 12),
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 14),
-        plot.margin = margin(0, 0, 0, 0),
-        plot.title = element_text(hjust = 0.5, size = 18),
-        strip.text = element_text(size = 12)) +
-  facet_wrap(~ Year, ncol = 4)
-
-updated_plot_tobacco1_data_bottom <-
-  ggplot(data_tobacco %>% filter(Year %in% c(2018, 2019, 2020))) +
-  geom_point(aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
-             alpha = 0.5, size = 2.5) +
-  geom_smooth(data = data_tobacco %>% filter(Year %in% c(2018, 2019, 2020)),
-              aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year),
-              method = MASS::rlm, linewidth = 1, se = TRUE, color = "black", alpha = .3) +
-  scale_x_continuous(name = "Prävalenz des aktuellen Tabakkonsums [%]",
-                     breaks = c(0, 10, 20, 30, 40, 50, 60),
-                     minor_breaks = waiver(),
-                     limits = c(0, 60)) +
-  scale_y_continuous(name = "BIP pro Kopf [$]",
-                     breaks = c(0, 25000, 50000, 75000, 100000, 125000),
-                     minor_breaks = waiver(),
-                     limits = c(0, 125000)) +
-  theme_bw() +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 12),
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 14),
-        legend.position = "bottom", 
-        plot.margin = margin(0, 0, 0, 0),
-        strip.text = element_text(size = 12)) +
-  facet_wrap(~ Year)
-
+# Updated presentation plot - assemble the plot
 pres_updated_tobacco_plot2 <-
   (updated_plot_tobacco1_data_upper /
     plot_tobacco1_density_upper /
