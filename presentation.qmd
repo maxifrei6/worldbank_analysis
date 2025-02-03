@@ -28,7 +28,7 @@ execute:
 ---
 
 ```{r setup, include=FALSE}
-## TODO: YOU NEED TO RUN env_setup TO INSTALL ALL PACKAGES
+# Source the environment setup to install necessary packages and load libraries
 source("env_setup.R")
 
 # Source each markdown analysis
