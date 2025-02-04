@@ -69,32 +69,6 @@ packages <- c(
   "tidyr"
   )
 
-##########################################################################################
-# OLD PACKAGE LIST - IS THERE ANYTHING LEFT IN HERE, THAT IS SUPPOSED TO BE IN LIST ABOVE?
-              # "gridExtra",  # for presentation (???)
-              # "lubridate",
-              # "purrr",
-              # "rnaturalearth",  # for worldmap design
-              # "rnaturalearthdata",  # for worldmap design
-              # "sf",  # for worldmap design
-              # "grid",  # for axis labeling of assembled plots
-              # "pROC",
-              # "rpart",
-              # "survival",
-              # "ggsurvfit",
-              # "survminer",
-              # "moments",
-              # "zoo",
-              # "kableExtra",
-              # "readr",
-              # "epitools",
-              # "ggmosaic",
-              # "e1071",
-              # "icenReg",
-              # "interval",
-              # "ggthemes",
-##########################################################################################
-
 # Set CRAN mirror
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
