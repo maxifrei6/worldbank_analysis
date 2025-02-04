@@ -60,3 +60,14 @@ body {
 .custom-smaller2 {
     font-size: 0.5em;
 }
+
+.center-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.3em;
+    height: 80vh;
+    width: 100%;
+    margin: 0 auto;
+}
