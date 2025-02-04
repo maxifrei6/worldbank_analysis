@@ -147,7 +147,7 @@ english_plot_1 <- base_plot_1 +
 english_plot_1
 
 # German plot for presentation: Available Data Pairs per Country
-presentation_education_plot7 <- base_plot_1 +
+pres_updated_education_backup1 <- base_plot_1 +
   labs(
     title = "Verfügbare Datenpaare (Staatliche Verschuldung & grundlegende Bildung)",
     x = "Land",
@@ -186,7 +186,7 @@ english_plot_2 <- base_plot_2 +
 english_plot_2
 
 # German Plot for presentation: Share of Basic Education Over the Years
-presentation_education_plot8 <- base_plot_2 +
+pres_updated_education_backup2 <- base_plot_2 +
   labs(
     title = "Bildungsentwicklung über die Jahre",
     x = "Jahr",
@@ -199,10 +199,13 @@ presentation_education_plot8 <- base_plot_2 +
     labels = c("Low" = "Gering", "Medium" = "Mittel", "High" = "Hoch")
   ) +
   theme(
-    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),  # Bigger and centered title
-    strip.text = element_text(size = 8, face = "bold"),
+    plot.title = element_text(size = 18, hjust = 0.5),  # Bigger and centered title
+    strip.text = element_text(size = 10),
+    axis.title = element_text(size = 14),
     axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
-    legend.position = "bottom"
+    legend.position = "bottom",
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 14)
   )
 
 # Filter countries with for SL.TLF.BASC.ZS

@@ -15,7 +15,7 @@ This analysis explores relationships between indicators across countries such as
 <br><br>
 The upon mentioned indicators taken into consideration during this analysis are defined in the following table.
 
-```{r tobacco_setup, echo = FALSE, message = FALSE}
+```{r tobacco_setup, echo = FALSE, message = FALSE, warning = FALSE}
 # Load libraries
 library(knitr)
 library(here)
@@ -78,6 +78,12 @@ data_tobacco <-
 ```
 (*Sources: https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?view=chart, https://data.worldbank.org/indicator/SH.PRV.SMOK?view=chart*)
 
+## Grouping of the countries
+The countries are grouped by their Prevalence of current tobacco use based on the quantiles of the average values of the tobacco variable. In the following, they are categorized into five categories. 
+<br>
+Since it is not always helpful to group over the average, an annual grouping is also used in the course of the script. Here, each country was categorized by quantiles over the tobacco variable each year.
+<br><br>
+
 ## Terminology and Methodological Approach
 To mitigate issues with data quality and variance in data, we employ robust statistical techniques, including:
 
@@ -139,7 +145,7 @@ For simplicity, we retain the default confidence bands provided by `geom_smooth(
 ## Agenda
 1.) GDP per capita and prevalence of current tobacco usage
 <br><br>
-1.1.) Exploration of data in last year and derivation/application of yearly grouping
+1.1.) Exploration of data with general grouping and derivation/application of yearly grouping
 <br><br>
 1.2.) Scatter plot of interested variables
 <br><br>
@@ -203,241 +209,8 @@ data_tobacco <- data_tobacco %>%
 data_tob <- data_tobacco
 ```
 
-#### 1.1. Exploration of data in last year and derivation/application of yearly grouping
-
-To take a look at the grouping of our data by tobacco usage, we will display a plot of the most recent data in Year 2020. <br>
-
-```{r tobL_3, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  filter(Year == 2020) %>%
-  ggplot(aes(`Country Name`, SH.PRV.SMOK, colour = cat_tob_usage)) +
-  geom_point(size = 3, alpha = 0.7) +
-  labs(
-    y = "Anteil der tabakkonsumierenden Erwachsenen",
-    x = "Land",
-    title = "Gruppierung der Daten im Jahr 2020",
-    colour = "relativer Tabakkonsum"
-  ) +
-  theme_bw() +
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1,
-    size = 4
-  )) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> For an overview we take a look at the Comparison of tobacco usage and GDP in 2020. Therefore we group by the relative tobacco usage. <br>
-
-```{r tobL_4, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  filter(Year == 2020) %>%
-  group_by(cat_tob_usage) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP im Jahr 2020",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> Now we view only one dot per category of relative tobacco usage. <br>
-
-```{r tobL_5, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  filter(Year == 2020) %>%
-  group_by(cat_tob_usage) %>%
-  summarise(
-    cat_tob_usage = cat_tob_usage,
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE)
-  ) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP im Jahr 2020",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> Now take a look of the coherence of the variables without our extreme value of the group "Very Low". <br>
-
-```{r tobL_6, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  filter(Year == 2020) %>%
-  group_by(cat_tob_usage) %>%
-  summarise(
-    cat_tob_usage = cat_tob_usage,
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE)
-  ) %>%
-  filter(cat_tob_usage != "Sehr gering") %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP im Jahr 2020",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> To get a better overview we take a look at all years. First only on years we have data of their tobacco consumption on. <br>
-
-```{r tobL_7, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  group_by(Year, cat_tob_usage) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1,
-    size = 10
-  )) +
-  labs(
-    x = "Jahr",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    colour = "relativer Tabakkonsum"
-  ) +
-  scale_colour_brewer(palette = "Set2")
-# geom_line(aes(group = cat_tob_usage)) +  ## problematisch, da stetiges Wachstum innerhalb eines Jahres durch diskrete Daten nicht gegeben
-```
-
-<br> Now over all years we have data on their countries BIP. <br>
-
-```{r tobL_8, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob_all %>%
-  group_by(Year, cat_tob_usage) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(Year, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1,
-    size = 8
-  )) +
-  labs(
-    x = "Jahr",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    colour = "relativer Tabakkonsum"
-  ) +
-  scale_colour_brewer(palette = "Set2")
-# geom_line(aes(group = cat_tob_usage)) +  ## problematisch, da stetiges Wachstum innerhalb eines Jahres durch diskrete Daten nicht gegeben
-```
-
-<br> But maybe better facett over year to show better the coherence of BIP and tobacco consumption. <br>
-
-```{r tobL_9, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  group_by(cat_tob_usage, Year) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  facet_wrap( ~ Year) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP alle Jahre",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> Hier sehen wir, dass die Gruppierung nicht für jedes Jahr angebracht ist. Später wollen wir die Daten für jedes Jahr neu gruppieren. <br> Nun aber nochmal ohne unser lineares Modell, da durch den Wert für unser sehr niedrigen Tabbakkonsum dieses nicht geeignet ist. <br>
-
-```{r tobL_10, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  group_by(cat_tob_usage, Year) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  facet_wrap( ~ Year) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP alle Jahre",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.2) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> Wenn wir nun für jede Gruppe alle Länder anzeigen lassen, sieht der Plot so aus: <br>
-
-```{r tobL_11, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage)) +
-  facet_wrap( ~ Year) +
-  geom_point(size = 2, alpha = 0.7) +
-  theme_bw() +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP alle Jahre",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> Hier fällt erneut auf, dass der relative Tabakkonsum nicht immer gut eingeordnet ist, da Gruppen mit (eingeordnet) weniger Tabakkonsum tatsächlich teilweise mehr Tabak konsumieren. Hier sollte man sich überlegen, ob es nicht besser ist die Gruppierung für jedes Jahr neu zu bestimmen. Dieses Ergebnis wollen wir dann in einem Barplot festhalten. <br> Hier nun also erst mit der allgemeineren Gruppierung: <br>
-
-```{r tobL_12, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  group_by(cat_tob_usage) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    .groups = "drop"
-    ) %>%
-  ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col() +
-  theme_bw() +
-  labs(x = "relativer Tabakkonsum", 
-       y = "BIP pro Kopf in $", 
-       title = "Tabakkonsum vs. BIP",
-       subtitle = "Allgemeine Gruppierung")
-```
-
-<br> Und nun mit neuer Gruppierung der Daten: <br>
-
-```{r tobL_13, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_3, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+# Grouping per year: Setting up according data frames
 # Grouping by tobacco values each year and saving this full dataset in data_tob_per_year using function 2.2 group_data_year
 data_tob_per_year <- data_tob %>%
   group_by(Year) %>%
@@ -452,7 +225,7 @@ data_tob_per_year <- data_tob %>%
       )$cat_tob_usage_per_year
   )
 
-# teilweise brauchen wir dieselben Daten mit einer formatmäßig abgeänderten Version
+# partly we need the labels in slightly different format, therefore:
 data_tob_per_year_format <- data_tob %>%
   group_by(Year) %>%
   mutate(
@@ -467,79 +240,72 @@ data_tob_per_year_format <- data_tob %>%
   )
 ```
 
-<br> Hierzu nun erst der nach Jahr gefacettete Dotplot: <br>
+#### 1.1. Exploration of data with general grouping and derivation/application of yearly grouping
+For an overview we take a look at the comparison of tobacco usage and GDP in 2020, our most recent data. We add an linear regression line to get a better impression on the overall coherence.<br>
 
-```{r tobL_14, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob_per_year %>%
-  group_by(cat_tob_usage_per_year, Year) %>%
+```{r tobL_1, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  filter(Year == 2020) %>%
+  group_by(cat_tob_usage) %>%
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD)) +
+  geom_point(size = 3, alpha = 0.6) +
+  theme_bw() +
+  labs(
+    x = "Anteil der tabakkonsumierenden Erwachsenen [%]",
+    y = "BIP pro Kopf [$]",
+    title = "Tabakkonsum und BIP im Jahr 2020"
+  ) +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, colour = "black", alpha = 0.3, size = 0.7)
+```
+ 
+<br> If we take the general categorization of the countries by the tobacco variable into account and plot only one point per group by calculating their mean, the following plot is created. <br>
+
+```{r tobL_2, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob %>%
+  group_by(cat_tob_usage, Year) %>%
   summarise(
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
     SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
-  facet_wrap( ~ Year) +
-  geom_point(size = 3, alpha = 0.7) +
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD)) +
+  facet_wrap( ~ Year, ncol = 4) +
+  geom_point(aes(fill = cat_tob_usage), size = 3, alpha = 0.7, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Tabakkonsum",
+                       option = "plasma",
+                       direction = -1) +
   theme_bw() +
   labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Tabakkonsum"
+    x = "Anteil der tabakkonsumierenden Erwachsenen [%]",
+    y = "BIP pro Kopf [$]",
+    title = "Tabakkonsum und BIP alle Jahre - allgemeine Gruppierung"
   ) +
-  geom_smooth(aes(group = 1), method = "lm", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
+  theme(legend.position = "bottom")
 ```
-
-<br> Und nun mit nicht-linearer smooth line: <br>
-
-```{r tobL_15, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+<br> Here we see that the grouping is not appropriate for each year. For example, in the years 2000 and 2005 we see that countries with relative medium tobacco use have on average a larger proportion of tobacco users than countries belonging to the group of relative high tobacco use. So there appear to be countries that have such fluctuating tobacco use rates over the years that they belong to different groups depending on the year. <br>
+This can be seen particularly well in the plot below. Here, the outlier belongs to different groups over the years. We look at the annual grouping of countries according to the quantils of their tobacco variables of the corresponding year.<br>
+In the following plot, all data points are visible. This also shows that the annual grouping creates correct classifications. <br>
+```{r tobL_4, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
-  group_by(cat_tob_usage_per_year, Year) %>%
-  summarise(
-    NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
-    SH.PRV.SMOK = mean(SH.PRV.SMOK, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
-  facet_wrap( ~ Year) +
+  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD)) +
+  facet_wrap( ~ Year, ncol = 4) +
+  geom_point(aes(fill = cat_tob_usage_per_year), size = 2.5, alpha = 0.6, shape = 21) +
+  scale_fill_viridis_d(name = "relativer Tabakkonsum",
+                       option = "plasma",
+                       direction = -1) +
   theme_bw() +
-  geom_point(size = 3, alpha = 0.7) +
   labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Tabakkonsum"
+    x = "Anteil der tabakkonsumierenden Erwachsenen [%]",
+    y = "BIP pro Kopf [$]",
+    title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
   ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE, span = 1.2) +
-  scale_colour_brewer(palette = "Set2")
+  theme(legend.position = "bottom")
 ```
 
-<br> Auffällig ist, dass anders als bei den allgemein gruppierten Daten (über den Durchschnitt des Tabakkonsums eines Landes) hier nun die Länder mit relativ gesehen sehr niedrigem Tabakkonsum ein viel höheres BIP haben, als aus der vorherigen Gruppierung hervorgeht. Demnach ist es durchaus sinnvoll, die Daten jährlich neu zu gruppieren, wenn die Zugehörigkeit zu einer bestimmten Gruppe eines Landes sich über die Jahre ändern kann. <br> Und nun mit Datenpunkt pro Land: <br>
+<br> Now, if we apply the new grouping to a bar plot showing the average values of all years for each group, the distribution is as follows: <br>
 
-```{r tobL_16, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r tobL_5, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
-  ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD, colour = cat_tob_usage_per_year)) +
-  facet_wrap( ~ Year) +
-  geom_point(size = 3, alpha = 0.7) +
-  theme_bw() +
-  labs(
-    x = "Anteil der tabakkonsumierenden Erwachsenen in %",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten",
-    colour = "relativer Tabakkonsum"
-  ) +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE) +
-  scale_colour_brewer(palette = "Set2")
-```
-
-<br> Hier sieht man nun deutlich, wie der Ausreißer einer anderen Gruppe zugeordnet wurde für die Jahre 2000-2010 und somit, warum unsere Daten nun andere Zusammenhänge zeigen. <br> Und nun im Barplot: <br>
-
-```{r tobL_17, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year) %>%
   summarise(
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
@@ -550,95 +316,52 @@ data_tob_per_year_format %>%
   theme_bw() +
   labs(
     x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten"
+    y = "BIP pro Kopf [$]",
+    title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
   )
 ```
+<br> Now we want to include the dispersion of the HIV values in each group, to counteract any bias through averaging calculations. To do this, we now look at boxplots for each category. <br>
+```{r tobL_6, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+data_tob_cat_n <- data_tob_per_year %>%
+  group_by(cat_tob_usage_per_year) %>%
+  summarise(n = n())
 
-<br> Nun wollen wir noch die Varianz für jede Gruppe in ihren HIV Werten überprüfen, da Mittelwertsberechnungen schnell verzerrt sein können. Dafür betrachten wir nun botplots für jede Kategorie. <br>
+xlabels <- paste0(sort(unique(data_tob_per_year$cat_tob_usage_per_year)), "\nn = ", data_tob_cat_n$n)
 
-```{r tobL_18, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 data_tob_per_year %>%
   ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_y_log10() +
+  geom_boxplot() +
+  scale_y_log10(labels = scales::comma) +
+  scale_x_discrete(labels = xlabels) +
   theme_bw() +
   labs(
     x = "relativer Tabakkonsum",
-    y = "Logarithmiertes BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten"
+    y = "BIP pro Kopf [$] (log10)",
+    title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
   )
 ```
+<br> This shows that the average calculations are representative of the data because they are similar to the distribution by the medians. <br>
+The following bar plots visualize the relationship between GDP and tobacco use quite well.<br>
 
-<br> Hier nochmal nach Jahr facetiert: <br>
-
-```{r tobL_19, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob_per_year %>%
-  ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_y_log10() +
-  facet_wrap( ~ Year) +
-  theme_bw() +
-  labs(
-    x = "relativer Tabakkonsum",
-    y = "Logarithmiertes BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten"
-  )
-```
-
-<br> Hier Barplots facettiert nach jahr, wobei nach Tabakdurchschnittskonsum gruppiert wurde: <br>
-
-```{r tobL_20, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
-  group_by(cat_tob_usage) %>%
-  ggplot(aes(x = cat_tob_usage, y = NY.GDP.PCAP.PP.KD)) +
-  geom_col() +
-  facet_wrap( ~ Year) +
-  theme_bw() +
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1,
-    size = 9
-  )) +
-  labs(
-    x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Allgemeine Gruppierung"
-  )
-```
-
-<br> Und nun Barplots facettiert nach Jahr, wobei jedes jahr neu nach Tabakkonsum gruppiert wurde: <br>
-
-```{r tobL_21, echo=FALSE, fig.align="left", message=FALSE, warning=FALSE}
+```{r tobL_7, echo=FALSE, fig.align="left", message=FALSE, warning=FALSE}
 data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year, Year) %>%
   summarise(NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE)) %>% 
   ggplot(aes(x = cat_tob_usage_per_year, y = NY.GDP.PCAP.PP.KD)) +
   geom_col() +
-  facet_wrap( ~ Year) +
+  facet_wrap( ~ Year, ncol = 4) +
   theme_bw() +
   labs(
     x = "relativer Tabakkonsum",
-    y = "BIP pro Kopf in $",
-    title = "Tabakkonsum vs. BIP",
-    subtitle = "Pro Jahr gruppierte Daten"
+    y = "BIP pro Kopf [$]",
+    title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
   )
- # +
- #  theme(axis.text.x = element_text(
- #    angle = 45,
- #    hjust = 1,
- #    size = 9
- #  ))
 
 # Note: The following plot is the original version of the presentation plot used during
 # the presentation held on 2025/01/20. For reproducibility purposes, the original plot
 # remains in the code; for the feedback-adjusted version, refer to plotting code below.
 # Moving forward, we will only mark the first version with '# Original presentation plot'.
-presentation_tobacco_plot1 <-
+presentation_tobacco_plot1 <- 
   data_tob_per_year_format %>%
   group_by(cat_tob_usage_per_year, Year) %>%
   summarise(NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE)) %>% 
@@ -664,12 +387,15 @@ presentation_tobacco_plot1 <-
 # presentation can still be rendered even after the feedback has been implemented. Moving
 # forward, we will only mark the adjusted version with '# Updated presentation plot'.
 
-# TODO: UPDATED VERSION OF THE FIRST TOBACCO PLOT:
-# pres_updated_tobacco_plot1 <-
-  
+pres_updated_tobacco_plot1 <-
+  presentation_tobacco_plot1 +
+  labs(
+    x = "relativer Tabakkonsum",
+    y = "BIP pro Kopf [$]",
+    title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
+  )
 ```
-
-<br> So how does GDP per capita relate to the prevalence of current tobacco use (% of adults)? <br> <br> Was bedeutet BIP pro Kopf genau? Bruttoinlandsprodukt (BIP): Der Gesamtwert aller Waren und Dienstleistungen, die innerhalb eines Landes in einem bestimmten Zeitraum (z. B. ein Jahr) produziert werden. Pro Kopf: Das BIP wird durch die Gesamtbevölkerung des Landes geteilt, um eine durchschnittliche Wirtschaftskraft pro Einwohner zu ermitteln. Das BIP soll einen Blick in den Lebensstandard einer Bevölkerung geben können, da es möglichst kaufkraftbereinigt ist. <br> Zu beachten ist, dass eindeutige Aussagen nicht getroffen werden können, da hier ein Land je nach durchschnittlichem Tabakkonsum einer Kategorie zugeordnet wird, wobei das BIP pro Kopf wiederum ein Durchschnittswert ist. Die Aussage beispielsweise, dass wenn ein Mensch viel Tabak konsumiert, er im Durchschnitt auch ein recht hohes Einkommen/Umsatz hat, ist nicht zu treffen, einerseits da die Daten eine derartige Interpretation nicht zulassen und BIP nicht das Einkommen charakterisiert. So kann nämlich gerade in Ländern mit hohem BIP die arme Bevölkerung besonders viel Tabak konsumieren, wenn die relativ sehr extreme Armut (bei einem eher hohen Lebensstandard im Land) als Ursache von diesem gesehen werden will. Dadurch werden Werte verzerrt. Wie sich diese Werte dann bilden, ist aber ebenfalls nicht bekannt, da die Einkommensverteilung im BIP nicht berücksichtigt wird. (Anmerkung: fiktives Beispiel). Diese Verhältnisse können wir aus den Daten also mit Sicherheit nicht herauslesen. <br> Jedoch können wir folgende Aussagen, anhand der letzten Grafik treffen: <br> Sichtbar ist, dass je größer der durchschnittliche Tabakkonsum im Land desto tendentiell geringer ist das BIP pro Kopf. <br> Einzelne Ausnahmen, fallen jedoch auf: <br> Für die Jahre 2000, 2005 und 2010 ist festzustellen, dass Länder mit großem durchschnittlichen Tabakkonsum das höchste BIP pro Kopf der im Datensatz aufgeführten Länder aufgewiesen hatten. <br> Dies ändert sich in den Jahren 2015, 2018, 2019 und 2020. Hier ist auffällig, dass Länder mit relativ gesehen sehr geringem Tabakkonsum das gerinste BIP pro Kopf aller aufgeführten Länder aufwiesen. <br> Für alle anderen Kategorien an relativem Tabakkonsum, gilt die anfängliche Erkenntnisse, dass mit relativ gesehen größeren Tabakkonsum der BIP pro Kopf relativ gesehen geringer ist.
+<br> For the years 2000, 2005 and 2010, countries with very low and high average tobacco use had a higher GDP per capita in the dataset. <br> This changes in 2015, 2018, 2019 and 2020. It is striking that countries with relatively very low tobacco use now had the lowest GDP per capita of all the countries listed. <br> For all other categories of relative tobacco use it seems, that countries with relatively high tobacco use have lower GDP per capita. <br> <br>
 
 In the following, we want to investigate the relationship further by taking a step back and looking at the data without the yearly grouping. This is now done by starting with the initial comparison of the two variables without taking the time of data acquisition into account.
 

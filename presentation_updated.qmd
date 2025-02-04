@@ -186,7 +186,7 @@ In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävale
 ## 2.3 Tabakkonsum {.custom-smaller}
 
 ```{r fig.height=8, fig.width= 14, echo = FALSE, warning=FALSE, message=FALSE}
-presentation_tobacco_plot1
+pres_updated_tobacco_plot1
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
