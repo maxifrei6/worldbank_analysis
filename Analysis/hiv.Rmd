@@ -95,7 +95,7 @@ data_alc <- data_hiv %>%
   filter(Year %in% data_table$Year)
 ```
 
-#### Grouping of the data
+#### Grouping of the countries
 The data is grouped by the variables we want to observe. To do this, we grouped the countries by the quantiles of the average values of the corresponding variable. In the following, the variables were devided into five categories. 
 <br>
 Since it is not always helpful to group over the average, an annual grouping is also used in the course of the script. Here, each country was categorized by quantiles over the corresponding variable each year.
