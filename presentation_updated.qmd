@@ -162,7 +162,7 @@ pres_updated_education_plot6
 In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen?
 
 ```{r tobacco_plot1_, fig.height=7, fig.width= 15, echo = FALSE, warning=FALSE, message=FALSE}
-presentation_tobacco_plot1
+presentation_tobacco_plot1_update
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
