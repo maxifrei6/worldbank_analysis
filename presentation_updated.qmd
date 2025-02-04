@@ -92,13 +92,13 @@ knitr::opts_chunk$set(fig.align = "center")
 Wie verhält sich die HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren zum gesamten Alkoholkonsum pro Kopf?
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot1
+presentation_hiv_plot1_update
 ```
 
 ## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot2
+presentation_hiv_plot2_update
 ```
 
 ## 2.1 HIV {.custom-smaller}
@@ -106,13 +106,13 @@ presentation_hiv_plot2
 Haben Länder mit einem höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung eine niedrigere HIV-Prävalenz unter den 15- bis 49-Jährigen?
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot3
+presentation_hiv_plot3_update
 ```
 
 ## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot4
+presentation_hiv_plot4_update
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -278,19 +278,19 @@ pres_updated_agriculture_backup6
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=9, fig.width=15}
-presentation_hiv_backup1
+presentation_hiv_backup1_update
 ```
 
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=9, fig.width=15}
-presentation_hiv_backup2
+presentation_hiv_backup2_update
 ```
 
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=9, fig.width=15}
-presentation_hiv_backup3
+presentation_hiv_backup3_update
 ```
 
 ## Anhang {.custom-smaller}
