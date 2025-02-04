@@ -187,7 +187,7 @@ presentation_hiv_backup1 <- data_alc %>%
 ```{r hiv_4, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 #Note: The following plot is the updated version of the presentation plot created in the code chunk above. In the R markdown file is only shown this feedback-adjusted version.
 
-presentation_hiv_plot1_update <- data_alc %>%
+pres_updated_hiv_plot1 <- data_alc %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
   geom_point(size = 3.5, alpha = 0.4) +
   geom_smooth(
@@ -593,7 +593,7 @@ presentation_hiv_plot2 <- data_alc_per_year %>%
         plot.title = element_text(hjust = 0.5, size = 20))
 
 # plot for updated presentation
-presentation_hiv_plot2_update <- data_alc_per_year %>%
+pres_updated_hiv_plot2 <- data_alc_per_year %>%
   ggplot(aes(cat_alc_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   theme_bw() + 
@@ -964,7 +964,7 @@ presentation_hiv_plot3 <- data_edu_per_year %>%
 
 # plot for updated presentation
 
-presentation_hiv_plot3_update <- data_edu_per_year %>%
+pres_updated_hiv_plot3 <- data_edu_per_year %>%
   group_by(cat_edu_per_year, Year) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -1027,7 +1027,7 @@ presentation_hiv_plot4 <- data_edu_per_year %>%
 
 # plot for updated presentation
 
-presentation_hiv_plot4_update <- data_edu_per_year %>%
+pres_updated_hiv_plot4 <- data_edu_per_year %>%
   ggplot(aes(cat_edu_per_year, SH.DYN.AIDS.ZS)) +
   geom_boxplot(alpha = 0.7) +
   scale_y_log10() +

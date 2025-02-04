@@ -89,91 +89,119 @@ knitr::opts_chunk$set(fig.align = "center")
 
 ## 2.1 HIV {.custom-smaller}
 
+::: {.center-text}
 Wie verhält sich die HIV-Prävalenz in der Bevölkerung zwischen 15 und 49 Jahren zum gesamten Alkoholkonsum pro Kopf?
+:::
+
+## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot1_update
+pres_updated_hiv_plot1
 ```
 
 ## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot2_update
+pres_updated_hiv_plot2
 ```
 
 ## 2.1 HIV {.custom-smaller}
 
+::: {.center-text}
 Haben Länder mit einem höheren Prozentsatz der Erwerbsbevölkerung mit Grundbildung eine niedrigere HIV-Prävalenz unter den 15- bis 49-Jährigen?
+:::
+
+## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot3_update
+pres_updated_hiv_plot3
 ```
 
 ## 2.1 HIV {.custom-smaller}
 
 ```{r, fig.height=7, fig.width=12}
-presentation_hiv_plot4_update
+pres_updated_hiv_plot4
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
+::: {.center-text}
 Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung?
+:::
 
-```{r edu_slide_1, fig.height=7, fig.width=12}
+## 2.2 Bildung {.custom-smaller}
+
+```{r fig.height=7, fig.width=12}
 pres_updated_education_plot1
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
-```{r edu_slide_2, fig.height=7, fig.width=12}
+```{r fig.height=7, fig.width=12}
 pres_updated_education_plot2
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
-```{r edu_slide_3, fig.height=7, fig.width=12}
+```{r fig.height=7, fig.width=12}
 pres_updated_education_plot3
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
+::: {.center-text}
 Führen mehr Erwerbstätige mit Grundbildung zu einer niedrigeren Schüler-Lehrer-Relation?
+:::
 
-```{r edu_slide_4, fig.height=7, fig.width=12}
+## 2.2 Bildung {.custom-smaller}
+
+```{r fig.height=7, fig.width=12}
 pres_updated_education_plot4
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
-```{r edu_slide_5, fig.height=7, fig.width=12}
+```{r fig.height=7, fig.width=12}
 pres_updated_education_plot5
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
+::: {.center-text}
 Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqualität?
+:::
 
-```{r edu_slide_6, fig.height=7, fig.width=12}
+## 2.2 Bildung {.custom-smaller}
+
+```{r fig.height=7, fig.width=12}
 pres_updated_education_plot6
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
 
+::: {.center-text}
 In welchem Zusammenhang steht das Bruttoinlandsprodukt pro Kopf mit der Prävalenz des aktuellen Tabakkonsums unter Erwachsenen?
+:::
 
-```{r tobacco_plot1_, fig.height=7, fig.width= 15, echo = FALSE, warning=FALSE, message=FALSE}
+## 2.3 Tabakkonsum {.custom-smaller}
+
+```{r fig.height=8, fig.width= 14, echo = FALSE, warning=FALSE, message=FALSE}
 presentation_tobacco_plot1
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
 
-```{r, fig.height=7, fig.width=12}
+```{r fig.height=7, fig.width=12}
 pres_updated_tobacco_plot2
 ```
 
 ## 2.4 Landwirtschaft {.custom-smaller}
 
+::: {.center-text}
 Gibt es einen Zusammenhang zwischen dem Anteil der landwirtschaftlichen Nutzfläche und den CO<sub>2</sub> Emissionen pro Kopf eines Landes?
+:::
+
+## 2.4 Landwirtschaft {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
 pres_updated_agriculture_plot1
@@ -181,7 +209,11 @@ pres_updated_agriculture_plot1
 
 ## 2.4 Landwirtschaft {.custom-smaller}
 
+::: {.center-text}
 Welcher Bedeutung fällt hierbei die Landesfläche eines Landes zu?
+:::
+
+## 2.4 Landwirtschaft {.custom-smaller}
 
 ```{r fig.height=8, fig.width=14}
 pres_updated_agriculture_plot2
@@ -211,14 +243,14 @@ Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern
 
 ## Anhang {.custom-smaller}
 
-```{r}
-presentation_education_plot7
+```{r fig.height=6, fig.width=10}
+pres_updated_education_backup1
 ```
 
 ## Anhang {.custom-smaller}
 
-```{r}
-presentation_education_plot8
+```{r fig.height=7, fig.width=12}
+pres_updated_education_backup2
 ```
 
 ## Anhang {.custom-smaller}
@@ -295,54 +327,56 @@ presentation_hiv_backup3_update
 
 ## Anhang {.custom-smaller}
 
-**Ordinary Least Squares (OLS)** estimates regression coefficients by minimizing squared residuals:
+**Ordinary Least Squares (OLS)** schätzt die Regressionskoeffizienten, indem die quadrierten Residuen minimiert werden:
 
 $$
 \min_{\beta} \sum_{i=1}^{n} (y_i - X_i \beta)^2
 $$
 
-This method provides **BLUE (Best Linear Unbiased Estimators)** under the **Gauss-Markov theorem**, assuming **normally distributed residuals**. However, in real-world data, violations of this assumption can reduce efficiency, affecting **confidence intervals and hypothesis tests**.
+Diese Methode liefert **BLUE (Best Linear Unbiased Estimators)** gemäß dem **Gauss-Markov-Theorem**, unter der Annahme **normalverteilter Residuen**. In realen Daten führen jedoch Verstöße gegen diese Annahme zu geringerer Effizienz, was sich auf **Konfidenzintervalle und Hypothesentests** auswirken kann.
 
 ## Anhang {.custom-smaller}
 
-To mitigate outliers, **Robust Linear Models (RLMs)** via `MASS::rlm()` use **Iteratively Reweighted Least Squares (IRLS)**, reducing the influence of extreme values.
+Um Ausreißer zu mildern, verwenden **Robuste Lineare Modelle (RLMs)** via `MASS::rlm()` das Verfahren der **Iteratively Reweighted Least Squares (IRLS)**, wodurch der Einfluss extremer Werte reduziert wird.
 
-The default psi function, **psi.huber**, applies **Huber’s loss function**:
+Die Standard-psi-Funktion, **psi.huber**, nutzt die **Huber-Loss-Funktion**:
 
 $$
 L_{\delta}(r) =
 \begin{cases} 
-\frac{1}{2} r^2  & \text{if } |r| \leq \delta, \\
-\delta (|r| - \frac{1}{2} \delta)  & \text{if } |r| > \delta.
+\frac{1}{2} r^2  & \text{wenn } |r| \leq \delta, \\
+\delta (|r| - \frac{1}{2} \delta)  & \text{wenn } |r| > \delta.
 \end{cases}
 $$
 
-where:
+wobei:
 
--   ( r ) is the **residual** ( y_i - X_i \beta )
--   ( \delta ) (default: **1.345**) controls robustness
+-   $r$ ist das **Residuum ** $y_i - X_i\beta$
+-   $\delta$ (Standardwert: **1.345**) steuert die Robustheit
 
 ## Anhang {.custom-smaller}
 
-By default, `geom_smooth(method = MASS::rlm)` displays confidence intervals, but **`MASS::rlm()` does not compute standard errors**. Instead, `ggplot2` approximates them using the **OLS-based formula**:
+Standardmäßig zeigt `geom_smooth(method = MASS::rlm)` Konfidenzintervalle an, aber **`MASS::rlm()` berechnet keine Standardfehler**. Stattdessen approximiert **ggplot2** diese unter Verwendung der **OLS-basierten Formel**:
 
 $$
 CI = \hat{y} \pm t_{\alpha/2, df} \cdot SE(\hat{y})
 $$
 
-where:
+wobei:
 
--   ( \hat{y} ) is the **predicted value**
--   ( SE(\hat{y}) ) is **approximated via local smoothing**
--   ( t\_{\alpha/2, df} ) is the **critical t-value**
+-   $\hat{y}$ ist der **vorhergesagte Wert**
+-   $SE(\hat{y})$ wird **durch lokale Glättung approximiert**
+-   $t_{\alpha/2, df}$ ist der **kritische t-Wert**
 
 ## Anhang {.custom-smaller}
 
-The **Spearman correlation coefficient** measures the **monotonic relationship** between two variables. Unlike **Pearson correlation**, which captures only **linear relationships**, Spearman correlation assesses whether as one variable increases, the other tends to increase or decrease in a consistent order.
+Der **Spearman-Korrelationskoeffizient** misst die **monotone Beziehung** zwischen zwei Variablen. Im Gegensatz zum **Pearson-Korrelationskoeffizienten**, der nur **lineare Beziehungen** erfasst, bewertet der Spearman-Korrelationskoeffizient, ob mit dem Anstieg einer Variablen die andere tendenziell in einer konsistenten Reihenfolge steigt oder fällt.
 
 $$
 \rho = 1 - \frac{6 \sum d_i^2}{n(n^2 - 1)}
-$$ where:
+$$
 
--   ( d_i ) is the difference between the ranks of the corresponding values of the two variables
--   ( n ) is the number of observations
+wobei:
+
+-   $d_i$ ist die Differenz zwischen den Rängen der entsprechenden Werte der beiden Variablen ist
+-   $n$ ist die Anzahl der Beobachtungen
