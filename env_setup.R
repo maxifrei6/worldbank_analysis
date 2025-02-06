@@ -55,6 +55,8 @@ packages <- c(
   "forcats",
   # Install package for plotting
   "ggplot2",
+  # Install package for converting tables to graphical objects
+  "gridExtra",
   # Install package for relative path usage
   "here",
   # Install package for more options in assembling plots
