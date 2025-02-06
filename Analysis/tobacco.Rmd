@@ -24,6 +24,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(tidyr)
 library(patchwork)
+library(gridExtra)
 
 # Source self-written functions using 'here'
 source(here("Scripts", "functions.R"))
@@ -401,7 +402,7 @@ In the following, we want to investigate the relationship further by taking a st
 
 #### 1.2. Scatter plot of interested variables
 
-```{r scatter_with_outlier, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
+```{r scatter_with_outlier_tob, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 # Scatter plot of interested variables
 scatter_tob_gdp <-
   ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
@@ -456,7 +457,7 @@ As we are looking at the data without any consideration of time, we want to chec
 
 #### 1.3. Scatter plot of interested variables; except outlier Qatar
 
-```{r scatter_without_outlier, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
+```{r scatter_without_outlier_tob, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 # Investigate the y-axis outlier - are they all from the same country?
 data_tobacco %>% filter(NY.GDP.PCAP.PP.KD > 80000)
 # Indeed, all the data points originate out of Qatar
@@ -494,7 +495,6 @@ presentation_tobacco_backup2 <-
               method = "lm", linewidth = 1.5, se = FALSE) +
   ggtitle("Prävalenz des Tabakkonsums vs. BIP pro Kopf - ohne Ausreißer")
 
-
 # Updated presentation plot
 pres_updated_tobacco_backup2 <-
   scatter_tob_gdp_without_Qatar +
@@ -517,9 +517,10 @@ Keeping this influence of the outliers in mind, we want to do the small intermed
 
 #### 1.4. Scatter plot of interested variables with faceted years
 
-```{r faceted_scatter, fig.height=7, fig.width=12, echo=FALSE, message=FALSE, warning=FALSE}
+```{r scatter_faceted_tob, fig.height=7, fig.width=12, echo=FALSE, message=FALSE, warning=FALSE}
 # Scatter plot of interested variables with faceted years
-ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
+scatter_faceted_tob_gdp <-
+  ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
   geom_point(alpha = 0.5) +
   geom_smooth(data = data_tobacco,
               aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD, group = Year,
@@ -549,6 +550,7 @@ ggplot(data_tobacco, aes(x = SH.PRV.SMOK, y = NY.GDP.PCAP.PP.KD)) +
         legend.position = "bottom",
         plot.title = element_text(hjust = 0.5)) +
   facet_wrap(~ Year, ncol = 4)
+scatter_faceted_tob_gdp
 ```
 
 It seems that the Qatari data point in each of the years is still highly influential on the linear relationship. However, the relationship develops to more synchronized behaviour between the robust and non-robust relationship, with the non-robust changing from slightly negative to slightly positive.
@@ -557,7 +559,7 @@ But looking at the distribution of the data points within each facet, something 
 
 #### 1.5. Scatter plot of interested variables with faceted years with density curves
 
-```{r faceted_scatter_density, fig.height=7, fig.width=12, echo=FALSE, message=FALSE, warning=FALSE}
+```{r scatter_faceted_density_tob, fig.height=7, fig.width=12, echo=FALSE, message=FALSE, warning=FALSE}
 # Prepare the density visualization:
 # Calculate mean and standard deviation for each year
 data_tobacco_param <- data_tobacco %>%
@@ -774,7 +776,7 @@ Moreover, the kernel density estimation seems to assimilate towards the normal d
 
 This can be proven by calculating the Kullback-Leibler divergence for each of the years, comparing the KDE with the underlying normal distribution to check the accuracy of describing our empirical distribution by normal distribution.
 
-```{r kl_divergence, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
+```{r kl_divergence_tob, echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 # Compute Kullback-Leibler divergences for each year with differing kernel bandwidths
 data_tobacco_kld <-
   kl_div_from_dnorm(data_tobacco, "SH.PRV.SMOK", kernel_bw = 2) %>%
@@ -791,8 +793,40 @@ data_tobacco_kld <- data_tobacco_kld %>% rename("Jahr" = Year)
 # Return table of Kullback-Leibler divergences for each year and each of the bandwidths
 presentation_tobacco_backup3 <- kable(data_tobacco_kld)
 presentation_tobacco_backup3
+
+# Convert the kable table into a graphical object to safe it with ggsave
+table_kldivergence <- tableGrob(data_tobacco_kld)
 ```
 
 As we can see, there are clear differences between 2000 and 2020, regardless of granularity determined by the chosen bandwidth. Compared to the start of the time span, the empirical  distribution clearly attunes closer to the normal distribution at the end. However, the closest for each of the bandwidths is always 2010. For the bandwidth of two it is the only one which decreases from 2015 onwards again till the end. The wider bandwidths on the other hand, which smooth out the individual data points more with the risk of over-smoothing, decrease only for the first three facets and then increase again, all be it with marginal differences from 2018 to 2020.
 <br><br>
 In summary though and after a clear convergence in the early 2000s, the convergence towards a normally distributed prevalence of tobacco usage among adults stagnated slightly over the last years tending to a backwards development but not strong enough to make any assumptions for future developments. Still, with the general average consumption decreasing.
+
+```{r tobacco_save_pngs, error=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# Save all the graphics used during this markdown analysis to list of lists where each
+# list contains the individual parameters for ggsave
+pngs <- list(
+  list(file = "scatter_tob_gdp.png", plot = presentation_tobacco_backup1,
+       height = 8, width = 14),
+  list(file = "scatter_tob_gdp_updated.png", plot = pres_updated_tobacco_backup1,
+       height = 8, width = 14),
+  list(file = "scatter_without_outlier_tob_gdp.png",
+       plot = presentation_tobacco_backup2, height = 8, width = 14),
+  list(file = "scatter_without_outlier_tob_gdp_updated.png",
+       plot = pres_updated_tobacco_backup2, height = 8, width = 14),
+  list(file = "scatter_faceted_tob_gdp.png", plot = scatter_faceted_tob_gdp,
+       height = 7, width = 12),
+  list(file = "scatter_density_tob_gdp.png", plot = presentation_tobacco_plot2,
+       height = 7, width = 12),
+  list(file = "scatter_density_tob_gdp_updated.png", plot = pres_updated_tobacco_plot2,
+       height = 7, width = 12),
+  list(file = "table_kldivergence.png", plot = table_kldivergence,
+       height = 10, width = 16)
+  )
+
+# Use lapply to apply ggsave to each element in the list
+lapply(pngs, function(x) {
+  ggsave(filename = x$file, plot = x$plot, path = here("Results", "Tobacco"),
+         height = x$height, width = x$width, device = "png", dpi = 320, bg = "white")
+  })
+```
