@@ -22,7 +22,7 @@ For a detailed list of loaded packages, please refer to "env_setup.R" under the 
 
 The data originates from the publicly-accessible data base of the World Development Indicators (WDI) published by the World Bank Open Data Bank. The dataset is classified as public under the Access to Information Classification Policy. Users inside and outside the Bank can access this data set.
 
-The World Bank Open Data is accessible via [data.worldbank.org](https://data.worldbank.org){.uri}, the WDI data base via [databank.worldbank.org/source/world-development-indicators](https://databank.worldbank.org/source/world-development-indicators){.uri}
+The World Bank Open Data is accessible via "*data.worldbank.org*", the WDI data base via "*databank.worldbank.org/source/world-development-indicators*".
 
 ## Usage
 
