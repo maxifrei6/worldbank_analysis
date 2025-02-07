@@ -299,7 +299,7 @@ First, we plot the grouping of our data by alcohol consumption of the most recen
 <br>
 <br>
 ```{r hiv_5, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_alc %>%
+country_alc_grouping <- data_alc %>%
   filter(Year == 2020) %>%
   ggplot(aes(`Country Name`, SH.ALC.PCAP.LI)) +
   geom_point(aes(fill = cat_alc),
@@ -319,6 +319,8 @@ data_alc %>%
     size = 5
   ),
   legend.position = "bottom")
+
+country_alc_grouping
 ```
 <br>
 We can see some overlapping of the different groups, which could arise from grouping the data over averages of all years. As can be seen here, the grouping is not correct, especially for the low and medium category. The alcohol variable seems to vary over the years in such a way that an annual grouping makes sense. We will address this later in this script.
@@ -334,7 +336,7 @@ data_alc_without_outlier <- data_alc %>%
   filter(`Country Name` != "Tansania") %>% 
   filter(SH.ALC.PCAP.LI <= 12)
 
-data_alc %>%
+alc_hiv_2020 <- data_alc %>%
   filter(Year == 2020) %>%
   group_by(cat_alc) %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS, colour = cat_alc)) +
@@ -372,13 +374,15 @@ data_alc %>%
   theme(
     legend.position = "bottom"
   )
+
+alc_hiv_2020
 ```
 <br>
 To get a better overview, we take a look at all years. This shows the development of the HIV Prevalence for each category and the overall relations of the groups to each other.
 <br>
 <br>
 ```{r hiv_7, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_hiv %>%
+year_hiv_grouped <- data_hiv %>%
   group_by(Year, cat_alc) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -401,13 +405,15 @@ data_hiv %>%
     y = "HIV Prävalenz [%]"
   ) +
   theme(legend.position = "bottom")
+
+year_hiv_grouped
 ```
 <br>
 Now we take a look at the average of all years, where we categorize by relative alcohol consumption and compare to the mean of HIV Prevalence.
 <br>
 <br>
 ```{r hiv_8, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_hiv %>%
+alc_hiv_barplot <- data_hiv %>%
   group_by(cat_alc) %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             .groups = "drop") %>%
@@ -417,6 +423,8 @@ data_hiv %>%
   labs(x = "relativer Alkoholkonsum",
     y = "HIV Prävalenz [%]",
     title = "Alkoholkonsum und HIV Prävalenz im Schnitt über die Jahre - Allgemeine Gruppierung")
+
+alc_hiv_barplot
 ```
 <br>
 When plotting likewise while faceting over year, we can see that only very slight fluctuations in the distribution are recognizable here. The plots per year are very similar to the plot shown above. Remembering that the grouping of our data wasn`t correct for each year individually, we now come back to the idea of annual grouping. 
@@ -517,7 +525,7 @@ We use a smooth line of the method "loess" with a span of 1.05, for emphasizing 
 <br>
 <br>
 ```{r hiv_11, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_alc_per_year %>%
+alc_hiv_mean_per_group_yearly <- data_alc_per_year %>%
   group_by(cat_alc_per_year, Year) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -551,6 +559,8 @@ data_alc_per_year %>%
     colour = "relativer Alkoholkonsum"
   ) +
   theme(legend.position = "bottom")
+
+alc_hiv_mean_per_group_yearly
 ```
 <br>
 However, in order to include the scattering of the values and to avoid distortion due to averaging, the same data is shown in a box plot:
@@ -614,7 +624,7 @@ If we now look at the average bar plot again, but with annually regrouped data, 
 <br>
 <br>
 ```{r hiv_13, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_alc_per_year %>%
+alc_hiv_barplot_yearlygrouped <- data_alc_per_year %>%
   group_by(cat_alc_per_year) %>%
   summarise(SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
             .groups = "drop") %>%
@@ -626,6 +636,8 @@ data_alc_per_year %>%
     y = "HIV Prävalenz [%]",
     title = "Alkoholkonsum und HIV Prävalenz - Jährlich gruppierte Daten"
   )
+
+alc_hiv_barplot_yearlygrouped
 ```
 <br>
 We really can see a big difference to our first bar plot with our general categorization.
@@ -654,7 +666,7 @@ In the beginning we take a look at the most recent data, the year 2021. We want 
 <br>
 <br>
 ```{r hiv_15, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_edu %>%
+edu_hiv_2021 <- data_edu %>%
   filter(Year == 2021) %>%
   group_by(cat_education) %>%
   ggplot(aes(SL.TLF.BASC.ZS, SH.DYN.AIDS.ZS)) +
@@ -681,6 +693,8 @@ data_edu %>%
     size = 0.8
   ) +
   theme(legend.position = "bottom")
+
+edu_hiv_2021
 ```
 In the plot above it stands out that there are no points for the medium category of our relative percentage of labor force with basic education. This implies that we have some missing data, especially of all countries being part of this "medium" group. This is caused by grouping over the average of all years of our education variable. This problem would be solved by grouping annually. 
 <br>
@@ -693,7 +707,7 @@ Here is a plot over all years to get an overview of the relationship between our
 <br>
 <br>
 ```{r hiv_16, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_edu %>%
+year_hiv_grouped_edu <- data_edu %>%
   group_by(Year, cat_education) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -716,6 +730,8 @@ data_edu %>%
   labs(title = "HIV Prävalenz über die Jahre", 
        x = "Jahr", 
        y = "HIV Prävalenz [%]")
+
+year_hiv_grouped_edu
 ```
 <br>
 The 60 % of our countries with relative higher education level also show a higher HIV Prevalence. Their Prevalence is falling over the years, while countries with lower education level have an small tendency to increasing HIV prevalence. The labor force with relative great educated labor force have a higher HIV Prevalence than the others.
@@ -724,7 +740,7 @@ Now we take a look at all years While faceting by our categorization, we can obs
 <br>
 <br>
 ```{r hiv_17, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_edu %>%
+year_hiv_facetedu <- data_edu %>%
   ggplot(aes(Year, SH.DYN.AIDS.ZS)) +
   geom_point(size = 2, alpha = 0.4) +
   facet_wrap(~ cat_education) +
@@ -732,9 +748,11 @@ data_edu %>%
   labs(
     title = "HIV Prävalenz und Grundbildung",
     subtitle = "Je nach relativem Anteil an Erwerbstätigen mit grundlegender Bildung",
-    x = "Erwerbstätige mit grundlegender Bildung [%]",
+    x = "Jahr",
     y = "HIV Prävalenz [%]"
   )
+
+year_hiv_facetedu
 ```
 <br>
 Here we can see especially in the group with a big percentage of labor force with basic education, that the scattering of our values mainly arises by differences of HIV values between countries being categorized into one group.
@@ -744,7 +762,7 @@ We want to create a plot of the averages over all years grouped by education lev
 <br>
 <br>
 ```{r hiv_18, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_edu %>%
+edu_hiv_barplot <- data_edu %>%
   group_by(cat_education) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -756,6 +774,8 @@ data_edu %>%
   labs(x = "relativer Anteil an Erwerbstätigen mit grundlegender Bildung", 
        y = "HIV Prävalenz [%]", 
        title = "Gebildete Erwerbstätige und HIV Prävalenz im Schnitt über die Jahre")
+
+edu_hiv_barplot
 ```
 <br>
 If we look at the bar plots faceted by year, we notice that the differences between the groups have decreased in amount.  HIV prevalence has fallen on average over the years, especially in countries with the highest HIV rates. However, the distribution itself is always similar to the plot shown above.
@@ -764,7 +784,7 @@ In the following we view the same plot but with the added education variable on 
 <br>
 <br>
 ```{r hiv_19, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_edu %>%
+edu_hiv_dotplot <- data_edu %>%
   group_by(cat_education) %>%
   summarise(
     SH.DYN.AIDS.ZS = mean(SH.DYN.AIDS.ZS, na.rm = TRUE),
@@ -797,6 +817,8 @@ data_edu %>%
     subtitle = "Allgemeine Gruppierung"
   ) +
   theme(legend.position = "bottom")
+
+edu_hiv_dotplot
 ```
 <br>
 Here we see that the grouping is not acceptable. For example, the group with a low proportion of educated workers has, on average, a higher proportion of educated workers than the group with a medium proportion of educated workers.
@@ -1048,3 +1070,66 @@ pres_updated_hiv_plot4 <- data_edu_per_year %>%
 <br>
 <br>
 From the last few plots, it is very clear that a higher proportion of workers with basic education in a country is also associated with a higher HIV prevalence. So this question is negated in terms of the data.
+
+```{r hiv_save_pngs, error=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# Save all the graphics used during this markdown analysis to list of lists where each
+# list contains the individual parameters for ggsave
+pngs <- list(
+  list(file = "pres_alc_hiv_dotplot.png", plot = presentation_hiv_plot1,
+       height = 8, width = 14),
+  list(file = "pres_alc_hiv_dotplot_rlm.png", plot = presentation_hiv_backup1,
+       height = 8, width = 14),
+  list(file = "pres_updated_alc_hiv_dotplot.png", plot = pres_updated_hiv_plot1,
+       height = 8, width = 14),
+  list(file = "pres_updated_alc_hiv_dotplot_rlm.png", plot = presentation_hiv_backup1_update,
+       height = 8, width = 14),
+  list(file = "country_alc_grouping.png", plot = country_alc_grouping,
+       height = 8, width = 14),
+  list(file = "alc_hiv_2020.png", plot = alc_hiv_2020,
+       height = 8, width = 14),
+  list(file = "year_hiv_grouped_alc.png", plot = year_hiv_grouped,
+       height = 8, width = 14),
+  list(file = "alc_hiv_barplot.png", plot = alc_hiv_barplot, 
+       height = 8, width = 14),
+  list(file = "pres_alc_hiv_facetyear_yearlygrouped.png", 
+       plot = presentation_hiv_backup2, height = 8, width = 14),
+  list(file = "pres_updated_alc_hiv_facetyear_yearlygrouped.png", 
+       plot = presentation_hiv_backup2_update, height = 8, width = 14),
+  list(file = "alc_hiv_mean_per_group_yearly.png", 
+       plot = alc_hiv_mean_per_group_yearly, height = 8, width = 14),
+  list(file = "pres_alc_hiv_boxplot_yearlygrouped.png",
+       plot = presentation_hiv_plot2, height = 8, width = 14),
+  list(file = "pres_updated_alc_hiv_boxplot_yearlygrouped.png", 
+       plot = pres_updated_hiv_plot2, height = 8, width = 14),
+  list(file = "alc_hiv_barplot_yearlygrouped.png", 
+       plot = alc_hiv_barplot_yearlygrouped, height = 8, width = 14),
+  list(file = "edu_hiv_2021_grouping.png",
+       plot = edu_hiv_2021, height = 8, width = 14),
+  list(file = "year_hiv_grouped_edu.png",
+       plot = year_hiv_grouped_edu, height = 8, width = 14),
+  list(file = "year_hiv_facetedu.png",
+       plot = year_hiv_facetedu, height = 8, width = 14),
+  list(file = "edu_hiv_barplot.png",
+       plot = edu_hiv_barplot, height = 8, width = 14),
+  list(file = "edu_hiv_dotplot.png",
+       plot = edu_hiv_dotplot, height = 8, width = 14),
+  list(file = "pres_edu_hiv_dotplot_yearlygrouped.png",
+       plot = presentation_hiv_backup3, height = 8, width = 14),
+  list(file = "pres_updated_edu_hiv_dotplot_yearlygrouped.png",
+       plot = presentation_hiv_backup3_update, height = 8, width = 14),
+  list(file = "pres_edu_hiv_mean_per_group_yearly.png",
+       plot = presentation_hiv_plot3, height = 8, width = 14),
+  list(file = "pres_updated_edu_hiv_mean_per_group_yearly.png",
+       plot = pres_updated_hiv_plot3, height = 8, width = 14),
+  list(file = "pres_edu_hiv_boxplot",
+       plot = presentation_hiv_plot4, height = 8, width = 14),
+  list(file = "pres_updated_edu_hiv_boxplot",
+       plot = pres_updated_hiv_plot4, height = 8, width = 14)
+)
+
+# Use lapply to apply ggsave to each element in the list
+lapply(pngs, function(x) {
+  ggsave(filename = x$file, plot = x$plot, path = here("Results", "HIV"),
+         height = x$height, width = x$width, device = "png", dpi = 320, bg = "white")
+})
+```
