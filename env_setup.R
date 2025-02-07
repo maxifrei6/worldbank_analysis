@@ -51,8 +51,6 @@ packages <- c(
   "checkmate",
   # Install package for cleansing purposes and pipelines
   "dplyr",
-  # Install package for recoding factors
-  "forcats",
   # Install package for plotting
   "ggplot2",
   # Install package for relative path usage

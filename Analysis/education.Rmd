@@ -19,7 +19,6 @@ library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-library(forcats)
 
 # Load the dataset
 data_merged <- readRDS(here("Data", "Processed", "data_merged.RDS"))
@@ -545,8 +544,8 @@ ggplot(tidy_correlation, aes(x = cat_income_level, y = cat_population_size, fill
 
 german_correlation <- tidy_correlation %>%
   mutate(
-    cat_income_level = fct_recode(cat_income_level, "Hoch" = "High", "Mittel" = "Medium", "Gering" = "Low"),
-    cat_population_size = fct_recode(cat_population_size, "Hoch" = "High", "Mittel" = "Medium", "Gering" = "Low")
+    cat_income_level = recode(cat_income_level, "High" = "Hoch", "Medium" = "Mittel", "Low" = "Gering"),
+    cat_population_size = recode(cat_population_size, "High" = "Hoch", "Medium" = "Mittel", "Low" = "Gering")
   )
 
 # German plot for presentation: Create heatmap with dynamically calculated correlation coefficients
