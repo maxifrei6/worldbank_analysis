@@ -245,7 +245,7 @@ data_tob_per_year_format <- data_tob %>%
 For an overview we take a look at the comparison of tobacco usage and GDP in 2020, our most recent data. We add an linear regression line to get a better impression on the overall coherence.<br>
 
 ```{r tobL_1, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
+tob_gdp_2020 <- data_tob %>%
   filter(Year == 2020) %>%
   group_by(cat_tob_usage) %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD)) +
@@ -257,12 +257,14 @@ data_tob %>%
     title = "Tabakkonsum und BIP im Jahr 2020"
   ) +
   geom_smooth(aes(group = 1), method = "lm", se = TRUE, colour = "black", alpha = 0.3, size = 0.7)
+
+tob_gdp_2020
 ```
  
 <br> If we take the general categorization of the countries by the tobacco variable into account and plot only one point per group by calculating their mean, the following plot is created. <br>
 
 ```{r tobL_2, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob %>%
+tob_gdp_facetyear_grouped <- data_tob %>%
   group_by(cat_tob_usage, Year) %>%
   summarise(
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
@@ -282,12 +284,14 @@ data_tob %>%
     title = "Tabakkonsum und BIP alle Jahre - allgemeine Gruppierung"
   ) +
   theme(legend.position = "bottom")
+
+tob_gdp_facetyear_grouped
 ```
 <br> Here we see that the grouping is not appropriate for each year. For example, in the years 2000 and 2005 we see that countries with relative medium tobacco use have on average a larger proportion of tobacco users than countries belonging to the group of relative high tobacco use. So there appear to be countries that have such fluctuating tobacco use rates over the years that they belong to different groups depending on the year. <br>
 This can be seen particularly well in the plot below. Here, the outlier belongs to different groups over the years. We look at the annual grouping of countries according to the quantils of their tobacco variables of the corresponding year.<br>
 In the following plot, all data points are visible. This also shows that the annual grouping creates correct classifications. <br>
 ```{r tobL_4, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob_per_year %>%
+tob_gdp_facetyear_yearlygrouped <- data_tob_per_year %>%
   ggplot(aes(SH.PRV.SMOK, NY.GDP.PCAP.PP.KD)) +
   facet_wrap( ~ Year, ncol = 4) +
   geom_point(aes(fill = cat_tob_usage_per_year), size = 2.5, alpha = 0.6, shape = 21) +
@@ -301,12 +305,14 @@ data_tob_per_year %>%
     title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
   ) +
   theme(legend.position = "bottom")
+
+tob_gdp_facetyear_yearlygrouped
 ```
 
 <br> Now, if we apply the new grouping to a bar plot showing the average values of all years for each group, the distribution is as follows: <br>
 
 ```{r tobL_5, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
-data_tob_per_year %>%
+tob_gdp_barplot_yearlygrouped <- data_tob_per_year %>%
   group_by(cat_tob_usage_per_year) %>%
   summarise(
     NY.GDP.PCAP.PP.KD = mean(NY.GDP.PCAP.PP.KD, na.rm = TRUE),
@@ -320,6 +326,8 @@ data_tob_per_year %>%
     y = "BIP pro Kopf [$]",
     title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
   )
+
+tob_gdp_barplot_yearlygrouped
 ```
 <br> Now we want to include the dispersion of the HIV values in each group, to counteract any bias through averaging calculations. To do this, we now look at boxplots for each category. <br>
 ```{r tobL_6, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
@@ -329,7 +337,7 @@ data_tob_cat_n <- data_tob_per_year %>%
 
 xlabels <- paste0(sort(unique(data_tob_per_year$cat_tob_usage_per_year)), "\nn = ", data_tob_cat_n$n)
 
-data_tob_per_year %>%
+tob_gdp_boxplot_yearlygrouped <- data_tob_per_year %>%
   ggplot(aes(cat_tob_usage_per_year, NY.GDP.PCAP.PP.KD)) +
   geom_boxplot() +
   scale_y_log10(labels = scales::comma) +
@@ -340,6 +348,8 @@ data_tob_per_year %>%
     y = "BIP pro Kopf [$] (log10)",
     title = "Tabakkonsum und BIP - jährlich gruppierte Daten"
   )
+
+tob_gdp_boxplot_yearlygrouped
 ```
 <br> This shows that the average calculations are representative of the data because they are similar to the distribution by the medians. <br>
 The following bar plots visualize the relationship between GDP and tobacco use quite well.<br>
@@ -806,6 +816,20 @@ In summary though and after a clear convergence in the early 2000s, the converge
 # Save all the graphics used during this markdown analysis to list of lists where each
 # list contains the individual parameters for ggsave
 pngs <- list(
+  list(file = "tob_gdp_2020.png", plot = tob_gdp_2020,
+       height = 8, width = 14),
+  list(file = "tob_gdp_facetyear_grouped.png", plot = tob_gdp_facetyear_grouped,
+       height = 8, width = 14),
+  list(file = "tob_gdp_facetyear_yearlygrouped,png", plot = tob_gdp_facetyear_yearlygrouped,
+       height = 8, width = 14),
+  list(file = "tob_gdp_barplot_yearlygrouped.png", plot = tob_gdp_barplot_yearlygrouped,
+       height = 8, width = 14),
+  list(file = "tob_gdp_boxplot_yearlygrouped.png", plot = tob_gdp_boxplot_yearlygrouped,
+       height = 8, width = 14),
+  list(file = "pres_tob_gdp_facetyear_barplot_yearlygrouped.png", 
+       plot = presentation_tobacco_plot1, height = 8, width = 14),
+  list(file = "pres_updated_tob_gdp_facetyear_barplot_yearlygrouped.png", 
+       plot = pres_updated_tobacco_plot1, height = 8, width = 14),
   list(file = "scatter_tob_gdp.png", plot = presentation_tobacco_backup1,
        height = 8, width = 14),
   list(file = "scatter_tob_gdp_updated.png", plot = pres_updated_tobacco_backup1,
@@ -822,11 +846,11 @@ pngs <- list(
        height = 7, width = 12),
   list(file = "table_kldivergence.png", plot = table_kldivergence,
        height = 10, width = 16)
-  )
+)
 
 # Use lapply to apply ggsave to each element in the list
 lapply(pngs, function(x) {
   ggsave(filename = x$file, plot = x$plot, path = here("Results", "Tobacco"),
          height = x$height, width = x$width, device = "png", dpi = 320, bg = "white")
-  })
+})
 ```
