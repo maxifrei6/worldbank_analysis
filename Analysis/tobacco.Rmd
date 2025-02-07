@@ -820,7 +820,7 @@ pngs <- list(
        height = 8, width = 14),
   list(file = "tob_gdp_facetyear_grouped.png", plot = tob_gdp_facetyear_grouped,
        height = 8, width = 14),
-  list(file = "tob_gdp_facetyear_yearlygrouped,png", plot = tob_gdp_facetyear_yearlygrouped,
+  list(file = "tob_gdp_facetyear_yearlygrouped.png", plot = tob_gdp_facetyear_yearlygrouped,
        height = 8, width = 14),
   list(file = "tob_gdp_barplot_yearlygrouped.png", plot = tob_gdp_barplot_yearlygrouped,
        height = 8, width = 14),
