@@ -6,7 +6,7 @@
 
 -   Maximilian Frei \<\<Maximilian.Frei(at)campus.lmu.de\>\>
 
--   Leonie Mertes \<\< TODO: INSERT E-MAIL \>\>
+-   Leonie Mertes \<\< Mertes.Le(at)campus.lmu.de \>\>
 
 Responsible for content: Robin Billinger
 
