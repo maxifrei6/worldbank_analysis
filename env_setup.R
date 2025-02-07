@@ -53,6 +53,8 @@ packages <- c(
   "dplyr",
   # Install package for plotting
   "ggplot2",
+  # Install package for converting tables to graphical objects
+  "gridExtra",
   # Install package for relative path usage
   "here",
   # Install package for more options in assembling plots
@@ -66,32 +68,6 @@ packages <- c(
   # Install package for pivoting data frames
   "tidyr"
   )
-
-##########################################################################################
-# OLD PACKAGE LIST - IS THERE ANYTHING LEFT IN HERE, THAT IS SUPPOSED TO BE IN LIST ABOVE?
-              # "gridExtra",  # for presentation (???)
-              # "lubridate",
-              # "purrr",
-              # "rnaturalearth",  # for worldmap design
-              # "rnaturalearthdata",  # for worldmap design
-              # "sf",  # for worldmap design
-              # "grid",  # for axis labeling of assembled plots
-              # "pROC",
-              # "rpart",
-              # "survival",
-              # "ggsurvfit",
-              # "survminer",
-              # "moments",
-              # "zoo",
-              # "kableExtra",
-              # "readr",
-              # "epitools",
-              # "ggmosaic",
-              # "e1071",
-              # "icenReg",
-              # "interval",
-              # "ggthemes",
-##########################################################################################
 
 # Set CRAN mirror
 options(repos = c(CRAN = "https://cloud.r-project.org"))
