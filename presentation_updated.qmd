@@ -131,19 +131,19 @@ Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbs
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-pres_updated_education_plot1
+pres_upd_scatter_color_debt_edu_income
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-pres_updated_education_plot2
+pres_upd_scatter_faceted_debt_edu_income
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-pres_updated_education_plot3
+pres_upd_cor_matrix_debt_edu
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -155,13 +155,13 @@ Führen mehr Erwerbstätige mit Grundbildung zu einer niedrigeren Schüler-Lehre
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-pres_updated_education_plot4
+pres_upd_scatter_color_teacher_edu
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-pres_updated_education_plot5
+pres_upd_scatter_faceted_teacher_edu
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -173,7 +173,7 @@ Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqu
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-pres_updated_education_plot6
+pres_upd_scatter_color_teacher_gdp
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
@@ -243,13 +243,13 @@ Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=6, fig.width=10}
-pres_updated_education_backup1
+pres_barplot_available_data_pairs
 ```
 
 ## Anhang {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-pres_updated_education_backup2
+pres_lineplot_edu_trend_country
 ```
 
 ## Anhang {.custom-smaller}
