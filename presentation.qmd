@@ -34,8 +34,6 @@ source("env_setup.R")
 # Source each markdown analysis
 source_rmd(here("Analysis", "education.Rmd"))
 source_rmd(here("Analysis", "hiv.Rmd"))
-source_rmd(here("Analysis", "tobacco_LEONIE.Rmd"))
-source_rmd(here("Analysis", "tobacco_ROBIN.Rmd"))
 source_rmd(here("Analysis", "tobacco.Rmd"))
 source_rmd(here("Analysis", "agriculture.Rmd"))
 
@@ -121,19 +119,19 @@ presentation_hiv_plot4
 Haben Länder mit höherer Staatsverschuldung einen geringeren Anteil an Erwerbspersonen mit Grundbildung?
 
 ```{r fig.height=7, fig.width=12}
-presentation_education_plot1
+pres_scatter_color_debt_edu_income
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-presentation_education_plot2
+pres_scatter_faceted_debt_edu_income
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-presentation_education_plot3
+pres_cor_matrix_debt_edu
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -141,13 +139,13 @@ presentation_education_plot3
 Führen mehr Erwerbstätige mit Grundbildung zu einer niedrigeren Schüler-Lehrer-Relation?
 
 ```{r fig.height=7, fig.width=12}
-presentation_education_plot4
+pres_scatter_color_teacher_edu
 ```
 
 ## 2.2 Bildung {.custom-smaller}
 
 ```{r fig.height=7, fig.width=12}
-presentation_education_plot5
+pres_scatter_faceted_teacher_edu
 ```
 
 ## 2.2 Bildung {.custom-smaller}
@@ -155,7 +153,7 @@ presentation_education_plot5
 Welche Auswirkungen haben niedrige Schüler-Lehrer-Relationen auf die Bildungsqualität?
 
 ```{r fig.height=7, fig.width=12}
-presentation_education_plot6
+pres_scatter_color_teacher_gdp
 ```
 
 ## 2.3 Tabakkonsum {.custom-smaller}
@@ -213,13 +211,13 @@ Mögliche Informationen zu anderen Indikatoren, die weitere Erkenntnisse liefern
 ## Anhang {.custom-smaller}
 
 ```{r}
-presentation_education_plot7
+pres_barplot_available_data_pairs
 ```
 
 ## Anhang {.custom-smaller}
 
 ```{r}
-presentation_education_plot8
+pres_lineplot_edu_trend_country
 ```
 
 ## Anhang {.custom-smaller}

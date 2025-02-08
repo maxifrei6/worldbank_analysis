@@ -296,7 +296,6 @@ To visualize the general relationship, we plot a scatter plot with a robust line
 ```{r edu_scatter_debt_edu, message=FALSE, echo=FALSE, warning=FALSE}
 # Scatter plot: Central government debt vs labor force with basic education
 scatter_base_debt_edu <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
-  geom_point(alpha = 0.6) +
   labs(
     title = "Central Government Debt vs Labor Force with Basic Education",
     x = "Central Government Debt (% of GDP)",
@@ -306,6 +305,7 @@ scatter_base_debt_edu <- ggplot(data_education, aes(x = GC.DOD.TOTL.GD.ZS, y = S
 
 # Adding robust linear regression line
 scatter_debt_edu <- scatter_base_debt_edu +
+  geom_point(alpha = 0.6) +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   theme_bw()
 
@@ -318,6 +318,7 @@ scatter_debt_edu
 ```{r edu_scatter-debt-edu-years, echo=FALSE, warning=FALSE, message=FALSE}
 # Scatter plot: Central government debt vs labor force with basic education
 scatter_debt_edu_years <- scatter_base_debt_edu +
+  geom_point(alpha = 0.6) +
   facet_wrap(~ Year) +
   geom_smooth(method = MASS::rlm, se = FALSE, color = "black")
 
@@ -336,6 +337,7 @@ Analyzing this relationship by income levels is a logical next step, as income s
 ```{r edu_scatter_debt_edu_income, echo=FALSE, , warning=FALSE, message=FALSE}
 # Scatter plot: Central government debt vs labor force with basic education
 scatter_color_debt_edu_income <- scatter_base_debt_edu +
+  geom_point(alpha = 0.6) +
   aes(color = cat_income_level) +
   scale_fill_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
   scale_color_manual(values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
@@ -375,6 +377,7 @@ pres_scatter_color_debt_edu_income <- scatter_color_base_pres +
     legend.title = element_text(hjust = 0.5, size = 14),
   )
 
+pres_scatter_color_debt_edu_income
 
 # German plot for presentation (Updated)
 pres_upd_scatter_color_debt_edu_income <- scatter_color_base_pres +
@@ -385,6 +388,7 @@ pres_upd_scatter_color_debt_edu_income <- scatter_color_base_pres +
     legend.title = element_text(hjust = 0.5, size = 18),
   )
 
+pres_upd_scatter_color_debt_edu_income
 ```
 
 <br>
@@ -412,7 +416,6 @@ income_labels <- c(
 
 # Base faceted scatter plot: Debt vs Education by Income Level
 scatter_faceted_base <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
-  geom_point(alpha = 0.6) +
   facet_wrap(~ cat_income_level) +
   theme_bw() +
   geom_text(
@@ -432,6 +435,7 @@ scatter_faceted_base <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.
 
 # English plot: Faceted scatter plot of Debt vs Education by Income Level
 scatter_faceted_debt_edu_income <- scatter_faceted_base +
+  geom_point(alpha = 0.6) +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(
     x = "Central Government Debt (% of GDP)",
@@ -471,7 +475,6 @@ pres_upd_scatter_faceted_debt_edu_income <- pres_scatter_faceted_debt_edu_income
     legend.text = element_text(size = 18),
     legend.title = element_text(hjust = 0.5, size = 18)
   )
-
 ```
 <br>
 
@@ -585,9 +588,7 @@ To begin, we examine the **overall relationship** between **basic education leve
 
 ```{r edu_teacher_edu, message=FALSE, warning=FALSE, echo=FALSE}
 # Scatter plot: pupil-teacher ratios vs labor force with basic education
-scatter_teacher_edu <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
+scatter_teacher_edu_base <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
   labs(
     title = "Pupil-Teacher Ratio vs Labor Force with Basic Education",
     x = "Pupil-Teacher Ratio",
@@ -596,6 +597,10 @@ scatter_teacher_edu <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = SL.
   theme_bw()
 
 # Display plot
+scatter_teacher_edu <- scatter_teacher_edu_base +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
+  geom_point(alpha = 0.6)
+
 scatter_teacher_edu
 ```
 
@@ -607,7 +612,7 @@ To further investigate this relationship, we analyze it **by population density*
 
 ```{r edu_teacher_edu_color, message=FALSE, warning=FALSE, echo=FALSE}
 # Scatter plot: pupil-teacher ratios vs labor force with basic education
-scatter_color_teacher_edu <- scatter_teacher_edu +
+scatter_color_teacher_edu <- scatter_teacher_edu_base +
   geom_point(aes(color = cat_population_density), alpha = 0.6) +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   scale_color_manual(name = "Population density", values = c("#F89441FF", "#CC4678FF", "#7E03A8FF")) +
@@ -617,7 +622,7 @@ scatter_color_teacher_edu <- scatter_teacher_edu +
 scatter_color_teacher_edu
 
 # Base presentation format
-scatter_color_teacher_edu_de <- scatter_color_teacher_edu +
+scatter_color_teacher_edu_de <- scatter_teacher_edu_base +
   geom_point(aes(color = cat_population_density), size = 3.5, alpha = 0.6) +
   labs(
     title = "Schüler-Lehrer-Relation vs. Grundbildung",
@@ -655,6 +660,10 @@ pres_upd_scatter_color_teacher_edu <- scatter_color_teacher_edu_de +
         plot.title = element_text(hjust = 0.5, size = 20)) +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 
+
+pres_scatter_color_teacher_edu
+pres_upd_scatter_color_teacher_edu
+
 ```
 
 #### First Impressions:  
@@ -687,7 +696,6 @@ facet_labels <- c(
 
 # Base faceted scatter plot: Pupil-Teacher Ratio vs Labor Force with Basic Education
 scatter_faceted_base <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.TLF.BASC.ZS)) +
-  geom_point(alpha = 0.6) +
   facet_wrap(~ cat_population_density) +
   labs(
     x = "Pupil-Teacher Ratio",
@@ -711,6 +719,7 @@ scatter_faceted_base <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.
 
 # English plot: Pupil-Teacher Ratio vs Labor Force with Basic Education
 scatter_faceted_teacher_edu <- scatter_faceted_base +
+  geom_point(alpha = 0.6) +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(title = "Pupil-Teacher Ratio vs Labor Force with Basic Education")
 
@@ -718,7 +727,8 @@ scatter_faceted_teacher_edu <- scatter_faceted_base +
 scatter_faceted_teacher_edu
 
 # German base plot (adds German facet labels)
-scatter_faceted_base_de <- scatter_faceted_teacher_edu +
+scatter_faceted_base_de <- scatter_faceted_base +
+  geom_point(size = 3.5, alpha = 0.6) +
   facet_wrap(~ cat_population_density, labeller = labeller(cat_population_density = facet_labels)) +
   labs(
     title = "Schüler-Lehrer-Relation vs. Grundbildung",
@@ -742,6 +752,9 @@ pres_upd_scatter_faceted_teacher_edu <- scatter_faceted_base_de  +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(title = "Schüler-Lehrer-Relation und Grundbildung")
 
+pres_scatter_faceted_teacher_edu
+pres_upd_scatter_faceted_teacher_edu
+
 ```
 <br>
 
@@ -757,7 +770,6 @@ For our analysis, we adopt an **economic perspective**, using **GDP per capita (
 ```{r edu_teacher_gdp, warning=FALSE, message=FALSE, echo=FALSE}
 # Scatter plot: Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
 scatter_color_teacher_gdp_base <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.ZS, y = NY.GDP.PCAP.PP.KD, fill = cat_population_density)) +
-  geom_point(shape = 21, alpha = 0.4) +
   labs(
     title = "Pupil-Teacher Ratio vs GDP per Capita",
     x = "Pupil-Teacher Ratio",
@@ -768,6 +780,7 @@ scatter_color_teacher_gdp_base <- ggplot(data_education, aes(x = SE.TER.ENRL.TC.
   theme_bw()
 
 scatter_color_teacher_gdp <- scatter_color_teacher_gdp_base +
+  geom_point(shape = 21, alpha = 0.4) +
   geom_smooth(aes(color = cat_population_density), method = MASS::rlm, show.legend = FALSE, alpha = 0.2) +
   scale_y_log10(
     breaks = c(10, 100, 1000, 10000, 100000),
@@ -779,6 +792,7 @@ scatter_color_teacher_gdp
 
 # German plot for presentation: Scatter plot of Pupil-Teacher Ratio vs GDP per Capita (Log Scale)
 pres_scatter_color_teacher_gdp_base <- scatter_color_teacher_gdp_base +
+  geom_point(size = 3.5, shape = 21, alpha = 0.4) +
   geom_smooth(aes(color = cat_population_density), method = MASS::rlm,  se = FALSE, show.legend = FALSE) +
   scale_y_log10() +  # Apply log10 transformation to the x-axis
   labs(
@@ -813,6 +827,9 @@ pres_upd_scatter_color_teacher_gdp <- pres_scatter_color_teacher_gdp_base +
     legend.text = element_text(size = 18),
     legend.title = element_text(hjust = 0.5, size = 18)
   )
+
+pres_scatter_color_teacher_gdp
+pres_upd_scatter_color_teacher_gdp
 
 ```
 <br>
