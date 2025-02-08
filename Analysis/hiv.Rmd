@@ -9,10 +9,10 @@ output:
 ## Introduction
 This analysis explores relationships of HIV prevalence in the population aged 15-49 to the total alcohol consumption per capita as well as its coherence to the percentage of labor force with basic education. Therefore, we have two main parts:
 <br>
-1. How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
-<br>
-2. Do countries with a higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
-<br>
+
+######## 1. How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?
+
+######## 2. Do countries with a higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?
 <br>
 ```{r hiv_setup, message = FALSE, echo = FALSE, warning = FALSE}
 # Load necessary libraries
@@ -85,7 +85,7 @@ data_table <- data_hiv %>%
 print(data_table)
 ```
 <br> 
-It is noticeable that there does not seem to be any data for Aruba at all, so this country will be removed from the data set that we need for this question. Additionally, there is no data for alcohol consumption in 2021.
+It is noticeable that there does not seem to be any data for Aruba at all, so this country will be removed from the data set that we need for this analysis. Additionally, there is no data for alcohol consumption in 2021.
 <br>
 <br>
 ```{r hiv_2, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
@@ -96,7 +96,7 @@ data_alc <- data_hiv %>%
 ```
 
 #### Grouping of the countries
-The data is grouped by the variables we want to observe. To do this, we grouped the countries by the quantiles of the average values of the corresponding variable. In the following, the variables were devided into five categories. 
+The data is grouped by the variables we want to observe. To do this, we grouped the countries by the quantiles of the average values of the corresponding variable. In the following, the countries were devided into five categories. 
 <br>
 Since it is not always helpful to group over the average, an annual grouping is also used in the course of the script. Here, each country was categorized by quantiles over the corresponding variable each year.
 <br>
@@ -104,8 +104,7 @@ Since it is not always helpful to group over the average, an annual grouping is 
 
 ### 1. HIV Prevalence and alcohol consumption
 <br>
-<br>
-First we want to look at the existing data about the relevant variables. For getting an better feeling for the coherence of our variables, we plot a linear smooth line. Noticing the outliers, we also plot a linear smooth line not taking these extreme values into account to take a look, if the same coherence still exists.
+First we want to look at the existing data about the relevant variables. For getting an better feeling for the coherence of our variables, we plot a linear smooth line. Noticing the outliers, we also plot a linear smooth line not taking these extreme values into account to see, if the same coherence still exists.
 <br>
 <br>
 ```{r hiv_3, echo=FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
@@ -325,7 +324,7 @@ country_alc_grouping
 <br>
 We can see some overlapping of the different groups, which could arise from grouping the data over averages of all years. As can be seen here, the grouping is not correct, especially for the low and medium category. The alcohol variable seems to vary over the years in such a way that an annual grouping makes sense. We will address this later in this script.
 <br>
-Now we take a look at the Comparison of alcohol consumption and HIV prevalence in 2020. To take the grouping into account we group by the relative alcohol consumption. 
+Now we take a look at the comparison of alcohol consumption and HIV prevalence in 2020. To take the grouping into account we group by the relative alcohol consumption. 
 <br>
 As you can see in the following, the outlier of the country Tanzania takes a great impact on our linear smooth line. Therefore the country Tanzania is removed for our second linear smooth line. (only for interest, how relations are moved)
 <br>
@@ -427,9 +426,7 @@ alc_hiv_barplot <- data_hiv %>%
 alc_hiv_barplot
 ```
 <br>
-When plotting likewise while faceting over year, we can see that only very slight fluctuations in the distribution are recognizable here. The plots per year are very similar to the plot shown above. Remembering that the grouping of our data wasn`t correct for each year individually, we now come back to the idea of annual grouping. 
-<br>
-<br>
+When plotting likewise while faceting over year, we can see that only very slight fluctuations in the distribution are recognizable here. The plots per year are very similar to the plot shown above. Remembering that the grouping of our data wasn`t correct for each year individually, we now come back to the idea of annual grouping.
 ```{r hiv_9, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
 # Grouping by alcohol consumption values each year and saving this full dataset in data_hiv using function 2.2 group_data_year
 data_alc_per_year <- data_alc %>%
@@ -449,7 +446,7 @@ data_alc_per_year <- data_alc %>%
 As we can see here, the plotted data per year show the correct classification of the quantiles:
 <br>
 <br>
-```{r hiv_10, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
+```{r hiv_10, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left", fig.height=7, fig.width=11}
 # plot for presentation
 presentation_hiv_backup2 <- data_alc_per_year %>%
   ggplot(aes(SH.ALC.PCAP.LI, SH.DYN.AIDS.ZS)) +
@@ -520,7 +517,8 @@ data_alc_per_year %>%
   theme(legend.position = "bottom")
 ```
 <br>
-When we plot only one point per category of the plot above and combine the facets into one plot, the data would result in the following:
+When we plot only one point per category of the plot above and combine the facets into one plot, the data would result in the following.
+<br>
 We use a smooth line of the method "loess" with a span of 1.05, for emphasizing the relation.
 <br>
 <br>
@@ -650,7 +648,7 @@ When plotting the same bar plot but faceted over all years, to avoid oversimplif
 **How does the HIV prevalence in the population aged 15-49 relate to the total alcohol consumption per capita?**
 <br>
 <br>
-In general, it can be seen that countries with high alcohol consumption had a higher HIV prevalence on average over all years. It should be noted that this can only be seen on average. This statement can no longer be made when analyzing medians. In the median, as can be seen in the boxplot, countries with relatively low alcohol consumption have the highest HIV rate. It is also noticeable that countries with higher relative alcohol consumption have a much greater spread of HIV values, as the corresponding boxplot shows a much larger interquartile range (size of the box). They are therefore more likely to have more extreme HIV rates, but they are not more likely to actually show higher values.
+In general, it can be seen that countries with high alcohol consumption had a higher HIV prevalence on average over all years. It should be noted that this can only be seen on average. This statement can no longer be made when analyzing medians. In the median, as can be seen in the boxplot, countries with relatively low alcohol consumption have the highest HIV rate. It is also noticeable that countries with higher relative alcohol consumption have a much greater spread of HIV values, as the corresponding boxplot shows a much larger interquartile range (size of the box). They are therefore more likely to have extreme HIV rates, but they are not more likely to actually show higher values.
 <br>
 <br>
 <br>
@@ -734,9 +732,9 @@ year_hiv_grouped_edu <- data_edu %>%
 year_hiv_grouped_edu
 ```
 <br>
-The 60 % of our countries with relative higher education level also show a higher HIV Prevalence. Their Prevalence is falling over the years, while countries with lower education level have an small tendency to increasing HIV prevalence. The labor force with relative great educated labor force have a higher HIV Prevalence than the others.
+The 60 % of our countries with relative high education level also show a higher HIV Prevalence. Their Prevalence is falling over the years, while countries with lower education level have an small tendency to increasing HIV prevalence. The labor force with relative great percentage of educated labor force have a higher HIV Prevalence than the others.
 <br>
-Now we take a look at all years While faceting by our categorization, we can observe the distribution of our HIV values in each group.
+Now we take a look at all years. While faceting by our categorization, we can observe the distribution of our HIV values in each group.
 <br>
 <br>
 ```{r hiv_17, echo = FALSE, warning = FALSE, message = FALSE, fig.align = "left"}
@@ -1069,7 +1067,7 @@ pres_updated_hiv_plot4 <- data_edu_per_year %>%
 **Do countries with higher percentage of labor force with basic education have lower HIV prevalence rates in the 15-49 population?**
 <br>
 <br>
-From the last few plots, it is very clear that a higher proportion of workers with basic education in a country is also associated with a higher HIV prevalence. So this question is negated in terms of the data.
+From the last few plots, it is obvious that a higher proportion of workers with basic education in a country is also associated with a higher HIV prevalence. So this question is negated in terms of the data.
 
 ```{r hiv_save_pngs, error=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Save all the graphics used during this markdown analysis to list of lists where each
