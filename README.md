@@ -1,6 +1,12 @@
 # World Bank
 
-**Author:** Robin Billinger, Maximilian Frei, Leonie Mertes
+**Author:**
+
+-   Robin Billinger \<\<R.Billinger(at)campus.lmu.de\>\>
+
+-   Maximilian Frei \<\<Maximilian.Frei(at)campus.lmu.de\>\>
+
+-   Leonie Mertes \<\< Mertes.Le(at)campus.lmu.de \>\>
 
 Responsible for content: Robin Billinger
 
@@ -10,19 +16,27 @@ This is the repository for the World Bank Project. To ensure the performance of 
 
 We use R Version 4.4.1 (2024-06-14). Some of our packages are dependent on the latest version of R. If you are using other versions, you may encounter errors while installing them.
 
-For a detailed list of loaded packages, please refer to "env_setup.R" under the root directory of our project.
+For a detailed list of loaded packages, please refer to "env_setup.R" under the root directory of our project, or to the "administrative_information.txt", where you further can find version information regarding used software and hardware while working on this project.
+
+## Data Origin
+
+The data originates from the publicly-accessible data base of the World Development Indicators (WDI) published by the World Bank Open Data Bank. The dataset is classified as public under the Access to Information Classification Policy.
+
+The World Bank Open Data is accessible via "*data.worldbank.org*", the WDI data base via "*databank.worldbank.org/source/world-development-indicators*".
 
 ## Usage
 
 First of all, please source the "env_setup.R" file. This will install all the necessary packages and load necessary data sets for programs.
 
-Then, for single analysis programs, simply knit the corresponding, topically divided Rmd files under the "Analysis" directory or refer to the first overview of all observed indicators by sourcing the "indicators.R" file in the "Scripts" directory. For single programs regarding general data processing, simply source the corresponding R file under the "Scripts" directory.
+Then, for single analysis programs, simply knit the corresponding, topically divided .Rmd files under the "Analysis" directory or refer to the general visualization of all observed indicators by sourcing the "indicators.R" file in the "Scripts" directory. For single programs regarding data processing, simply source the corresponding .R file under the "Scripts" directory.
 
 For generating the final report, open either the "presentation.qmd" file (for the original version) or the "presentation_updated.qmd" file (for the feedback-adjusted version) under the project's root directory.
 
 ## Directory Structure
 
 ### Root Directory
+
+administrative_information.txt
 
 customstyle.css
 
@@ -62,6 +76,4 @@ The "functions.R" is worth noting. It contains all the self-written functions us
 
 ### Results
 
-This directory contains the results (figures and tables) of our analysis. They are all saved in png format.
-
-# TODO: SIEHE WHATSAPP GRUPPE
+This directory contains the results (figures and tables) of our analysis. They are all saved in .PNG format. The results are topically sorted into the following sub-directories: "Agriculture", "Education", "HIV", and "Tobacco".
