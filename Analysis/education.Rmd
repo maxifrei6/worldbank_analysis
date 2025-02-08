@@ -377,8 +377,6 @@ pres_scatter_color_debt_edu_income <- scatter_color_base_pres +
     legend.title = element_text(hjust = 0.5, size = 14),
   )
 
-pres_scatter_color_debt_edu_income
-
 # German plot for presentation (Updated)
 pres_upd_scatter_color_debt_edu_income <- scatter_color_base_pres +
   geom_smooth(aes(color = cat_income_level), method = MASS::rlm, color = "black", alpha = 0.2) +
@@ -387,8 +385,6 @@ pres_upd_scatter_color_debt_edu_income <- scatter_color_base_pres +
     legend.text = element_text(size = 18),
     legend.title = element_text(hjust = 0.5, size = 18),
   )
-
-pres_upd_scatter_color_debt_edu_income
 ```
 
 <br>
@@ -660,10 +656,6 @@ pres_upd_scatter_color_teacher_edu <- scatter_color_teacher_edu_de +
         plot.title = element_text(hjust = 0.5, size = 20)) +
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 
-
-pres_scatter_color_teacher_edu
-pres_upd_scatter_color_teacher_edu
-
 ```
 
 #### First Impressions:  
@@ -752,9 +744,6 @@ pres_upd_scatter_faceted_teacher_edu <- scatter_faceted_base_de  +
   geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
   labs(title = "Schüler-Lehrer-Relation und Grundbildung")
 
-pres_scatter_faceted_teacher_edu
-pres_upd_scatter_faceted_teacher_edu
-
 ```
 <br>
 
@@ -827,9 +816,6 @@ pres_upd_scatter_color_teacher_gdp <- pres_scatter_color_teacher_gdp_base +
     legend.text = element_text(size = 18),
     legend.title = element_text(hjust = 0.5, size = 18)
   )
-
-pres_scatter_color_teacher_gdp
-pres_upd_scatter_color_teacher_gdp
 
 ```
 <br>
