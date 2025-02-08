@@ -1,7 +1,7 @@
 ---
 title: "World Bank Tobacco Analysis"
 author: "Robin Billinger, Leonie Mertes"
-date: "`r Sys.Date()`"
+date: "2025-01-20"
 output:
   html_document:
     self-contained: true
@@ -820,7 +820,8 @@ pngs <- list(
        height = 5, width = 8),
   list(file = "dotplot_facetyear_grouped_tob_gdp.png", plot = tob_gdp_facetyear_grouped,
        height = 5, width = 8),
-  list(file = "dotplot_facetyear_yearlygrouped_tob_gdp.png", plot = tob_gdp_facetyear_yearlygrouped,
+  list(file = "dotplot_facetyear_yearlygrouped_tob_gdp.png",
+       plot = tob_gdp_facetyear_yearlygrouped,
        height = 6, width = 10),
   list(file = "barplot_yearlygrouped_tob_gdp.png", plot = tob_gdp_barplot_yearlygrouped,
        height = 5, width = 8),
