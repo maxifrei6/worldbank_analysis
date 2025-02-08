@@ -413,7 +413,17 @@ income_labels <- c(
 # Base faceted scatter plot: Debt vs Education by Income Level
 scatter_faceted_base <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.TLF.BASC.ZS)) +
   facet_wrap(~ cat_income_level) +
-  theme_bw() +
+  theme_bw()
+
+# English plot: Faceted scatter plot of Debt vs Education by Income Level
+scatter_faceted_debt_edu_income <- scatter_faceted_base +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
+  labs(
+    title = "Central Government Debt vs Labor Force with Basic Education",
+    x = "Central Government Debt (% of GDP)",
+    y = "Labor Force with Basic Education (%)"
+  ) + 
   geom_text(
     data = cor_matrix_1,
     aes(
@@ -424,18 +434,9 @@ scatter_faceted_base <- ggplot(data_with_cor, aes(x = GC.DOD.TOTL.GD.ZS, y = SL.
     inherit.aes = FALSE,
     hjust = 1.1,
     vjust = 1.5,
-    size = 6,
+    size = 4.5,
     color = "black",
     parse = TRUE
-  )
-
-# English plot: Faceted scatter plot of Debt vs Education by Income Level
-scatter_faceted_debt_edu_income <- scatter_faceted_base +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
-  labs(
-    x = "Central Government Debt (% of GDP)",
-    y = "Labor Force with Basic Education (%)"
   )
 
 # Display plot
@@ -459,6 +460,20 @@ pres_scatter_faceted_debt_edu_income <- scatter_faceted_base +
     legend.title = element_text(hjust = 0.5, size = 14),
     plot.title = element_text(hjust = 0.5, size = 20),
     strip.text = element_text(size = 14)
+  ) +
+  geom_text(
+    data = cor_matrix_1,
+    aes(
+      x = Inf, 
+      y = Inf, 
+      label = paste0("italic(r)[s] == ", correlation)
+    ),
+    inherit.aes = FALSE,
+    hjust = 1.1,
+    vjust = 1.5,
+    size = 6,
+    color = "black",
+    parse = TRUE
   )
 
 # German plot for presentation (Updated)
@@ -693,7 +708,13 @@ scatter_faceted_base <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.
     x = "Pupil-Teacher Ratio",
     y = "Labor Force with Basic Education (%)"
   ) +
-  theme_bw() +
+  theme_bw()
+
+# English plot: Pupil-Teacher Ratio vs Labor Force with Basic Education
+scatter_faceted_teacher_edu <- scatter_faceted_base +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
+  labs(title = "Pupil-Teacher Ratio vs Labor Force with Basic Education") +
   geom_text(
     data = cor_matrix_2,
     aes(
@@ -704,16 +725,10 @@ scatter_faceted_base <- ggplot(data_with_cor, aes(x = SE.TER.ENRL.TC.ZS, y = SL.
     inherit.aes = FALSE,
     hjust = 1.1,
     vjust = 1.5,
-    size = 6,
+    size = 4.5,
     color = "black",
     parse = TRUE
   )
-
-# English plot: Pupil-Teacher Ratio vs Labor Force with Basic Education
-scatter_faceted_teacher_edu <- scatter_faceted_base +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = MASS::rlm, color = "black", alpha = 0.2) +
-  labs(title = "Pupil-Teacher Ratio vs Labor Force with Basic Education")
 
 # Display plot
 scatter_faceted_teacher_edu
@@ -733,6 +748,20 @@ scatter_faceted_base_de <- scatter_faceted_base +
     axis.title.y = element_text(margin = margin(r = 10), size = 18),
     plot.title = element_text(hjust = 0.5, size = 20),
     strip.text = element_text(size = 14)
+  ) +
+  geom_text(
+    data = cor_matrix_2,
+    aes(
+      x = Inf, 
+      y = Inf, 
+      label = paste0("italic(r)[s] == ", correlation)
+    ),
+    inherit.aes = FALSE,
+    hjust = 1.1,
+    vjust = 1.5,
+    size = 6,
+    color = "black",
+    parse = TRUE
   )
 
 # German plot for presentation
