@@ -1,7 +1,7 @@
 ---
 title: "World Bank Agriculture Analysis"
 author: "Robin Billinger"
-date: "`r Sys.Date()`"
+date: "2025-20-01"
 output:
   html_document:
     self-contained: true
@@ -400,7 +400,7 @@ We recognize a slightly positive linear relationship between the variables, mean
 ```{r scatter_faceted_agr_co2, echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
 # Logarithmic CO2 emissions by country, average agricultural land [%] for color and
 # faceting order
-scatter_faceted_agr_co2 <- 
+scatter_faceted_agr_co2 <-
   ggplot(data_agriculture, aes(x = Year, y = log10(EN.GHG.CO2.MT.CE.AR5 + 1))) +
   geom_point(aes(fill = AG.LND.AGRI.ZS), size = 2, shape = 21, stroke = 0.5) +
   ggtitle(bquote("CO"[2] * " Emissionen pro Kopf und landwirtschaftliche Nutzfläche" *
