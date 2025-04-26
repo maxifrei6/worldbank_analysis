@@ -2,13 +2,13 @@
 
 **Author:**
 
--   Robin Billinger \<\<R.Billinger(at)campus.lmu.de\>\>
+-   Robin Billinger \<\<R.Billinger(at)campus.lmu.de\>\> (Agriculture & Tobacco)
 
--   Maximilian Frei \<\<Maximilian.Frei(at)campus.lmu.de\>\>
+-   Maximilian Frei \<\<Maximilian.Frei(at)campus.lmu.de\>\> (Education)
 
--   Leonie Mertes \<\< Mertes.Le(at)campus.lmu.de \>\>
+-   Leonie Mertes \<\< Mertes.Le(at)campus.lmu.de \>\> (HIV & Tobacco)
 
-Responsible for content: Robin Billinger
+Responsible for content of fork: Maximilian Frei
 
 ## General Instruction
 
